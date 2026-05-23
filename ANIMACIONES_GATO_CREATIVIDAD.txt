@@ -1,0 +1,333 @@
+================================================================
+NUTRE CAT — BRIEF DE ANIMACION PARA CREATIVIDAD
+Juego: El Gato Campeon | Formato: Totem vertical 1080x1920px
+================================================================
+
+CONTEXTO GENERAL
+----------------
+El gato se llama Simon. Es el personaje principal de un juego
+interactivo tipo Tamagotchi con tematica del Mundial de Colombia.
+El jugador lo despierta, alimenta, cuida y juega con el hasta
+convertirlo en campeon.
+
+El codigo maneja todo el movimiento (rebotes, rotaciones, escala).
+Lo que creatividad debe entregar son 13 POSES ESTATICAS ilustradas
+del gato. El equipo tecnico las anima por codigo.
+
+================================================================
+REGLAS PARA TODAS LAS POSES
+================================================================
+- Fondo TRANSPARENTE (PNG con canal alfa)
+- Resolucion sugerida por pose: 600x600px minimo
+- El gato es un gato naranja con camiseta de Colombia (amarilla)
+- Estilo: caricatura expresiva, ojos grandes, proporciones chibi
+- Las poses deben funcionar centradas en un circulo (la UI recorta
+  en circulo con fondo de color segun el estado)
+
+================================================================
+POSES REQUERIDAS — 13 EN TOTAL
+================================================================
+
+----------------------------------------------------------------
+POSE 01 — cat-sleeping
+Pantalla: AttractLoop (pantalla de entrada/attract)
+----------------------------------------------------------------
+Descripcion de la pose:
+  Gato acurrucado sobre si mismo, ojos completamente cerrados,
+  con una expresion de sueno profundo. Puede tener una pequeña
+  "z" o burbujita de sueno saliendo de la nariz.
+
+Lo que el codigo le hace (NO ilustrar esto, solo la pose):
+  - El cuerpo sube y baja suavemente simulando respiracion
+    (escala 1 a 1.04 en loop de 3 segundos)
+  - Debajo del gato hay una pelota de futbol rotando (elemento
+    separado, no parte de la pose del gato)
+
+Expresion facial: Paz total, sonrisa suave, ojos en lineas curvas
+cerradas (estilo "---" o "u u" al reves)
+
+----------------------------------------------------------------
+POSE 02 — cat-idle
+Pantallas: Dashboard, FeedInteraction (antes de comer),
+           TalkScreen (antes de hablar), FootballGame (cargando)
+----------------------------------------------------------------
+Descripcion de la pose:
+  Gato sentado derecho, cara neutra pero amigable, ojos abiertos
+  mirando al frente. Postura relajada, patas apoyadas.
+
+Lo que el codigo le hace:
+  - Flota suavemente arriba y abajo (y: 0 a -6px, 2.5 a 3 segundos)
+
+Expresion facial: Neutral curiosa, ojos redondos abiertos, leve
+sonrisa. Esta es la pose "por defecto" que mas aparece en el juego.
+
+----------------------------------------------------------------
+POSE 03 — cat-awake
+Pantallas: WakeScreen, PetScreen (cuando carino < 60%)
+----------------------------------------------------------------
+Descripcion de la pose:
+  Gato de pie erguido, recien despertado pero con energia. Ojos
+  muy abiertos y brillantes. Orejas bien paradas. Postura alegre
+  y lista para jugar.
+
+Lo que el codigo le hace:
+  - Al despertar: sacudida rapida (crece a 115% y vuelve, rota
+    levemente de lado a lado, dura 0.5 segundos, UNA sola vez)
+  - Loop posterior: rebote energico arriba y abajo continuo
+    (y: 0 a -12px, 1.2 segundos)
+  - Aparece un globo de dialogo sobre el gato con texto
+    (elemento de UI, no de la ilustracion)
+
+Expresion facial: Sorpresa feliz, ojos con brillo/destello (estrellitas
+o reflejos en los ojos), boca abierta en sonrisa
+
+----------------------------------------------------------------
+POSE 04 — cat-happy
+Pantalla: PetScreen (cuando carino > 60%), efecto de caricia
+----------------------------------------------------------------
+Descripcion de la pose:
+  Gato sentado o recostado, claramente disfrutando ser acariciado.
+  Ojos entrecerrados de placer, sonrisa amplia. Postura relajada
+  y confiada. Cola enroscada o levantada.
+
+Lo que el codigo le hace:
+  - Loop base: rebote suave (y: 0 a -12px, 1.2 segundos)
+  - MIENTRAS el jugador acaricia: micro-rotacion de lado a lado
+    (rotate +-3 grados) y ligero crecimiento (escala a 1.05),
+    ritmo rapido de 0.4 segundos
+  - Aparece un globo con "Prrrrr... :3" al presionar
+  - Corazones (elemento UI) flotan desde el punto de toque
+
+Expresion facial: Ojos casi cerrados en media luna feliz (estilo
+"^ ^"), mejillas sonrojadas, ronroneo evidente
+
+----------------------------------------------------------------
+POSE 05 — cat-excited
+Pantalla: Dashboard cuando faltan pocas acciones para ser campeon
+----------------------------------------------------------------
+Descripcion de la pose:
+  Gato de pie, muy alerta y emocionado. Patas delanteras levantadas
+  o sacudiendo. Ojos muy abiertos, vibrando de emocion.
+
+Lo que el codigo le hace:
+  - Wiggle nervioso/emocionado: rota de -8 a +8 grados
+    continuamente en loop de 0.8 segundos
+  - Aura dorada pulsando alrededor del circulo (efecto UI)
+
+Expresion facial: Ojos grandes con destello, boca abierta de
+emocion, orejas hacia adelante. Maximo nivel de energia visual.
+
+----------------------------------------------------------------
+POSE 06 — cat-eating
+Pantalla: FeedInteractionScreen (despues de arrastrar el plato)
+----------------------------------------------------------------
+Descripcion de la pose:
+  Gato con la cabeza ligeramente inclinada hacia abajo como si
+  estuviera comiendo de un plato, lengua afuera o cara de
+  satisfaccion absoluta. Ojos expresivos de placer.
+
+Lo que el codigo le hace:
+  - Al recibir el plato: sacudida de sorpresa (crece a 120%,
+    rota levemente, dura 0.5 segundos, UNA sola vez)
+  - Loop posterior: rebote contento (y: 0 a -8px, 2.5 segundos)
+  - Aparece globo de dialogo "Miau! Estaba delicioso!"
+
+Expresion facial: Ojos en corazon o muy felices, mejillas
+sonrojadas, lengua asomando o lamiendo el hocico
+
+----------------------------------------------------------------
+POSE 07a — cat-playing-charge
+Pantalla: FootballGameScreen — fase de carga (primeros 25 seg)
+----------------------------------------------------------------
+Descripcion de la pose:
+  Gato en postura atletica, concentrado, como preparandose para
+  patear. Cuerpo ligeramente inclinado hacia adelante. Seria
+  pero con energia contenida.
+
+Lo que el codigo le hace:
+  - Flotacion suave (y: 0 a -5px, 1 segundo loop)
+  - El jugador toca la pantalla para cargar energia (no afecta
+    la pose, solo la barra de poder en la UI)
+
+Expresion facial: Ceño levemente fruncido de concentracion,
+ojos enfocados, boca cerrada seria. Como un deportista antes
+de actuar.
+
+----------------------------------------------------------------
+POSE 07b — cat-playing-kick
+Pantalla: FootballGameScreen — fase de patada
+----------------------------------------------------------------
+Descripcion de la pose:
+  Gato en plena patada. Una pata trasera extendida hacia adelante
+  (como si acabe de golpear el balon), cuerpo inclinado, la otra
+  pata de apoyo firme en el suelo. Pose dinamica y energica.
+
+Lo que el codigo le hace:
+  - Rota agresivamente de -10 a +10 grados en loop rapido
+    (1 segundo), simulando movimiento de patada continua
+  - Hay una pelota de futbol (elemento UI separado) que el
+    jugador debe tocar para ejecutar el disparo
+
+Expresion facial: Intensidad total, dientes a la vista, ojos
+enfocados en el balon. Cara de futbolista ejecutando un tiro.
+
+----------------------------------------------------------------
+POSE 07c — cat-playing-goal
+Pantalla: FootballGameScreen — resultado: GOL
+----------------------------------------------------------------
+Descripcion de la pose:
+  Gato celebrando el gol. Patas delanteras levantadas en V de
+  victoria o arriba. Saltando de alegria. Maximo dinamismo.
+
+Lo que el codigo le hace:
+  - Esta pose aparece en el resultado de la pantalla de futbol
+  - Actualmente el codigo usa el emoji 🎉 como placeholder,
+    esta pose reemplaza eso
+  - La pelota entra al arco con animacion de fisica (elemento UI)
+
+Expresion facial: Celebracion total, boca abierta gritando de
+alegria, ojos brillantes, estrellitas alrededor.
+
+----------------------------------------------------------------
+POSE 07d — cat-playing-miss
+Pantalla: FootballGameScreen — resultado: FALLO
+----------------------------------------------------------------
+Descripcion de la pose:
+  Gato triste despues de fallar el tiro. Orejas caidas, cabeza
+  gacha, cola baja. Postura de decepcion pero no desesperacion
+  (puede volver a intentarlo).
+
+Lo que el codigo le hace:
+  - Esta pose aparece cuando el jugador no metio gol
+  - Actualmente usa el emoji 😿 como placeholder
+
+Expresion facial: Ojos medios cerrados de tristeza, boca hacia
+abajo, lagrima opcional. Expresion de "lo intente".
+
+----------------------------------------------------------------
+POSE 08 — cat-care
+Pantallas: CareScreen (siendo cepillado), PetScreen (mientras
+           el jugador acaricia activamente)
+----------------------------------------------------------------
+Descripcion de la pose:
+  Gato en estado de relajacion profunda. Ojos cerrados o muy
+  entrecerrados, cuerpo suelto y abandonado al placer del cepillado.
+  Como un gato que se deja querer completamente.
+
+Lo que el codigo le hace:
+  - MIENTRAS se cepilla: rota rapidamente de -3 a +3 grados,
+    con ligero crecimiento (escala 1 a 1.05), ritmo de 0.4 seg
+  - Aparece un cepillo (elemento UI: emoji 🪮) flotando sobre
+    el hombro derecho del gato durante el cepillado
+  - Burbuja "Prrrrr..." aparece al iniciar el cepillado
+  - Al completar (bienestar 100%): rebote alegre
+
+Expresion facial: Ojos cerrados en media luna muy feliz,
+mejillas rosadas, expresion de bienestar absoluto. Ronroneo visual.
+
+Sub-estados de esta pantalla (referencia para el equipo):
+  - Sin cepillar: usa cat-idle (pose 02)
+  - Cepillando: usa cat-care (esta pose, con micro-rotacion)
+  - Completado: usa siguiente pose cat-happy (pose 04) con bounce
+
+----------------------------------------------------------------
+POSE 09 — cat-talking
+Pantalla: TalkScreen (cuando el gato responde al jugador)
+----------------------------------------------------------------
+Descripcion de la pose:
+  Gato en plena carcajada o reaccion expresiva al escuchar
+  al jugador. Cabeza ligeramente echada hacia atras de la risa
+  o emocion. Cuerpo expresivo.
+
+Lo que el codigo le hace:
+  - Al responder: rota de -5 a +5 grados y sube/baja (y: 0 a
+    -15px), dura 0.6 segundos, UNA sola vez
+  - Aparece burbuja de respuesta del gato con animacion spring
+    (elemento UI)
+  - Hay un microfono pulsando en pantalla (elemento UI separado)
+
+Sub-estados de esta pantalla:
+  - Antes de seleccion: usa cat-idle (pose 02)
+  - Despues de seleccionar opcion: usa cat-awake (pose 03,
+    escuchando atento)
+  - Al responder: usa cat-talking (esta pose)
+
+Expresion facial: Risa o expresion muy vivaz, ojos expresivos
+(pueden ser medias lunas de risa o muy abiertos segun la frase),
+boca abierta. Maximo carisma del personaje.
+
+----------------------------------------------------------------
+POSE 10 — cat-champion
+Pantalla: ChampionResultScreen (pantalla final de victoria)
+----------------------------------------------------------------
+Descripcion de la pose:
+  POSE MAS IMPORTANTE DEL JUEGO. Gato en victoria total. Patas
+  delanteras levantadas en alto. Postura erguida y orgullosa.
+  Puede tener una medalla o corona. Camiseta de Colombia lucida
+  con orgullo. Es el climax visual de toda la experiencia.
+
+Lo que el codigo le hace:
+  - Loop continuo: salta alto (y: 0 a -20px) y rota levemente
+    de -5 a +5 grados, ciclo de 1.5 segundos
+  - Aura tricolor Colombia pulsando alrededor (amarillo/rojo/azul)
+  - Confetti y estrellas cayendo en toda la pantalla (UI)
+  - Badge "Vinculo Inquebrantable" aparece debajo (UI)
+  - Esta pose reemplaza el trofeo 🏆 que hay actualmente
+
+Expresion facial: La mejor cara del gato. Sonrisa enorme, ojos
+brillantes con destellos, mejillas sonrojadas de orgullo, energia
+maxima. Esta es la cara del campeon.
+
+================================================================
+RESUMEN DE ENTREGABLES
+================================================================
+
+POSE              | ARCHIVO SUGERIDO              | PANTALLA
+------------------|-------------------------------|--------------------
+cat-sleeping      | cat-sleeping.png              | AttractLoop
+cat-idle          | cat-idle.png                  | Dashboard + varias
+cat-awake         | cat-awake.png                 | WakeScreen
+cat-happy         | cat-happy.png                 | PetScreen
+cat-excited       | cat-excited.png               | Dashboard pre-final
+cat-eating        | cat-eating.png                | FeedInteraction
+cat-playing-charge| cat-playing-charge.png        | FootballGame carga
+cat-playing-kick  | cat-playing-kick.png          | FootballGame patada
+cat-playing-goal  | cat-playing-goal.png          | FootballGame gol
+cat-playing-miss  | cat-playing-miss.png          | FootballGame fallo
+cat-care          | cat-care.png                  | CareScreen
+cat-talking       | cat-talking.png               | TalkScreen
+cat-champion      | cat-champion.png              | ChampionResult
+
+TOTAL: 13 poses estaticas en PNG con fondo transparente
+
+================================================================
+NOTAS TECNICAS PARA CREATIVIDAD
+================================================================
+
+1. TRANSPARENCIA: Todas las poses en PNG con canal alfa (fondo
+   transparente). El circulo de fondo con degradado lo pone
+   el codigo segun el estado.
+
+2. TAMANIO: 600x600px minimo. El codigo las escala segun contexto
+   (desde 110px en el dashboard hasta 220px en pantallas grandes).
+
+3. CENTRADO: El gato debe estar centrado en el canvas. Dejar
+   margen de ~10% en todos los lados para que las animaciones
+   de rebote y rotacion no corten al personaje.
+
+4. MOVIMIENTO: El codigo solo necesita la pose estatica. NO hace
+   falta animar nada (no se necesita GIF ni sprite sheet). Framer
+   Motion hace todo el movimiento por codigo.
+
+5. IDENTIDAD: Gato naranja, camiseta Colombia amarilla con franja
+   roja en el pecho. Ojos grandes expresivos. Estilo chibi/caricatura.
+   Colores de marca: cian #00AEEF, purpura #6C3FCA, naranja #FF8C00.
+
+6. PRIORIDAD DE ENTREGA si no se pueden hacer todas a la vez:
+   Alta:    cat-idle, cat-sleeping, cat-champion, cat-awake
+   Media:   cat-happy, cat-eating, cat-care, cat-talking
+   Baja:    cat-excited, cat-playing-x4
+
+================================================================
+FIN DEL BRIEF
+================================================================

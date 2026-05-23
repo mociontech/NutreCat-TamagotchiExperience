@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(curl -o \"C:\\\\Users\\\\Pipec\\\\Downloads\\\\attract.png\" \"https://www.figma.com/api/mcp/asset/61389954-31b1-4cdd-9355-03cb28768afc\")",
+      "PowerShell(curl -o \"C:\\\\Users\\\\Pipec\\\\Downloads\\\\register.png\" \"https://www.figma.com/api/mcp/asset/d7bb4fbf-79b8-4bb4-b6f4-c8cd79026830\")",
+      "PowerShell(curl -o \"C:\\\\Users\\\\Pipec\\\\Downloads\\\\dashboard.png\" \"https://www.figma.com/api/mcp/asset/d270c0b4-7c5c-44ca-850d-c7146b81075b\")",
+      "mcp__figma__get_screenshot",
+      "PowerShell(curl -o \"C:\\\\Users\\\\Pipec\\\\Downloads\\\\juego.png\" \"https://www.figma.com/api/mcp/asset/be8759ec-eaa6-47aa-8821-69450705ecbc\")",
+      "PowerShell(curl -o \"C:\\\\Users\\\\Pipec\\\\Downloads\\\\comer.png\" \"https://www.figma.com/api/mcp/asset/4948ad6f-f709-4a53-9a80-05c87945ccc1\")",
+      "PowerShell(curl -o \"C:\\\\Users\\\\Pipec\\\\Downloads\\\\higiene.png\" \"https://www.figma.com/api/mcp/asset/c22c6d38-42cb-48d0-af05-be26317f0747\")",
+      "PowerShell(curl -o \"C:\\\\Users\\\\Pipec\\\\Downloads\\\\dormir.png\" \"https://www.figma.com/api/mcp/asset/62115765-3776-4d0e-96d5-8620708d6604\")",
+      "PowerShell(curl -o \"C:\\\\Users\\\\Pipec\\\\Downloads\\\\finish.png\" \"https://www.figma.com/api/mcp/asset/894744a9-c820-4e71-ac4c-e81fed37191e\")",
+      "PowerShell(curl -o \"C:\\\\Users\\\\Pipec\\\\Downloads\\\\body.png\" \"https://www.figma.com/api/mcp/asset/5aed2a05-96ff-42a2-b23d-e9434acb9618\")",
+      "PowerShell(curl -o \"C:\\\\Users\\\\Pipec\\\\Downloads\\\\attract2.png\" \"https://www.figma.com/api/mcp/asset/29367b66-fd73-42e7-8568-36138083f79f\")",
+      "PowerShell(curl -o \"C:\\\\Users\\\\Pipec\\\\Downloads\\\\juego_contador.png\" \"https://www.figma.com/api/mcp/asset/087e66be-d7b5-4c6c-8feb-7ebbf494d1ee\")",
+      "PowerShell(curl -o \"C:\\\\Users\\\\Pipec\\\\Downloads\\\\juego_cajas.png\" \"https://www.figma.com/api/mcp/asset/89c46710-c4c1-4ad1-8ee1-d72aeee11910\")",
+      "PowerShell(curl -o \"C:\\\\Users\\\\Pipec\\\\Downloads\\\\juego_stars.png\" \"https://www.figma.com/api/mcp/asset/3383968e-c5b0-4512-ab9f-cb43afd57547\")",
+      "mcp__figma__get_design_context"
+    ]
+  }
+}
