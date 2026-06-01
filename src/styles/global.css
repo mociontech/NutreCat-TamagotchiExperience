@@ -1,4 +1,26 @@
-@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Fredoka+One&display=swap');
+@font-face {
+  font-family: 'Rafigen';
+  src: url('/fonts/Rafigen Regular.otf') format('opentype');
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Latcha';
+  src: url('/fonts/Latcha-PersonalUseOnly.otf') format('opentype');
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'MyriadPro';
+  src: url('/fonts/MyriadPro-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-display: swap;
+}
+
+/* Inter como fallback del sistema */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
 
 *, *::before, *::after {
   box-sizing: border-box;
@@ -9,9 +31,11 @@
 }
 
 :root {
-  --nc-cyan: #00AEEF;
-  --nc-cyan-dark: #0090C8;
-  --nc-cyan-light: #B8E8F8;
+  --nc-cyan: #00b6ed;
+  --nc-cyan-dark: #009ccc;
+  --nc-cyan-light: #b8e8f8;
+  --nc-petrol: #00577a;
+  --nc-petrol-dark: #003d57;
   --nc-purple: #6C3FCA;
   --nc-purple-light: #8B5CF6;
   --nc-orange: #FF8C00;
@@ -23,10 +47,12 @@
   --nc-dark: #0A1628;
   --nc-dark-2: #12244A;
   --nc-dark-3: #1E3A6E;
-  --nc-text-light: rgba(255,255,255,0.85);
-  --nc-text-muted: rgba(255,255,255,0.55);
-  --font-display: 'Fredoka One', cursive;
-  --font-body: 'Nunito', sans-serif;
+  --nc-text-light: rgba(255,255,255,0.9);
+  --nc-text-muted: rgba(255,255,255,0.6);
+  --font-display: 'Rafigen', sans-serif;
+  --font-body: 'Latcha', sans-serif;
+  --font-ui: 'Inter', 'MyriadPro', sans-serif;
+  --font-promo: 'MyriadPro', sans-serif;
   --radius-sm: 12px;
   --radius-md: 20px;
   --radius-lg: 32px;
@@ -41,7 +67,7 @@ html, body, #root {
   height: 100%;
   overflow: hidden;
   background: var(--nc-dark);
-  font-family: var(--font-body);
+  font-family: var(--font-ui);
 }
 
 button { cursor: pointer; border: none; outline: none; font-family: var(--font-body); }
@@ -61,7 +87,7 @@ button:active { transform: scale(0.96); }
   width: min(100vw, calc(100vh * 9 / 16));
   height: min(100vh, calc(100vw * 16 / 9));
   overflow: hidden;
-  background: var(--nc-dark);
+  background: var(--nc-cyan);
 }
 
 @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-12px)} }

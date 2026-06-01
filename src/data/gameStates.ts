@@ -3,8 +3,10 @@ export type FoodType = 'dry' | 'wet' | 'treats' | null;
 
 export type ScreenName =
   | 'attract' | 'wake' | 'pet' | 'registration' | 'hub' | 'dashboard'
-  | 'feedSelect' | 'feedInteraction' | 'footballGame'
-  | 'goalCelebration' | 'care' | 'talk'
+  | 'gameSelect' | 'feedSelect' | 'feedInteraction'
+  | 'footballGame' | 'goalCelebration'
+  | 'fallingBagsCountdown' | 'fallingBagsGame'
+  | 'care' | 'talk'
   | 'championResult' | 'rewardQr' | 'sharePostcard';
 
 export interface CatState {

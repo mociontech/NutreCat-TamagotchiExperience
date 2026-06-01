@@ -1,202 +1,234 @@
-import { motion } from 'framer-motion';
-import NutreCatLogo from '../components/NutreCatLogo';
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface Props { onStart: () => void; }
 
 export default function AttractLoop({ onStart }: Props) {
+  const [tap, setTap] = useState(0); // 0=peeking, 1=half-out, 2=full-out
+
+  useEffect(() => {
+    if (tap === 2) {
+      const t = setTimeout(onStart, 1500);
+      return () => clearTimeout(t);
+    }
+  }, [tap, onStart]);
+
+  const handleTap = () => {
+    if (tap < 2) setTap(t => t + 1);
+  };
+
   return (
-    <div style={{
-      width: '100%', height: '100%',
-      backgroundImage: 'url(/assets/Bg1.png)',
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-      display: 'flex', flexDirection: 'column', alignItems: 'center',
-      justifyContent: 'space-between', padding: '44px 28px 54px',
-      position: 'relative', overflow: 'hidden',
-    }}>
-      {/* Luces de estadio */}
-      {[...Array(6)].map((_, i) => (
-        <motion.div key={i}
-          animate={{ opacity: [0.07, 0.35, 0.07] }}
-          transition={{ duration: 2.5 + i * 0.4, repeat: Infinity, delay: i * 0.35 }}
-          style={{
-            position: 'absolute', top: '-15%', left: `${8 + i * 16}%`,
-            width: '3px', height: '55%',
-            background: 'linear-gradient(180deg, rgba(255,255,255,0.5), transparent)',
-            transform: `rotate(${-18 + i * 7}deg)`, transformOrigin: 'top center',
-            pointerEvents: 'none',
-          }}
+    <div
+      onClick={handleTap}
+      style={{
+        width: '100%',
+        height: '100%',
+        background: '#00b6ed',
+        position: 'relative',
+        overflow: 'hidden',
+        cursor: 'pointer',
+      }}
+    >
+      {/* ── LOGO
+          Figma inset: top 5.52% / right 27.96% / bottom 76.75% / left 27.97%
+      ──────────────────────────────────────────────────────── */}
+      <div style={{
+        position: 'absolute',
+        top: '5.52%', right: '27.96%', bottom: '76.75%', left: '27.97%',
+      }}>
+        <img
+          src="/assets/ui/logo-nutre-cat.svg"
+          alt="Nutre Cat Premium"
+          draggable={false}
+          style={{ width: '100%', height: '100%', objectFit: 'contain' }}
         />
-      ))}
+      </div>
 
-      {/* Estrellas */}
-      {[...Array(22)].map((_, i) => (
-        <motion.div key={i}
-          animate={{ opacity: [0.2, 1, 0.2], scale: [1, 1.4, 1] }}
-          transition={{ duration: 1.5 + (i % 5) * 0.4, repeat: Infinity, delay: (i % 7) * 0.45 }}
-          style={{
-            position: 'absolute',
-            top: `${5 + (i * 37 % 55)}%`,
-            left: `${(i * 47 % 92)}%`,
-            width: 2 + (i % 3), height: 2 + (i % 3),
-            background: 'white', borderRadius: '50%',
-            pointerEvents: 'none',
-          }}
-        />
-      ))}
+      {/* ── TÍTULO
+          Figma: top 27.97%, font 145px / frame 1080px → 13.43vw
+          min() para que escale bien en landscape (desarrollo)
+      ──────────────────────────────────────────────────────── */}
+      <div style={{
+        position: 'absolute',
+        top: '27.97%',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        width: '86.76%',
+        textAlign: 'center',
+        lineHeight: 0.88,
+      }}>
+        <p style={{
+          fontFamily: 'var(--font-display)',
+          fontSize: 'min(13.43vw, 7.55vh)',
+          color: '#00577a',
+          textTransform: 'uppercase',
+          letterSpacing: 'min(0.27vw, 0.15vh)',
+          margin: 0,
+        }}>El Verdadero</p>
+        <p style={{
+          fontFamily: 'var(--font-display)',
+          fontSize: 'min(13.43vw, 7.55vh)',
+          color: '#00577a',
+          textTransform: 'uppercase',
+          letterSpacing: 'min(0.27vw, 0.15vh)',
+          margin: 0,
+        }}>Talento Nutrecat</p>
+      </div>
 
-      {/* Logo */}
-      <motion.div initial={{ opacity: 0, y: -28 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-        <NutreCatLogo size={88} />
-      </motion.div>
+      {/* ── SUBTÍTULO
+          Figma: top 41.98%, font 66px / 1080px → 6.11vw
+      ──────────────────────────────────────────────────────── */}
+      <div style={{
+        position: 'absolute',
+        top: '41.98%',
+        left: '50%',
+        transform: 'translateX(-50%)',
+        width: '67.04%',
+        textAlign: 'center',
+      }}>
+        <p style={{
+          fontFamily: 'var(--font-body)',
+          fontSize: 'min(6.11vw, 3.44vh)',
+          color: '#00577a',
+          textTransform: 'uppercase',
+          letterSpacing: 'min(0.3vw, 0.17vh)',
+          fontWeight: 700,
+          lineHeight: 1.25,
+          margin: 0,
+        }}>
+          Cuida a tu gato y hazlo feliz con Nutrecat
+        </p>
+      </div>
 
-      {/* Zona central — CLICABLE */}
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4, type: 'spring', stiffness: 120 }}
-        onClick={onStart}
-        style={{
-          display: 'flex', flexDirection: 'column', alignItems: 'center',
-          gap: '0px', flex: 1, justifyContent: 'center',
-          cursor: 'pointer', position: 'relative', width: '100%',
-        }}
-      >
-        {/* Título */}
-        <motion.div
-          initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.55 }}
-          style={{ textAlign: 'center', marginBottom: '8px' }}
-        >
-          <h1 style={{
-            fontFamily: 'var(--font-display)',
-            fontSize: '42px', color: 'white',
-            lineHeight: 1.1, marginBottom: '6px',
-            textShadow: '0 2px 20px rgba(0,174,239,0.5)',
-          }}>
-            EL GATO<br/>
-            <span style={{ color: 'var(--nc-cyan)' }}>CAMPEÓN</span>
-          </h1>
-          <p style={{ color: 'rgba(255,255,255,0.65)', fontSize: '14px', fontWeight: 600 }}>
-            está esperando por ti
-          </p>
-        </motion.div>
+      {/* ── GATO — 3 estados
+          Solo cambia la imagen y su posición vertical.
+          El resto de la pantalla permanece igual.
+          Figma cat position: left 6.76% / top 69.74% / width 89.07%
+      ──────────────────────────────────────────────────────── */}
+      <AnimatePresence mode="wait">
 
-        {/* Gato + mano + ripples */}
-        <div style={{ position: 'relative', display: 'flex', justifyContent: 'center' }}>
-          {/* Ripples de tap centrados bajo el gato */}
-          {[1, 2, 3].map(i => (
-            <motion.div key={i}
-              animate={{ scale: [0.6, 2.4], opacity: [0.45, 0] }}
-              transition={{ duration: 1.8, repeat: Infinity, delay: i * 0.55, ease: 'easeOut' }}
-              style={{
-                position: 'absolute',
-                bottom: '18%', left: '50%',
-                transform: 'translateX(-50%)',
-                width: 100, height: 100,
-                borderRadius: '50%',
-                border: '2px solid rgba(0,174,239,0.55)',
-                pointerEvents: 'none',
-              }}
-            />
-          ))}
-
-          {/* Gato */}
+        {tap === 0 && (
+          // Estado 0: gato apenas asomándose en la caja
           <motion.img
-            src="/assets/cat/cat-attract.png"
-            alt="Gato Nutre Cat"
-            animate={{ y: [0, -10, 0] }}
-            transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-            style={{
-              width: 340, height: 340,
-              objectFit: 'contain', objectPosition: 'bottom',
-              userSelect: 'none', pointerEvents: 'none',
-              filter: 'drop-shadow(0 20px 40px rgba(0,174,239,0.25))',
-              position: 'relative', zIndex: 1,
-            }}
-          />
-
-          {/* Mano apuntando — animada con intención de tap */}
-          <motion.div
-            animate={{
-              x: [0, 22, 4, 22, 0],
-              y: [0, -14, -4, -14, 0],
-              rotate: [-27, -18, -24, -18, -27],
-            }}
-            transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut', times: [0, 0.35, 0.5, 0.65, 1] }}
+            key="state-0"
+            src="/assets/cat/cat-box-hidden.png"
+            alt=""
+            draggable={false}
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0, transition: { duration: 0.2 } }}
             style={{
               position: 'absolute',
-              bottom: '12%',
-              left: '-8%',
-              width: 110,
-              zIndex: 2,
+              left: '6.76%',
+              top: '69.74%',
+              width: '89.07%',
+              height: 'auto',
+              userSelect: 'none',
               pointerEvents: 'none',
-              transformOrigin: 'bottom right',
+            }}
+          />
+        )}
+
+        {tap === 1 && (
+          // Estado 1: gato medio saliendo — misma imagen subida 12% para revelar más cuerpo
+          <motion.img
+            key="state-1"
+            src="/assets/cat/cat-box-hidden.png"
+            alt=""
+            draggable={false}
+            initial={{ top: '69.74%', opacity: 0 }}
+            animate={{ top: '57.74%', opacity: 1 }}
+            exit={{ opacity: 0, transition: { duration: 0.2 } }}
+            transition={{ duration: 0.4, ease: 'easeOut' }}
+            style={{
+              position: 'absolute',
+              left: '6.76%',
+              width: '89.07%',
+              height: 'auto',
+              userSelect: 'none',
+              pointerEvents: 'none',
+            }}
+          />
+        )}
+
+        {tap === 2 && (
+          // Estado 2: gato saliendo de la caja — "3 1" del Figma
+          <motion.img
+            key="state-2"
+            src="/assets/cat/cat-box-out.png"
+            alt="Simón"
+            draggable={false}
+            initial={{ y: '10%', opacity: 0 }}
+            animate={{ y: '0%', opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.4, ease: 'easeOut' }}
+            style={{
+              position: 'absolute',
+              left: '6.76%',
+              top: '55%',
+              width: '89.07%',
+              height: 'auto',
+              userSelect: 'none',
+              pointerEvents: 'none',
+            }}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* ── MANO
+          Figma: inset top 67.45% / right 69.99% / bottom 12.89% / left -9.81%
+          Rotate: -27.14deg
+          Tamaño natural SVG en Figma: 360.612 × 239.336px en frame 1080px
+          Escalado: 360.612/1080 = 33.39% de frame width → min(33.39vw, 18.78vh)
+          height: auto para no distorsionar
+      ──────────────────────────────────────────────────────── */}
+      <AnimatePresence>
+        {tap < 2 && (
+          <motion.div
+            key="hand"
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0, transition: { duration: 0.3 } }}
+            style={{
+              position: 'absolute',
+              top: '67.45%',
+              right: '69.99%',
+              bottom: '12.89%',
+              left: '-9.81%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              pointerEvents: 'none',
+              overflow: 'visible',
             }}
           >
-            <img
-              src="/assets/hand-pointer.svg"
+            <motion.img
+              src="/assets/ui/hand-pointer.svg"
               alt=""
+              draggable={false}
+              animate={{
+                x: [0, 20, 0, 20, 0],
+                y: [0, -13, 0, -13, 0],
+              }}
+              transition={{
+                duration: 1.4,
+                repeat: Infinity,
+                ease: 'easeInOut',
+                times: [0, 0.35, 0.5, 0.65, 1],
+              }}
               style={{
-                width: '100%',
-                filter: 'brightness(0) invert(1) opacity(0.85)',
+                /* Ancho natural del SVG escalado al frame:
+                   360.612 / 1080 × 100vw = 33.39vw
+                   En landscape: 33.39 × 9/16 = 18.78vh */
+                width: 'min(33.39vw, 18.78vh)',
+                height: 'auto',          // ← respeta el aspect ratio, sin distorsión
+                rotate: '-27.14deg',
+                transformOrigin: 'bottom right',
+                flexShrink: 0,
+                userSelect: 'none',
               }}
             />
           </motion.div>
-
-          {/* Brillitos */}
-          {['✨', '⭐', '✨'].map((e, i) => (
-            <motion.span key={i}
-              animate={{ opacity: [0, 1, 0], scale: [0.5, 1.2, 0.5], y: [0, -12, 0] }}
-              transition={{ duration: 2, repeat: Infinity, delay: i * 0.65 }}
-              style={{
-                position: 'absolute',
-                top: `${10 + i * 28}%`,
-                left: i === 1 ? 'auto' : i === 0 ? '-10%' : '100%',
-                right: i === 1 ? '-8%' : 'auto',
-                fontSize: '22px',
-                pointerEvents: 'none',
-              }}
-            >{e}</motion.span>
-          ))}
-        </div>
-      </motion.div>
-
-      {/* Pie: dots Colombia + aviso de toque */}
-      <motion.div
-        initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 }}
-        style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}
-      >
-        <div style={{ display: 'flex', gap: '6px' }}>
-          {['#FCD116', '#CE1126', '#003087'].map((c, i) => (
-            <motion.span key={i}
-              animate={{ scale: [1, 1.35, 1] }}
-              transition={{ duration: 1.4, repeat: Infinity, delay: i * 0.18 }}
-              style={{ width: 9, height: 9, borderRadius: '50%', background: c, display: 'inline-block' }}
-            />
-          ))}
-        </div>
-
-        <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '13px', textAlign: 'center', fontWeight: 600 }}>
-          Aliméntalo, cuídalo y ayúdalo a ganar 🏆
-        </p>
-
-        {/* Aviso de toque — reemplaza el botón */}
-        <motion.div
-          animate={{ opacity: [0.5, 1, 0.5] }}
-          transition={{ duration: 1.5, repeat: Infinity }}
-          onClick={onStart}
-          style={{ cursor: 'pointer', textAlign: 'center' }}
-        >
-          <p style={{
-            color: 'var(--nc-cyan)',
-            fontSize: '17px', fontWeight: 800,
-            letterSpacing: '0.04em',
-            textShadow: '0 0 20px rgba(0,174,239,0.6)',
-          }}>
-            🐾 Toca al gato para despertar
-          </p>
-        </motion.div>
-      </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
