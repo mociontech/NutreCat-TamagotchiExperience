@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
+import { sfx, sfxStop } from '../utils/sounds';
 
 const NAV = [
   { id: 'game',    label: 'Jugar',  icon: '/assets/nav/icon-game.svg'    },
@@ -13,6 +14,7 @@ interface Bubble { id: number; x: number; y: number; size: number; dx: number; }
 interface Props { onDone: () => void; onBack?: () => void; score?: number; }
 
 export default function CareScreen({ onDone, onBack, score = 0 }: Props) {
+  const handleDone = () => { sfxStop('purr'); onDone(); };
   const [cleanness,   setCleanness]   = useState(0);
   const [scrubbing,   setScrubbing]   = useState(false);
   const [sponge,      setSponge]      = useState<{ x: number; y: number } | null>(null);
@@ -21,7 +23,11 @@ export default function CareScreen({ onDone, onBack, score = 0 }: Props) {
   const lastPos   = useRef<{ x: number; y: number } | null>(null);
   const bubbleId  = useRef(0);
   const goBack    = onBack ?? onDone;
-  const done      = cleanness >= 100;
+  const done = cleanness >= 100;
+
+  useEffect(() => {
+    if (done) sfx('purr', 0.85);
+  }, [done]);
 
   /* ── Spawn foam bubbles at pointer position ─────────────── */
   const spawnBubbles = useCallback((x: number, y: number) => {
@@ -47,6 +53,8 @@ export default function CareScreen({ onDone, onBack, score = 0 }: Props) {
     setSponge({ x: e.clientX, y: e.clientY });
   };
 
+  const spongeThrottle = useRef(0);
+
   const onMove = (e: React.PointerEvent) => {
     setSponge({ x: e.clientX, y: e.clientY });
     if (!scrubbing || done) return;
@@ -62,6 +70,12 @@ export default function CareScreen({ onDone, onBack, score = 0 }: Props) {
       setCleanness(next);
       spawnBubbles(e.clientX, e.clientY);
       lastPos.current = { x: e.clientX, y: e.clientY };
+      // Sonido de esponja throttled cada 600ms
+      const now = Date.now();
+      if (now - spongeThrottle.current > 600) {
+        sfx('sponge', 0.6);
+        spongeThrottle.current = now;
+      }
     }
   };
 
@@ -186,7 +200,7 @@ export default function CareScreen({ onDone, onBack, score = 0 }: Props) {
               boxShadow: ['0 0 20px rgba(0,87,122,0.3)', '0 0 50px rgba(0,87,122,0.7)', '0 0 20px rgba(0,87,122,0.3)'],
             }}
             transition={{ duration: 0.35, boxShadow: { duration: 1.6, repeat: Infinity } }}
-            onClick={onDone}
+            onClick={handleDone}
             style={{
               position: 'absolute', bottom: '24%', left: '50%',
               transform: 'translateX(-50%)',

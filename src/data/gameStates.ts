@@ -17,6 +17,7 @@ export interface CatState {
   mood: number;
   mundialSpirit: number;
   score: number;
+  playScore: number;
   level: CatLevel;
   selectedFood: FoodType;
   hasFed: boolean;
@@ -34,6 +35,7 @@ export const initialCatState: CatState = {
   mood: 40,
   mundialSpirit: 10,
   score: 0,
+  playScore: 0,
   level: 'Dormido',
   selectedFood: null,
   hasFed: false,

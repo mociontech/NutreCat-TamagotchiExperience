@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { sfx, bgPlay, bgStop } from '../utils/sounds';
 
 interface Props { onStart: () => void; }
 
@@ -34,6 +35,12 @@ function ShimmerLogo({ src, alt, style }: { src: string; alt: string; style?: Re
 export default function AttractLoop({ onStart }: Props) {
   const [tap, setTap] = useState(0);
 
+  // Music box en loop mientras está el attract
+  useEffect(() => {
+    bgPlay('musicbox', 0.08);
+    return () => bgStop('musicbox');
+  }, []);
+
   useEffect(() => {
     if (tap === 2) {
       const t = setTimeout(onStart, 1500);
@@ -41,7 +48,12 @@ export default function AttractLoop({ onStart }: Props) {
     }
   }, [tap, onStart]);
 
-  const handleTap = () => { if (tap < 2) setTap(t => t + 1); };
+  const handleTap = () => {
+    if (tap < 2) {
+      sfx('meow', 0.8);
+      setTap(t => t + 1);
+    }
+  };
 
   return (
     <div
@@ -73,7 +85,7 @@ export default function AttractLoop({ onStart }: Props) {
           position: 'absolute',
           top: '27.97%',
           left: '50%',
-          transform: 'translateX(-50%)',
+          x: '-50%',
           width: '86.76%',
           textAlign: 'center',
           lineHeight: 0.88,
@@ -120,7 +132,7 @@ export default function AttractLoop({ onStart }: Props) {
           position: 'absolute',
           top: '41.98%',
           left: '50%',
-          transform: 'translateX(-50%)',
+          x: '-50%',
           width: '67.04%',
           textAlign: 'center',
         }}
@@ -213,24 +225,27 @@ export default function AttractLoop({ onStart }: Props) {
               position: 'absolute',
               top: '67.45%', right: '69.99%', bottom: '12.89%', left: '-9.81%',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              pointerEvents: 'none', overflow: 'visible',
+              pointerEvents: 'none',
             }}
           >
-            <motion.img
-              src="/assets/ui/hand-pointer.svg"
-              alt=""
-              draggable={false}
+            {/* Wrapper con las dimensiones naturales del SVG (360.612 × 239.336) y la rotación */}
+            <motion.div
               animate={{ x: [0, 20, 0, 20, 0], y: [0, -13, 0, -13, 0] }}
               transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut', times: [0, 0.35, 0.5, 0.65, 1] }}
               style={{
-                width: 'min(33.39vw, 18.78vh)',
-                height: 'auto',
+                width:  'min(33.39vw, 18.78vh)',
+                height: 'min(22.16vw, 12.47vh)',
                 rotate: '-27.14deg',
-                transformOrigin: 'bottom right',
                 flexShrink: 0,
-                userSelect: 'none',
               }}
-            />
+            >
+              <img
+                src="/assets/ui/hand-pointer.svg"
+                alt=""
+                draggable={false}
+                style={{ width: '100%', height: '100%', display: 'block', userSelect: 'none' }}
+              />
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>

@@ -1,16 +1,22 @@
 import { motion } from 'framer-motion';
+import { useEffect } from 'react';
 import type { CatState } from '../data/gameStates';
+import { sfx } from '../utils/sounds';
 
 interface Props { cat: CatState; onClaim: () => void; }
 
-const STATS = [
-  { label: 'Energía',  key: 'energy'       as keyof CatState, icon: '⚡', bonus: 20  },
-  { label: 'Nutrición', key: 'hunger'      as keyof CatState, icon: '🍗', bonus: 0, invert: true },
-  { label: 'Cariño',   key: 'affection'    as keyof CatState, icon: '💕', bonus: 25  },
-  { label: 'Ánimo',    key: 'mood'         as keyof CatState, icon: '😄', bonus: 15  },
-] as const;
+const MAX_PLAY_SCORE = 400;
+
+const STATS: { label: string; icon: string; getValue: (cat: CatState) => number }[] = [
+  { label: 'Alimentación', icon: '🍗', getValue: () => 100 },
+  { label: 'Juego',        icon: '⚽', getValue: (cat) => Math.min(100, Math.round(cat.playScore * 100 / MAX_PLAY_SCORE)) },
+  { label: 'Higiene',      icon: '🛁', getValue: () => 100 },
+  { label: 'Descanso',     icon: '😴', getValue: () => 100 },
+];
 
 export default function ChampionResultScreen({ cat, onClaim }: Props) {
+  useEffect(() => { sfx('fanfare', 1.0); }, []);
+
   return (
     <div style={{
       width: '100%', height: '100%',
@@ -154,10 +160,7 @@ export default function ChampionResultScreen({ cat, onClaim }: Props) {
         }}
       >
         {STATS.map(s => {
-          const raw = cat[s.key] as number;
-          const val = s.invert
-            ? Math.min(100, Math.max(0, 100 - raw + s.bonus))
-            : Math.min(100, raw + s.bonus);
+          const val = s.getValue(cat);
           return (
             <div key={s.label} style={{ marginBottom: 'min(1.8vw, 1vh)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 'min(0.8vw, 0.45vh)' }}>

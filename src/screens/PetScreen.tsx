@@ -2,6 +2,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useRef, useEffect, useCallback } from 'react';
 import ScreenLayout from '../components/ScreenLayout';
 import BottomNav, { type NavTabDef } from '../components/BottomNav';
+import { bgPlay, bgStop } from '../utils/sounds';
 
 const NAV_ICONS = {
   game:    '/assets/nav/icon-game.svg',
@@ -86,6 +87,16 @@ export default function PetScreen({ onNext }: Props) {
     clearInterval(petTimer.current!);
     clearInterval(blinkTimer.current!);
   }, []);
+
+  /* Ronroneo: loop mientras se consienta, para al soltar o terminar */
+  useEffect(() => {
+    if (petting && !done) {
+      bgPlay('purr', 0.65);
+    } else {
+      bgStop('purr');
+    }
+    return () => bgStop('purr');
+  }, [petting, done]);
 
   const catSrc = done ? CAT_DONE : eyesClosed ? CAT_EYES_CLOSED : CAT_EYES_OPEN;
 

@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import type { FoodType } from '../data/gameStates';
+import { sfx, sfxStop } from '../utils/sounds';
 
 const PRODUCTS: { id: FoodType; img: string; left: string; width: string }[] = [
   { id: 'dry',    img: '/assets/products/product-3.png', left: '13.61%', width: '21.48%' },
@@ -25,8 +26,10 @@ interface Props {
 export default function FeedInteractionScreen({ selectedFood, onDone, onBack, score = 0 }: Props) {
   const [showBtn, setShowBtn] = useState(false);
   const goBack = onBack ?? onDone;
+  const handleDone = () => { sfxStop('eat'); onDone(); };
 
   useEffect(() => {
+    sfx('eat', 0.7);
     const t = setTimeout(() => setShowBtn(true), 1600);
     return () => clearTimeout(t);
   }, []);
@@ -119,7 +122,7 @@ export default function FeedInteractionScreen({ selectedFood, onDone, onBack, sc
               boxShadow: ['0 0 20px rgba(0,87,122,0.3)', '0 0 50px rgba(0,87,122,0.7)', '0 0 20px rgba(0,87,122,0.3)'],
             }}
             transition={{ duration: 0.35, boxShadow: { duration: 1.6, repeat: Infinity } }}
-            onClick={onDone}
+            onClick={handleDone}
             style={{
               position: 'absolute',
               bottom: '24%', left: '50%',

@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect, useRef } from 'react';
 import type { CatState, ScreenName } from '../data/gameStates';
+import { sfx, bgPlay, bgStop } from '../utils/sounds';
 
 const BLINK_FRAMES = [
   '/assets/cat/cat-hub.png',
@@ -72,6 +73,12 @@ const NAV = [
 
 export default function HubScreen({ cat, onNavigate, pointsEarned, onPointsShown }: Props) {
   const allDone  = cat.hasFed && cat.hasPlayed && cat.hasCared && cat.hasTalked;
+
+  // Música ambiental del Hub
+  useEffect(() => {
+    bgPlay('ukulele', 0.08);
+    return () => bgStop('ukulele');
+  }, []);
   const isDirty  = cat.hasFed && !cat.hasCared;
   const isSleepy = cat.hasCared && !cat.hasTalked;
 
@@ -101,9 +108,15 @@ export default function HubScreen({ cat, onNavigate, pointsEarned, onPointsShown
     return () => clearTimeout(t);
   }, [pointsEarned, onPointsShown]);
 
-  /* Confetti al completar todas las actividades por primera vez */
+  /* Bling al recibir puntos */
+  useEffect(() => {
+    if (pointsEarned) sfx('bling', 0.75);
+  }, [pointsEarned]);
+
+  /* Confetti + fanfare al completar todas las actividades */
   useEffect(() => {
     if (allDone && !prevAllDone.current) {
+      sfx('fanfare', 0.85);
       const pieces: ConfettiPiece[] = Array.from({ length: 40 }, (_, i) => ({
         id: i,
         x: 5 + Math.random() * 90,
@@ -327,47 +340,39 @@ export default function HubScreen({ cat, onNavigate, pointsEarned, onPointsShown
           }}
         />
 
-        {/* Campeón CTA */}
-        <AnimatePresence>
-          {allDone && (
+      </div>
+
+      {/* Campeón CTA — centrado horizontalmente en su propia fila */}
+      <AnimatePresence>
+        {allDone && (
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.35, type: 'spring' }}
+            style={{ flexShrink: 0, position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'center', padding: '0 9% min(2vw, 1.1vh)' }}
+          >
             <motion.button
-              initial={{ opacity: 0, scale: 0.8, y: 20 }}
-              animate={{
-                opacity: 1, scale: 1, y: 0,
-                boxShadow: [
-                  '0 0 20px rgba(0,87,122,0.3)',
-                  '0 0 55px rgba(0,87,122,0.75)',
-                  '0 0 20px rgba(0,87,122,0.3)',
-                ],
-              }}
-              transition={{
-                opacity: { duration: 0.35 },
-                scale: { duration: 0.35, type: 'spring' },
-                boxShadow: { duration: 1.8, repeat: Infinity },
-              }}
-              onClick={() => onNavigate('championResult')}
+              animate={{ boxShadow: ['0 0 20px rgba(0,87,122,0.3)', '0 0 55px rgba(0,87,122,0.75)', '0 0 20px rgba(0,87,122,0.3)'] }}
+              transition={{ boxShadow: { duration: 1.8, repeat: Infinity } }}
+              onClick={() => { sfx('snap', 0.6); onNavigate('championResult'); }}
               style={{
-                position: 'absolute',
-                bottom: '5%', left: '50%',
-                transform: 'translateX(-50%)',
-                background: '#00577a',
-                color: 'white', border: 'none',
+                width: '100%',
+                background: '#00577a', color: 'white', border: 'none',
                 borderRadius: 99,
                 padding: 'min(2.8vw, 1.6vh) min(7vw, 4vh)',
                 fontFamily: 'var(--font-display)',
                 fontSize: 'min(5.5vw, 3.1vh)',
                 textTransform: 'uppercase',
                 cursor: 'pointer',
-                whiteSpace: 'nowrap',
                 letterSpacing: '0.03em',
-                zIndex: 10,
               }}
             >
               🏆 ¡Ver resultado campeón!
             </motion.button>
-          )}
-        </AnimatePresence>
-      </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Botones nav circulares */}
       <div style={{
@@ -399,7 +404,7 @@ function NavCircle({ icon, label, done, onClick }: NavCircleProps) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 'min(1.2vw, 0.68vh)', flexShrink: 0 }}>
       <motion.button
-        onClick={onClick}
+        onClick={() => { sfx('snap', 0.55); onClick(); }}
         whileTap={{ scale: 0.88 }}
         initial={false}
         animate={{

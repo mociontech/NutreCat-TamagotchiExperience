@@ -13,14 +13,12 @@ import GameSelectScreen       from './screens/GameSelectScreen';
 import FeedSelectScreen       from './screens/FeedSelectScreen';
 import FeedInteractionScreen  from './screens/FeedInteractionScreen';
 import FootballGameScreen     from './screens/FootballGameScreen';
-import GoalCelebrationScreen  from './screens/GoalCelebrationScreen';
 import CountdownScreen        from './screens/CountdownScreen';
 import FallingBagsGameScreen  from './screens/FallingBagsGameScreen';
 import CareScreen             from './screens/CareScreen';
 import TalkScreen             from './screens/TalkScreen';
 import ChampionResultScreen   from './screens/ChampionResultScreen';
 import RewardQrScreen         from './screens/RewardQrScreen';
-import SharePostcardScreen    from './screens/SharePostcardScreen';
 
 const IDLE_MS         = 3 * 60 * 1000; // 3 min → aviso
 const WARNING_SECS    = 10;            // 10 s de aviso antes de resetear
@@ -34,7 +32,6 @@ const pageVariants = {
 export default function App() {
   const [screen, setScreen]             = useState<ScreenName>('attract');
   const [cat,    setCat]                = useState<CatState>(initialCatState);
-  const [goalScore, setGoalScore]       = useState(0);
   const [pointsEarned, setPointsEarned] = useState<number | null>(null);
   const [idleWarning, setIdleWarning]   = useState(false);
   const [warnSecs,  setWarnSecs]        = useState(WARNING_SECS);
@@ -46,7 +43,6 @@ export default function App() {
   const doReset = useCallback(() => {
     setIdleWarning(false);
     setCat(initialCatState);
-    setGoalScore(0);
     setPointsEarned(null);
     setScreen('attract');
   }, []);
@@ -115,11 +111,10 @@ export default function App() {
     flashPoints(pts); nav('hub');
   };
 
-  const handleGoal         = (points: number) => { setGoalScore(points); nav('goalCelebration'); };
-
-  const handleGoalContinue = () => {
-    updateCat({ score: cat.score + goalScore, mundialSpirit: clamp(cat.mundialSpirit + 25), affection: clamp(cat.affection + 10), energy: clamp(cat.energy - 10), hasPlayed: true, level: 'Juguetón' });
-    flashPoints(goalScore); nav('hub');
+  const handleGoal = (points: number) => {
+    updateCat({ score: cat.score + points, playScore: points, mundialSpirit: clamp(cat.mundialSpirit + 25), affection: clamp(cat.affection + 10), energy: clamp(cat.energy - 10), hasPlayed: true, level: 'Juguetón' });
+    flashPoints(points);
+    nav('hub');
   };
 
   const handleBagsDone = (points: number) => {
@@ -139,7 +134,7 @@ export default function App() {
     flashPoints(pts); nav('hub');
   };
 
-  const handleRestart = () => { setCat(initialCatState); setGoalScore(0); setPointsEarned(null); nav('attract'); };
+  const handleRestart = () => { setCat(initialCatState); setPointsEarned(null); nav('attract'); };
 
   const renderScreen = () => {
     switch (screen) {
@@ -155,7 +150,6 @@ export default function App() {
       case 'feedInteraction': return <FeedInteractionScreen selectedFood={cat.selectedFood} onDone={handleFeedDone} onBack={() => nav('hub')} score={cat.score} />;
 
       case 'footballGame':    return <FootballGameScreen onGoal={handleGoal} onBack={() => nav('gameSelect')} />;
-      case 'goalCelebration': return <GoalCelebrationScreen score={goalScore} onContinue={handleGoalContinue} />;
 
       case 'fallingBagsCountdown': return <CountdownScreen onDone={() => nav('fallingBagsGame')} />;
       case 'fallingBagsGame':      return <FallingBagsGameScreen onDone={handleBagsDone} />;
@@ -164,8 +158,7 @@ export default function App() {
       case 'talk': return <TalkScreen onDone={handleTalkDone} onBack={() => nav('hub')} score={cat.score} />;
 
       case 'championResult': return <ChampionResultScreen cat={cat} onClaim={() => nav('rewardQr')} />;
-      case 'rewardQr': return <RewardQrScreen cat={cat} onNext={handleRestart} onShare={() => nav('sharePostcard')} />;
-      case 'sharePostcard': return <SharePostcardScreen cat={cat} onRestart={handleRestart} />;
+      case 'rewardQr': return <RewardQrScreen cat={cat} onNext={handleRestart} />;
 
       default: return <AttractLoop onStart={() => nav('attract')} />;
     }

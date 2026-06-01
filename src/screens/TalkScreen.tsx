@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect, useRef } from 'react';
+import { sfx, bgPlay, bgStop } from '../utils/sounds';
 
 const NAV = [
   { id: 'game',    label: 'Jugar',  icon: '/assets/nav/icon-game.svg'    },
@@ -18,6 +19,13 @@ export default function TalkScreen({ onDone, onBack, score = 0 }: Props) {
   const [zzzList, setZzzList] = useState<Zzz[]>([]);
   const zzzId   = useRef(0);
   const goBack  = onBack ?? onDone;
+
+  /* Musicbox suave solo mientras fase oscura */
+  useEffect(() => {
+    if (phase !== 'dark') return;
+    bgPlay('musicbox', 0.12);
+    return () => bgStop('musicbox');
+  }, [phase]);
 
   /* ZZZ spawn loop while dark */
   useEffect(() => {
@@ -42,6 +50,7 @@ export default function TalkScreen({ onDone, onBack, score = 0 }: Props) {
 
   const tapLamp = () => {
     if (phase !== 'light') return;
+    sfx('lightswitch', 0.8);
     setPhase('dimming');
     setTimeout(() => {
       setPhase('dark');
