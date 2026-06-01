@@ -92,7 +92,7 @@ function GameOver({score,onClaim}:{score:number;onClaim:()=>void}) {
 }
 
 // ─── Componente principal ──────────────────────────────────────────────────────
-export default function FootballGameScreen({onGoal,onBack}:Props) {
+export default function FootballGameScreen({onGoal}:Props) {
   const [phase,      setPhase]  = useState<Phase>('shoot_aim');
   const [timeLeft,   setTime]   = useState(GAME_SECS);
   const [totalScore, setTotal]  = useState(0);
@@ -101,9 +101,9 @@ export default function FootballGameScreen({onGoal,onBack}:Props) {
   const [hoverZone,  setHover]  = useState<number|null>(null);
   const [aimZone,    setAim]    = useState<number|null>(null);
   const [isDrawing,  setDraw]   = useState(false);
-  const [drawEndPx,  setDEnd]   = useState<{x:number;y:number}|null>(null);
+  const [,           setDEnd]   = useState<{x:number;y:number}|null>(null);
   const [barPos,     setBarPos] = useState(0);
-  const [barZone,    setBarZone]= useState<BZ|null>(null);
+  const [,           setBarZone]= useState<BZ|null>(null);
   const [isGoal,     setIsGoal] = useState(false);
   const [ptsShot,    setPts]    = useState(0);
   const [shotKey,    setKey]    = useState(0);
@@ -129,8 +129,6 @@ export default function FootballGameScreen({onGoal,onBack}:Props) {
   const aimRef      = useRef<number|null>(null);
   const isGoalRef   = useRef(false);
   const ptsRef      = useRef(0);
-  const spongeThrottle = useRef(0);
-
   useEffect(()=>{gkZoneRef.current=gkZone;},[gkZone]);
   useEffect(()=>{aiZoneRef.current=aiZone;},[aiZone]);
   useEffect(()=>{aimRef.current=aimZone;},[aimZone]);
@@ -300,7 +298,6 @@ export default function FootballGameScreen({onGoal,onBack}:Props) {
   const svgLine = (!isDrawing||hoverZone===null||zonePxs.length===0) ? null
     : bezD(ballPx.x,ballPx.y,zonePxs[hoverZone].x,zonePxs[hoverZone].y);
 
-  const isShooting = phase==='shoot_aim'||phase==='shoot_confirm'||phase==='shoot_timing'||phase==='shoot_firing'||phase==='shoot_result';
   const isSaving   = phase==='save_ready';
   const roundNum   = roundHist.length+1;
 
@@ -597,13 +594,12 @@ export default function FootballGameScreen({onGoal,onBack}:Props) {
                 onClick={()=>{
                   if(phase==='shoot_timing') stopBar();
                   else if(phase==='save_ready') commitSave();
-                  else if(phase==='gameover') onGoal(totalScore);
                 }}
                 whileTap={{scale:0.94}}
                 animate={phase==='shoot_timing'?{scale:[1,1.03,1],boxShadow:['0 4px 20px rgba(253,230,138,0.3)','0 4px 40px rgba(253,230,138,0.8)','0 4px 20px rgba(253,230,138,0.3)']}
                         :phase==='save_ready'?{boxShadow:['0 4px 20px rgba(74,222,128,0.3)','0 4px 40px rgba(74,222,128,0.8)','0 4px 20px rgba(74,222,128,0.3)']}:{}}
                 transition={{duration:0.8,repeat:Infinity}}
-                disabled={phase!=='shoot_timing'&&phase!=='save_ready'&&phase!=='gameover'}
+                disabled={phase!=='shoot_timing'&&phase!=='save_ready'}
                 style={{
                   width:'100%',padding:'min(3.2vw,1.8vh)',
                   background:phase==='shoot_timing'?'#fbbf24':phase==='save_ready'?'#16a34a':'rgba(255,255,255,0.1)',
@@ -623,7 +619,6 @@ export default function FootballGameScreen({onGoal,onBack}:Props) {
                 {phase==='save_ready'   &&`🧤 CONFIRMAR TAPADA · ${saveSecs}s`}
                 {phase==='save_firing'  &&'💥 ¡La IA dispara!'}
                 {phase==='save_result'  &&(savedOk?`¡Atajado! +${PTS.save}pts`:'Gol en contra')}
-                {phase==='gameover'     &&'🎁 Reclamar mi premio'}
               </motion.button>
             </div>
           </div>
