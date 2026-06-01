@@ -9,10 +9,10 @@ const PRODUCTS: { id: FoodType; img: string; left: string; width: string }[] = [
 ];
 
 const NAV = [
-  { id: 'game',    icon: '/assets/nav/icon-game.svg'    },
-  { id: 'food',    icon: '/assets/nav/icon-food.svg'    },
-  { id: 'hygiene', icon: '/assets/nav/icon-hygiene.svg' },
-  { id: 'sleep',   icon: '/assets/nav/icon-sleep.svg'   },
+  { id: 'game',    label: 'Jugar',  icon: '/assets/nav/icon-game.svg'    },
+  { id: 'food',    label: 'Comer',  icon: '/assets/nav/icon-food.svg'    },
+  { id: 'hygiene', label: 'Bañar',  icon: '/assets/nav/icon-hygiene.svg' },
+  { id: 'sleep',   label: 'Hablar', icon: '/assets/nav/icon-sleep.svg'   },
 ] as const;
 
 interface Props {
@@ -141,14 +141,19 @@ export default function FeedInteractionScreen({ selectedFood, onDone, onBack, sc
       </AnimatePresence>
 
       {/* Nav botones circulares */}
-      <div style={{ position: 'absolute', top: '82.6%', left: 0, right: 0, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 'min(4.4vw, 2.5vh)', padding: '0 9%', zIndex: 2 }}>
+      <div style={{ position: 'absolute', top: '80%', left: 0, right: 0, display: 'flex', justifyContent: 'center', alignItems: 'flex-end', gap: 'min(4.4vw, 2.5vh)', padding: '0 9%', zIndex: 2 }}>
         {NAV.map(item => {
-          const isFood = item.id === 'food';
+          const isActive = item.id === 'food';
           return (
-            <motion.button key={item.id} onClick={goBack} whileTap={{ scale: 0.88 }}
-              style={{ width: 'min(17.13vw, 9.64vh)', height: 'min(17.13vw, 9.64vh)', borderRadius: '50%', border: 'none', cursor: 'pointer', background: isFood ? 'white' : '#00577a', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: isFood ? '0 0 0 3px rgba(255,255,255,0.8), 0 6px 22px rgba(0,87,122,0.25)' : '0 4px 16px rgba(0,0,0,0.2)', flexShrink: 0 }}>
-              <img src={item.icon} alt="" style={{ width: '54%', height: '54%', objectFit: 'contain', filter: isFood ? 'none' : 'brightness(0) invert(1)' }} />
-            </motion.button>
+            <div key={item.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 'min(1.2vw, 0.68vh)', flexShrink: 0 }}>
+              <motion.button onClick={goBack} whileTap={{ scale: 0.88 }}
+                style={{ width: 'min(17.13vw, 9.64vh)', height: 'min(17.13vw, 9.64vh)', borderRadius: '50%', border: 'none', cursor: 'pointer', background: isActive ? 'white' : '#00577a', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: isActive ? '0 0 0 3px rgba(255,255,255,0.8), 0 6px 22px rgba(0,87,122,0.25)' : '0 4px 16px rgba(0,0,0,0.2)', flexShrink: 0 }}>
+                <img src={item.icon} alt="" style={{ width: '54%', height: '54%', objectFit: 'contain', filter: isActive ? 'none' : 'brightness(0) invert(1)' }} />
+              </motion.button>
+              <span style={{ fontFamily: 'var(--font-display)', fontSize: 'min(3.4vw, 1.9vh)', color: 'white', textTransform: 'uppercase', letterSpacing: '0.04em', opacity: isActive ? 1 : 0.75, whiteSpace: 'nowrap', pointerEvents: 'none' }}>
+                {isActive ? '✓ ' : ''}{item.label}
+              </span>
+            </div>
           );
         })}
       </div>

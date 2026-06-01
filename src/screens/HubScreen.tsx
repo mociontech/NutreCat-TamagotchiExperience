@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import type { CatState, ScreenName } from '../data/gameStates';
 
 const BLINK_FRAMES = [
@@ -10,7 +10,8 @@ const BLINK_FRAMES = [
 
 const SLEEPY_PHRASES = ['Tiene sueño... 😴', 'Zzz... 💤', 'Se está durmiendo...', '💤 Zzz...'];
 
-/* Animación de parpadeo normal */
+const CONFETTI_COLORS = ['#FCD116', '#ffffff', '#00577a', '#ff6b6b', '#a8edea', '#fed330'];
+
 function useBlink() {
   const [frame, setFrame] = useState(0);
   useEffect(() => {
@@ -34,7 +35,6 @@ function useBlink() {
   return BLINK_FRAMES[frame];
 }
 
-/* Animación soñolienta: solo blink1 ↔ blink2, sin ojos abiertos */
 function useSleepy() {
   const [frame, setFrame] = useState(1);
   useEffect(() => {
@@ -46,16 +46,31 @@ function useSleepy() {
   return BLINK_FRAMES[frame];
 }
 
-interface Props { cat: CatState; onNavigate: (screen: ScreenName) => void; }
+interface ConfettiPiece {
+  id: number;
+  x: number;
+  color: string;
+  size: number;
+  delay: number;
+  duration: number;
+  rotate: number;
+}
+
+interface Props {
+  cat: CatState;
+  onNavigate: (screen: ScreenName) => void;
+  pointsEarned?: number | null;
+  onPointsShown?: () => void;
+}
 
 const NAV = [
-  { id: 'game',    icon: '/assets/nav/icon-game.svg',    screen: 'gameSelect' as ScreenName, doneKey: 'hasPlayed' as keyof CatState },
-  { id: 'food',    icon: '/assets/nav/icon-food.svg',    screen: 'feedSelect' as ScreenName, doneKey: 'hasFed'    as keyof CatState },
-  { id: 'hygiene', icon: '/assets/nav/icon-hygiene.svg', screen: 'care'       as ScreenName, doneKey: 'hasCared'  as keyof CatState },
-  { id: 'sleep',   icon: '/assets/nav/icon-sleep.svg',   screen: 'talk'       as ScreenName, doneKey: 'hasTalked' as keyof CatState },
+  { id: 'game',    label: 'Jugar',  icon: '/assets/nav/icon-game.svg',    screen: 'gameSelect' as ScreenName, doneKey: 'hasPlayed' as keyof CatState },
+  { id: 'food',    label: 'Comer',  icon: '/assets/nav/icon-food.svg',    screen: 'feedSelect' as ScreenName, doneKey: 'hasFed'    as keyof CatState },
+  { id: 'hygiene', label: 'Bañar',  icon: '/assets/nav/icon-hygiene.svg', screen: 'care'       as ScreenName, doneKey: 'hasCared'  as keyof CatState },
+  { id: 'sleep',   label: 'Hablar', icon: '/assets/nav/icon-sleep.svg',   screen: 'talk'       as ScreenName, doneKey: 'hasTalked' as keyof CatState },
 ] as const;
 
-export default function HubScreen({ cat, onNavigate }: Props) {
+export default function HubScreen({ cat, onNavigate, pointsEarned, onPointsShown }: Props) {
   const allDone  = cat.hasFed && cat.hasPlayed && cat.hasCared && cat.hasTalked;
   const isDirty  = cat.hasFed && !cat.hasCared;
   const isSleepy = cat.hasCared && !cat.hasTalked;
@@ -63,12 +78,46 @@ export default function HubScreen({ cat, onNavigate }: Props) {
   const blinkSrc  = useBlink();
   const sleepySrc = useSleepy();
   const [phraseIdx, setPhraseIdx] = useState(0);
+  const [showPoints, setShowPoints] = useState(false);
+  const [pointsKey, setPointsKey]   = useState(0);
+  const [confetti, setConfetti]     = useState<ConfettiPiece[]>([]);
+  const prevAllDone = useRef(false);
 
   useEffect(() => {
     if (!isSleepy) return;
     const t = setInterval(() => setPhraseIdx(i => (i + 1) % SLEEPY_PHRASES.length), 2600);
     return () => clearInterval(t);
   }, [isSleepy]);
+
+  /* Flash +N puntos al entrar al hub con puntos nuevos */
+  useEffect(() => {
+    if (!pointsEarned) return;
+    setShowPoints(true);
+    setPointsKey(k => k + 1);
+    const t = setTimeout(() => {
+      setShowPoints(false);
+      onPointsShown?.();
+    }, 2200);
+    return () => clearTimeout(t);
+  }, [pointsEarned, onPointsShown]);
+
+  /* Confetti al completar todas las actividades por primera vez */
+  useEffect(() => {
+    if (allDone && !prevAllDone.current) {
+      const pieces: ConfettiPiece[] = Array.from({ length: 40 }, (_, i) => ({
+        id: i,
+        x: 5 + Math.random() * 90,
+        color: CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)],
+        size: 8 + Math.random() * 12,
+        delay: Math.random() * 0.6,
+        duration: 1.8 + Math.random() * 1.2,
+        rotate: Math.random() * 360,
+      }));
+      setConfetti(pieces);
+      setTimeout(() => setConfetti([]), 4000);
+    }
+    prevAllDone.current = allDone;
+  }, [allDone]);
 
   const catSrc = isDirty ? '/assets/cat/cat-dirty.png'
                : isSleepy ? sleepySrc
@@ -90,6 +139,26 @@ export default function HubScreen({ cat, onNavigate }: Props) {
         opacity: 0.44,
         pointerEvents: 'none',
       }} />
+
+      {/* Confetti al desbloquear campeón */}
+      <AnimatePresence>
+        {confetti.map(p => (
+          <motion.div
+            key={p.id}
+            initial={{ opacity: 1, y: '-5%', x: `${p.x}vw`, rotate: p.rotate, scale: 1 }}
+            animate={{ opacity: 0, y: '110%', rotate: p.rotate + 720, scale: 0.4 }}
+            transition={{ duration: p.duration, delay: p.delay, ease: 'easeIn' }}
+            style={{
+              position: 'absolute', top: 0, left: 0,
+              width: p.size, height: p.size * 0.55,
+              background: p.color,
+              borderRadius: 2,
+              zIndex: 20,
+              pointerEvents: 'none',
+            }}
+          />
+        ))}
+      </AnimatePresence>
 
       {/* Header: Logo + Puntos */}
       <div style={{
@@ -159,6 +228,91 @@ export default function HubScreen({ cat, onNavigate }: Props) {
           )}
         </AnimatePresence>
 
+        {/* +N puntos flotante */}
+        <AnimatePresence>
+          {showPoints && pointsEarned && (
+            <motion.div
+              key={pointsKey}
+              initial={{ opacity: 0, scale: 0.5, y: 0 }}
+              animate={{ opacity: 1, scale: 1.2, y: -60 }}
+              exit={{ opacity: 0, scale: 0.8, y: -100 }}
+              transition={{ duration: 0.5, ease: 'backOut' }}
+              style={{
+                position: 'absolute',
+                top: '30%', left: '50%',
+                transform: 'translateX(-50%)',
+                background: '#00577a',
+                color: 'white',
+                borderRadius: 99,
+                padding: 'min(2vw, 1.1vh) min(5vw, 2.8vh)',
+                fontFamily: 'var(--font-display)',
+                fontSize: 'min(7vw, 3.9vh)',
+                textTransform: 'uppercase',
+                letterSpacing: '0.04em',
+                whiteSpace: 'nowrap',
+                boxShadow: '0 8px 30px rgba(0,87,122,0.45)',
+                zIndex: 15,
+                pointerEvents: 'none',
+              }}
+            >
+              +{pointsEarned} puntos 🐾
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Nombre del gato + progreso */}
+        <div style={{
+          position: 'absolute', top: '4%', left: '50%',
+          transform: 'translateX(-50%)',
+          display: 'flex', flexDirection: 'column', alignItems: 'center',
+          gap: 'min(1vw, 0.55vh)', zIndex: 2, pointerEvents: 'none',
+        }}>
+          {/* Badge con nombre del gato */}
+          <motion.div
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            style={{
+              background: 'rgba(255,255,255,0.22)',
+              borderRadius: 99,
+              padding: 'min(0.9vw, 0.5vh) min(4vw, 2.2vh)',
+              display: 'flex', alignItems: 'center', gap: 'min(1.5vw, 0.85vh)',
+              backdropFilter: 'blur(4px)',
+              border: '1.5px solid rgba(255,255,255,0.35)',
+            }}
+          >
+            <span style={{ fontSize: 'min(4vw, 2.3vh)' }}>🐱</span>
+            <span style={{
+              fontFamily: 'var(--font-display)',
+              fontSize: 'min(4.8vw, 2.7vh)',
+              color: 'white',
+              textTransform: 'uppercase',
+              letterSpacing: '0.06em',
+              whiteSpace: 'nowrap',
+            }}>
+              {cat.name}
+            </span>
+          </motion.div>
+
+          {!allDone && (
+            <motion.span
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.35 }}
+              style={{
+                fontFamily: 'var(--font-body)',
+                fontSize: 'min(3.8vw, 2.1vh)',
+                color: 'rgba(255,255,255,0.85)',
+                letterSpacing: '0.03em',
+                fontWeight: 700,
+                whiteSpace: 'nowrap',
+              }}
+            >
+              {[cat.hasFed, cat.hasPlayed, cat.hasCared, cat.hasTalked].filter(Boolean).length} de 4 actividades completadas
+            </motion.span>
+          )}
+        </div>
+
         <motion.img
           src={catSrc}
           alt="Gato"
@@ -218,14 +372,15 @@ export default function HubScreen({ cat, onNavigate }: Props) {
       {/* Botones nav circulares */}
       <div style={{
         position: 'relative', zIndex: 1, flexShrink: 0,
-        display: 'flex', justifyContent: 'center', alignItems: 'center',
+        display: 'flex', justifyContent: 'center', alignItems: 'flex-end',
         gap: 'min(4.4vw, 2.5vh)',
-        padding: 'min(2.5vw, 1.4vh) 9% min(4.8vw, 2.7vh)',
+        padding: 'min(2.5vw, 1.4vh) 9% min(3.5vw, 2vh)',
       }}>
         {NAV.map(item => (
           <NavCircle
             key={item.id}
             icon={item.icon}
+            label={item.label}
             done={cat[item.doneKey] as boolean}
             onClick={() => onNavigate(item.screen)}
           />
@@ -236,65 +391,79 @@ export default function HubScreen({ cat, onNavigate }: Props) {
 }
 
 /* ── Botón circular individual ─────────────────────────────── */
-interface NavCircleProps { icon: string; done: boolean; onClick: () => void; }
+interface NavCircleProps { icon: string; label: string; done: boolean; onClick: () => void; }
 
-function NavCircle({ icon, done, onClick }: NavCircleProps) {
+function NavCircle({ icon, label, done, onClick }: NavCircleProps) {
   const SIZE = 'min(17.13vw, 9.64vh)';
 
   return (
-    <motion.button
-      onClick={onClick}
-      whileTap={{ scale: 0.88 }}
-      initial={false}
-      animate={{
-        backgroundColor: done ? '#ffffff' : '#00577a',
-        boxShadow: done
-          ? '0 0 0 3px rgba(255,255,255,0.8), 0 6px 22px rgba(0,87,122,0.25)'
-          : '0 4px 16px rgba(0,0,0,0.2)',
-      }}
-      transition={{ duration: 0.45, ease: 'easeOut' }}
-      style={{
-        width: SIZE, height: SIZE,
-        borderRadius: '50%', border: 'none',
-        cursor: 'pointer', flexShrink: 0,
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        position: 'relative', overflow: 'hidden',
-        backgroundColor: done ? '#ffffff' : '#00577a',
-      }}
-    >
-      {/* Relleno blanco que sube desde abajo al completar */}
-      <AnimatePresence>
-        {done && (
-          <motion.div
-            key="fill"
-            initial={{ scaleY: 0 }}
-            animate={{ scaleY: 1 }}
-            exit={{ scaleY: 0 }}
-            transition={{ duration: 0.38, ease: 'easeOut' }}
-            style={{
-              position: 'absolute', inset: 0,
-              background: 'white',
-              transformOrigin: 'bottom center',
-              borderRadius: '50%',
-              zIndex: 0,
-            }}
-          />
-        )}
-      </AnimatePresence>
-
-      {/* Ícono */}
-      <img
-        src={icon}
-        alt=""
-        style={{
-          width: '54%', height: '54%',
-          objectFit: 'contain',
-          position: 'relative', zIndex: 1,
-          filter: done ? 'none' : 'brightness(0) invert(1)',
-          transition: 'filter 0.3s ease',
-          pointerEvents: 'none',
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 'min(1.2vw, 0.68vh)', flexShrink: 0 }}>
+      <motion.button
+        onClick={onClick}
+        whileTap={{ scale: 0.88 }}
+        initial={false}
+        animate={{
+          backgroundColor: done ? '#ffffff' : '#00577a',
+          boxShadow: done
+            ? '0 0 0 3px rgba(255,255,255,0.8), 0 6px 22px rgba(0,87,122,0.25)'
+            : '0 4px 16px rgba(0,0,0,0.2)',
         }}
-      />
-    </motion.button>
+        transition={{ duration: 0.45, ease: 'easeOut' }}
+        style={{
+          width: SIZE, height: SIZE,
+          borderRadius: '50%', border: 'none',
+          cursor: 'pointer', flexShrink: 0,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          position: 'relative', overflow: 'hidden',
+          backgroundColor: done ? '#ffffff' : '#00577a',
+        }}
+      >
+        <AnimatePresence>
+          {done && (
+            <motion.div
+              key="fill"
+              initial={{ scaleY: 0 }}
+              animate={{ scaleY: 1 }}
+              exit={{ scaleY: 0 }}
+              transition={{ duration: 0.38, ease: 'easeOut' }}
+              style={{
+                position: 'absolute', inset: 0,
+                background: 'white',
+                transformOrigin: 'bottom center',
+                borderRadius: '50%',
+                zIndex: 0,
+              }}
+            />
+          )}
+        </AnimatePresence>
+
+        <img
+          src={icon}
+          alt=""
+          style={{
+            width: '54%', height: '54%',
+            objectFit: 'contain',
+            position: 'relative', zIndex: 1,
+            filter: done ? 'none' : 'brightness(0) invert(1)',
+            transition: 'filter 0.3s ease',
+            pointerEvents: 'none',
+          }}
+        />
+      </motion.button>
+
+      <span style={{
+        fontFamily: 'var(--font-display)',
+        fontSize: 'min(3.4vw, 1.9vh)',
+        color: 'white',
+        textTransform: 'uppercase',
+        letterSpacing: '0.04em',
+        opacity: done ? 1 : 0.75,
+        transition: 'opacity 0.3s ease',
+        pointerEvents: 'none',
+        whiteSpace: 'nowrap',
+      }}>
+        {done ? '✓ ' : ''}{label}
+      </span>
+    </div>
   );
 }

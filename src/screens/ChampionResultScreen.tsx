@@ -1,117 +1,217 @@
 import { motion } from 'framer-motion';
 import type { CatState } from '../data/gameStates';
-import FloatingParticles from '../components/FloatingParticles';
-import PrimaryButton from '../components/PrimaryButton';
-import StatBar from '../components/StatBar';
 
 interface Props { cat: CatState; onClaim: () => void; }
+
+const STATS = [
+  { label: 'Energía',  key: 'energy'       as keyof CatState, icon: '⚡', bonus: 20  },
+  { label: 'Nutrición', key: 'hunger'      as keyof CatState, icon: '🍗', bonus: 0, invert: true },
+  { label: 'Cariño',   key: 'affection'    as keyof CatState, icon: '💕', bonus: 25  },
+  { label: 'Ánimo',    key: 'mood'         as keyof CatState, icon: '😄', bonus: 15  },
+] as const;
 
 export default function ChampionResultScreen({ cat, onClaim }: Props) {
   return (
     <div style={{
       width: '100%', height: '100%',
-      background: 'linear-gradient(180deg, #003087 0%, #0A1628 40%, #8a2be2 80%, #0A1628 100%)',
-      display: 'flex', flexDirection: 'column', alignItems: 'center',
-      justifyContent: 'space-between', padding: '36px 24px 44px',
+      background: '#00b6ed',
+      display: 'flex', flexDirection: 'column',
+      alignItems: 'center',
       position: 'relative', overflow: 'hidden',
+      padding: '0 9%',
+      boxSizing: 'border-box',
     }}>
-      <FloatingParticles type="confetti" count={40} active />
-      <FloatingParticles type="stars" count={15} active />
+      {/* Fondo cuarto */}
+      <div style={{
+        position: 'absolute', inset: 0,
+        backgroundImage: 'url(/assets/backgrounds/bg-pet.png)',
+        backgroundSize: 'cover', backgroundPosition: 'center bottom',
+        opacity: 0.2, pointerEvents: 'none',
+      }} />
 
-      {/* Header */}
-      <motion.div initial={{ opacity: 0, y: -30 }} animate={{ opacity: 1, y: 0 }} style={{ textAlign: 'center' }}>
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '6px', marginBottom: '10px' }}>
-          {['🇨🇴','⚽','🏆','⚽','🇨🇴'].map((e, i) => (
-            <motion.span key={i} animate={{ y: [0, -8, 0] }} transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.15 }} style={{ fontSize: '22px' }}>{e}</motion.span>
-          ))}
-        </div>
-        <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '36px', color: 'white', lineHeight: 1.1, textShadow: '0 0 30px rgba(252,209,22,0.8)' }}>
-          ¡{cat.name} es un<br/>
-          <span style={{ color: '#FCD116' }}>CAMPEÓN!</span> 🏆
-        </h1>
-        <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '14px', fontWeight: 600, marginTop: '8px' }}>
+      {/* Partículas de estrellas */}
+      {[...Array(12)].map((_, i) => (
+        <motion.div
+          key={i}
+          initial={{ opacity: 0, scale: 0, x: `${10 + (i * 7.5) % 80}vw`, y: '100%' }}
+          animate={{ opacity: [0, 1, 0], scale: [0, 1.2, 0.6], y: '-20%' }}
+          transition={{ delay: (i * 0.18) % 2, duration: 2.2 + (i % 3) * 0.4, repeat: Infinity, repeatDelay: Math.random() * 2 }}
+          style={{ position: 'absolute', bottom: 0, fontSize: 'min(5vw, 2.8vh)', pointerEvents: 'none', zIndex: 1 }}
+        >
+          {['✨', '⭐', '💫', '🌟'][i % 4]}
+        </motion.div>
+      ))}
+
+      {/* Header: Logo + Puntos */}
+      <div style={{
+        flexShrink: 0, position: 'relative', zIndex: 2,
+        width: '100%',
+        display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between',
+        paddingTop: 'min(4.8vw, 2.7vh)',
+      }}>
+        <img src="/assets/ui/logo-nutre-cat.svg" alt="Nutre Cat" style={{ width: '28.5%', objectFit: 'contain' }} />
+        <motion.div
+          key={cat.score}
+          animate={{ scale: [1.1, 1] }}
+          transition={{ duration: 0.3 }}
+          style={{ background: 'white', borderRadius: 99, padding: 'min(1.5vw, 0.85vh) min(4.5vw, 2.5vh)', boxShadow: '0 2px 14px rgba(0,87,122,0.18)' }}
+        >
+          <span style={{ fontFamily: 'var(--font-display)', fontSize: 'min(6.6vw, 3.7vh)', color: '#00577a', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>
+            {cat.score} pts ⭐
+          </span>
+        </motion.div>
+      </div>
+
+      <div style={{ flex: '0.4' }} />
+
+      {/* Título */}
+      <motion.div
+        initial={{ opacity: 0, y: -16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.15, type: 'spring', stiffness: 280 }}
+        style={{ flexShrink: 0, textAlign: 'center', zIndex: 2, position: 'relative' }}
+      >
+        <p style={{
+          fontFamily: 'var(--font-display)',
+          fontSize: 'min(9.5vw, 5.35vh)',
+          color: '#00577a',
+          textTransform: 'uppercase',
+          lineHeight: 1.05, margin: 0,
+          letterSpacing: '0.02em',
+        }}>
+          ¡{cat.name} es un
+        </p>
+        <p style={{
+          fontFamily: 'var(--font-display)',
+          fontSize: 'min(12vw, 6.75vh)',
+          color: 'white',
+          textTransform: 'uppercase',
+          lineHeight: 1, margin: 0,
+          textShadow: '0 4px 20px rgba(0,87,122,0.35)',
+          letterSpacing: '0.03em',
+        }}>
+          Campeón 🏆
+        </p>
+        <p style={{
+          fontFamily: 'var(--font-body)',
+          fontSize: 'min(3.8vw, 2.1vh)',
+          color: 'rgba(255,255,255,0.85)',
+          margin: 'min(1.5vw, 0.85vh) 0 0',
+          fontWeight: 700, letterSpacing: '0.03em',
+          textTransform: 'uppercase',
+        }}>
           Gracias por cuidarlo, alimentarlo y jugar con él
         </p>
       </motion.div>
 
-      {/* Champion cat */}
-      <motion.div
-        animate={{ y: [0, -20, 0], rotate: [0, -5, 5, 0] }}
-        transition={{ duration: 1.5, repeat: Infinity }}
-        style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px' }}
-      >
-        <div style={{ position: 'relative' }}>
-          <img
-            src="/assets/cat/cat-champion.png"
-            alt="Simón Campeón"
-            style={{
-              width: 220, height: 220,
-              objectFit: 'contain', objectPosition: 'bottom',
-              userSelect: 'none', pointerEvents: 'none',
-              filter: 'drop-shadow(0 0 40px rgba(252,209,22,0.7))',
-            }}
-          />
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
-            style={{
-              position: 'absolute', inset: -12,
-              borderRadius: '50%',
-              border: '3px solid transparent',
-              borderTopColor: '#FCD116',
-              borderRightColor: '#CE1126',
-              borderBottomColor: '#003087',
-            }}
-          />
-        </div>
+      <div style={{ flex: '0.3' }} />
 
-        {/* Champion badge */}
+      {/* Gato campeón */}
+      <motion.div
+        animate={{ y: [0, -14, 0] }}
+        transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}
+        style={{ flexShrink: 0, position: 'relative', zIndex: 2, display: 'flex', justifyContent: 'center' }}
+      >
+        {/* Halo de marca */}
         <motion.div
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          transition={{ type: 'spring', stiffness: 300, delay: 0.5 }}
+          animate={{ rotate: 360 }}
+          transition={{ duration: 10, repeat: Infinity, ease: 'linear' }}
           style={{
-            background: 'linear-gradient(135deg, #FCD116, #FF8C00)',
-            borderRadius: '30px', padding: '8px 24px',
-            fontSize: '14px', fontWeight: 900, color: '#0A1628',
-            boxShadow: '0 4px 20px rgba(252,209,22,0.5)',
+            position: 'absolute',
+            inset: '-min(3vw, 1.7vh)',
+            borderRadius: '50%',
+            border: 'min(0.6vw, 0.34vh) solid transparent',
+            borderTopColor: 'white',
+            borderRightColor: 'rgba(255,255,255,0.4)',
+            borderBottomColor: 'rgba(0,87,122,0.6)',
           }}
-        >
-          💙 Vínculo Inquebrantable
-        </motion.div>
+        />
+        <img
+          src="/assets/cat/cat-champion.png"
+          alt={`${cat.name} campeón`}
+          style={{
+            width: 'min(48vw, 27vh)',
+            objectFit: 'contain',
+            userSelect: 'none', pointerEvents: 'none',
+            filter: 'drop-shadow(0 0 min(6vw, 3.4vh) rgba(255,255,255,0.5))',
+          }}
+        />
       </motion.div>
 
-      {/* Final stats */}
+      <div style={{ flex: '0.25' }} />
+
+      {/* Card de stats */}
       <motion.div
-        initial={{ opacity: 0, y: 30 }}
+        initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3 }}
         style={{
-          width: '100%',
-          background: 'rgba(255,255,255,0.05)',
-          borderRadius: '24px', padding: '16px 20px',
-          border: '1px solid rgba(255,255,255,0.1)',
-          backdropFilter: 'blur(10px)',
+          flexShrink: 0, width: '100%', zIndex: 2,
+          background: '#00577a',
+          borderRadius: 'min(4vw, 2.2vh)',
+          padding: 'min(3.5vw, 2vh) min(5vw, 2.8vh)',
+          boxShadow: '0 8px 30px rgba(0,87,122,0.35)',
         }}
       >
-        <StatBar label="Energía" value={Math.min(100, cat.energy + 20)} color="#00AEEF" icon="⚡" />
-        <StatBar label="Hambre bajo control" value={Math.max(0, 100 - cat.hunger + 40)} color="#FF8C00" icon="🍗" />
-        <StatBar label="Cariño" value={Math.min(100, cat.affection + 25)} color="#ec4899" icon="💕" />
-        <StatBar label="Ánimo Mundialista" value={Math.min(100, cat.mundialSpirit + 25)} color="#FCD116" icon="⚽" />
-
-        <div style={{ textAlign: 'center', marginTop: '12px' }}>
-          <span style={{ fontSize: '13px', color: 'rgba(255,255,255,0.5)', fontWeight: 700 }}>PUNTOS TOTALES </span>
-          <motion.span
-            animate={{ scale: [1, 1.2, 1] }}
-            transition={{ duration: 1, repeat: Infinity }}
-            style={{ fontSize: '24px', fontWeight: 900, color: '#FCD116' }}
-          >{cat.score} ⭐</motion.span>
-        </div>
+        {STATS.map(s => {
+          const raw = cat[s.key] as number;
+          const val = s.invert
+            ? Math.min(100, Math.max(0, 100 - raw + s.bonus))
+            : Math.min(100, raw + s.bonus);
+          return (
+            <div key={s.label} style={{ marginBottom: 'min(1.8vw, 1vh)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 'min(0.8vw, 0.45vh)' }}>
+                <span style={{ fontFamily: 'var(--font-body)', fontSize: 'min(3.4vw, 1.9vh)', color: 'rgba(255,255,255,0.8)', fontWeight: 700 }}>
+                  {s.icon} {s.label}
+                </span>
+                <span style={{ fontFamily: 'var(--font-display)', fontSize: 'min(3.4vw, 1.9vh)', color: 'white' }}>
+                  {Math.round(val)}/100
+                </span>
+              </div>
+              <div style={{ height: 'min(2.2vw, 1.25vh)', background: 'rgba(255,255,255,0.15)', borderRadius: 99, overflow: 'hidden' }}>
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: `${val}%` }}
+                  transition={{ duration: 0.7, ease: 'easeOut', delay: 0.4 }}
+                  style={{ height: '100%', background: 'white', borderRadius: 99, boxShadow: '0 0 8px rgba(255,255,255,0.4)' }}
+                />
+              </div>
+            </div>
+          );
+        })}
       </motion.div>
 
-      <PrimaryButton onClick={onClaim} variant="colombia" size="lg" fullWidth style={{ marginTop: '4px' }}>
+      <div style={{ flex: '0.35' }} />
+
+      {/* Botón reclamar */}
+      <motion.button
+        initial={{ opacity: 0, y: 16 }}
+        animate={{
+          opacity: 1, y: 0,
+          boxShadow: ['0 0 20px rgba(255,255,255,0.3)', '0 0 50px rgba(255,255,255,0.65)', '0 0 20px rgba(255,255,255,0.3)'],
+        }}
+        transition={{ delay: 0.5, boxShadow: { duration: 1.8, repeat: Infinity } }}
+        whileTap={{ scale: 0.94 }}
+        onClick={onClaim}
+        style={{
+          flexShrink: 0,
+          background: '#00577a',
+          color: 'white', border: 'none',
+          borderRadius: 99,
+          padding: 'min(3.2vw, 1.8vh) min(11vw, 6.2vh)',
+          fontFamily: 'var(--font-display)',
+          fontSize: 'min(6.5vw, 3.65vh)',
+          textTransform: 'uppercase',
+          letterSpacing: '0.04em',
+          cursor: 'pointer',
+          whiteSpace: 'nowrap',
+          zIndex: 2, position: 'relative',
+        }}
+      >
         🎁 Reclamar mi premio
-      </PrimaryButton>
+      </motion.button>
+
+      <div style={{ flex: '0.3' }} />
     </div>
   );
 }

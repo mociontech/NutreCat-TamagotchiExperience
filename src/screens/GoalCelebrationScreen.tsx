@@ -1,6 +1,4 @@
 import { motion } from 'framer-motion';
-import FloatingParticles from '../components/FloatingParticles';
-import PrimaryButton from '../components/PrimaryButton';
 
 interface Props { score: number; onContinue: () => void; }
 
@@ -8,94 +6,142 @@ export default function GoalCelebrationScreen({ score, onContinue }: Props) {
   return (
     <div style={{
       width: '100%', height: '100%',
-      background: 'linear-gradient(180deg, #003087 0%, #0A1628 50%, #CE1126 100%)',
-      display: 'flex', flexDirection: 'column', alignItems: 'center',
-      justifyContent: 'space-between', padding: '40px 24px 50px',
+      background: '#00b6ed',
+      display: 'flex', flexDirection: 'column',
+      alignItems: 'center',
       position: 'relative', overflow: 'hidden',
+      padding: '0 9%',
+      boxSizing: 'border-box',
     }}>
-      <FloatingParticles type="confetti" count={30} active />
+      {/* Fondo cuarto */}
+      <div style={{
+        position: 'absolute', inset: 0,
+        backgroundImage: 'url(/assets/backgrounds/bg-pet.png)',
+        backgroundSize: 'cover', backgroundPosition: 'center bottom',
+        opacity: 0.25, pointerEvents: 'none',
+      }} />
 
-      {/* Scoreboard */}
-      <motion.div
-        initial={{ opacity: 0, y: -30 }}
-        animate={{ opacity: 1, y: 0 }}
-        style={{
-          background: 'rgba(0,0,0,0.6)',
-          borderRadius: '24px', padding: '16px 32px',
-          border: '2px solid rgba(255,255,255,0.2)',
-          backdropFilter: 'blur(10px)',
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ display: 'flex', gap: '4px', marginBottom: '4px', justifyContent: 'center' }}>
-              <div style={{ width: 6, height: 20, background: '#FCD116' }}/>
-              <div style={{ width: 6, height: 20, background: '#CE1126' }}/>
-              <div style={{ width: 6, height: 20, background: '#003087' }}/>
-            </div>
-            <p style={{ color: 'white', fontSize: '11px', fontWeight: 800 }}>COL</p>
-          </div>
-          <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-            <motion.span
-              initial={{ scale: 0 }} animate={{ scale: 1 }}
-              transition={{ type: 'spring', stiffness: 300, delay: 0.3 }}
-              style={{ fontFamily: 'var(--font-display)', fontSize: '48px', color: '#FCD116' }}
-            >2</motion.span>
-            <span style={{ fontSize: '24px', color: 'rgba(255,255,255,0.4)' }}>-</span>
-            <span style={{ fontFamily: 'var(--font-display)', fontSize: '48px', color: 'white' }}>0</span>
-          </div>
-          <div style={{ textAlign: 'center' }}>
-            <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '11px', fontWeight: 800 }}>RIV</p>
-            <div style={{ width: 20, height: 20, background: 'rgba(255,255,255,0.15)', borderRadius: '50%', margin: '4px auto 0' }}/>
-          </div>
-        </div>
-        <p style={{ textAlign: 'center', fontSize: '10px', color: 'rgba(255,255,255,0.4)', fontWeight: 700, marginTop: '4px' }}>00:15</p>
-      </motion.div>
+      {/* Estrellas flotantes */}
+      {[...Array(10)].map((_, i) => (
+        <motion.div
+          key={i}
+          initial={{ opacity: 0, y: '100%', x: `${8 + i * 8}vw` }}
+          animate={{ opacity: [0, 1, 0], y: '-10%', scale: [0.5, 1.3, 0.8] }}
+          transition={{ delay: i * 0.15, duration: 1.8 + (i % 3) * 0.3, repeat: Infinity, repeatDelay: 0.8 }}
+          style={{ position: 'absolute', bottom: 0, fontSize: 'min(5vw, 2.8vh)', pointerEvents: 'none', zIndex: 1 }}
+        >
+          {['✨', '⭐', '💫'][i % 3]}
+        </motion.div>
+      ))}
 
-      {/* Cat celebrating */}
-      <motion.div
-        animate={{ y: [0, -20, 0], rotate: [0, -5, 5, 0] }}
-        transition={{ duration: 1, repeat: Infinity }}
-        style={{ fontSize: '130px', textAlign: 'center' }}
-      >🏆</motion.div>
+      {/* Logo */}
+      <div style={{ flexShrink: 0, alignSelf: 'flex-start', paddingTop: 'min(4.8vw, 2.7vh)', zIndex: 2 }}>
+        <img src="/assets/ui/logo-nutre-cat.svg" alt="Nutre Cat" style={{ width: 'min(35vw, 19.7vh)', objectFit: 'contain' }} />
+      </div>
 
-      {/* Main text */}
+      <div style={{ flex: '0.5' }} />
+
+      {/* ¡GOOOL! */}
       <motion.div
         initial={{ scale: 0, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        transition={{ type: 'spring', stiffness: 200, delay: 0.2 }}
-        style={{ textAlign: 'center' }}
+        transition={{ type: 'spring', stiffness: 260, delay: 0.1 }}
+        style={{ flexShrink: 0, textAlign: 'center', zIndex: 2 }}
       >
-        <h1 style={{
+        <p style={{
           fontFamily: 'var(--font-display)',
-          fontSize: '52px', lineHeight: 1,
+          fontSize: 'min(18vw, 10.1vh)',
           color: 'white',
-          textShadow: '0 0 40px rgba(252,209,22,0.8)',
-          marginBottom: '8px',
+          textTransform: 'uppercase',
+          lineHeight: 1, margin: 0,
+          textShadow: '0 6px 24px rgba(0,87,122,0.4)',
+          letterSpacing: '0.04em',
+        }}>¡GOOOL!</p>
+        <p style={{
+          fontFamily: 'var(--font-body)',
+          fontSize: 'min(4.5vw, 2.5vh)',
+          color: 'rgba(255,255,255,0.9)',
+          fontWeight: 700,
+          margin: 'min(1vw, 0.55vh) 0 0',
+          textTransform: 'uppercase',
+          letterSpacing: '0.04em',
         }}>
-          ¡GOOOL!
-        </h1>
-        <div style={{
-          background: 'linear-gradient(90deg, #FCD116, #CE1126, #003087)',
-          borderRadius: '8px', padding: '3px 16px',
-          display: 'inline-block', marginBottom: '12px',
-        }}>
-          <span style={{ color: 'white', fontWeight: 900, fontSize: '14px' }}>🇨🇴 POR COLOMBIA 🇨🇴</span>
-        </div>
-        <p style={{ color: 'rgba(255,255,255,0.8)', fontSize: '16px', fontWeight: 700 }}>
           ¡Tu gato está más feliz! 🐱💕
         </p>
-        <motion.p
-          initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}
-          style={{ color: '#FCD116', fontSize: '20px', fontWeight: 900, marginTop: '8px' }}
-        >
-          +{score} puntos ⚽
-        </motion.p>
       </motion.div>
 
-      <PrimaryButton onClick={onContinue} variant="colombia" size="lg" fullWidth>
+      <div style={{ flex: '0.3' }} />
+
+      {/* Gato campeón */}
+      <motion.img
+        src="/assets/cat/cat-champion.png"
+        alt="Campeón"
+        animate={{ y: [0, -18, 0], rotate: [0, -4, 4, 0] }}
+        transition={{ duration: 1.2, repeat: Infinity, ease: 'easeInOut' }}
+        style={{
+          flexShrink: 0,
+          width: 'min(52vw, 29.3vh)',
+          objectFit: 'contain',
+          userSelect: 'none', pointerEvents: 'none',
+          filter: 'drop-shadow(0 0 min(5vw, 2.8vh) rgba(255,255,255,0.5))',
+          zIndex: 2, position: 'relative',
+        }}
+      />
+
+      <div style={{ flex: '0.3' }} />
+
+      {/* Puntos ganados */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.7 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: 0.4, type: 'spring', stiffness: 280 }}
+        style={{
+          flexShrink: 0, zIndex: 2,
+          background: '#00577a',
+          borderRadius: 99,
+          padding: 'min(2vw, 1.1vh) min(8vw, 4.5vh)',
+          boxShadow: '0 8px 28px rgba(0,87,122,0.4)',
+          textAlign: 'center',
+        }}
+      >
+        <span style={{
+          fontFamily: 'var(--font-display)',
+          fontSize: 'min(8vw, 4.5vh)',
+          color: 'white',
+          whiteSpace: 'nowrap',
+        }}>
+          +{score} puntos ⚽
+        </span>
+      </motion.div>
+
+      <div style={{ flex: '0.5' }} />
+
+      {/* Botón continuar */}
+      <motion.button
+        initial={{ opacity: 0, y: 16 }}
+        animate={{
+          opacity: 1, y: 0,
+          boxShadow: ['0 0 20px rgba(0,87,122,0.3)', '0 0 50px rgba(0,87,122,0.7)', '0 0 20px rgba(0,87,122,0.3)'],
+        }}
+        transition={{ delay: 0.5, boxShadow: { duration: 1.8, repeat: Infinity } }}
+        whileTap={{ scale: 0.94 }}
+        onClick={onContinue}
+        style={{
+          flexShrink: 0, zIndex: 2,
+          background: '#00577a', color: 'white',
+          border: 'none', borderRadius: 99,
+          padding: 'min(3.2vw, 1.8vh) min(11vw, 6.2vh)',
+          fontFamily: 'var(--font-display)',
+          fontSize: 'min(6.5vw, 3.65vh)',
+          textTransform: 'uppercase',
+          letterSpacing: '0.04em',
+          cursor: 'pointer', whiteSpace: 'nowrap',
+        }}
+      >
         Continuar 🎉
-      </PrimaryButton>
+      </motion.button>
+
+      <div style={{ flex: '0.4' }} />
     </div>
   );
 }

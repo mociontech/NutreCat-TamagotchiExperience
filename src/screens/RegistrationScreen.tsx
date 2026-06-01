@@ -63,19 +63,32 @@ export default function RegistrationScreen({ onNext }: Props) {
             overflow: 'hidden',
           }}
         >
-          {/* "Dame un nombre" */}
+          {/* Encabezado */}
+          <p style={{
+            fontFamily: 'var(--font-body)',
+            fontSize: 'min(4vw, 2.3vh)',
+            color: 'rgba(255,255,255,0.7)',
+            textTransform: 'uppercase',
+            letterSpacing: '0.08em',
+            fontWeight: 700,
+            textAlign: 'center',
+            margin: 0,
+          }}>
+            Ponle nombre a tu gato
+          </p>
+
           <p style={{
             fontFamily: 'var(--font-display)',
             fontSize: 'min(11.3vw, 6.35vh)',
             color: 'white',
             textTransform: 'uppercase',
             textAlign: 'center',
-            lineHeight: 1.1,
+            lineHeight: 1.05,
             letterSpacing: '0.01em',
             margin: 0,
             width: '100%',
           }}>
-            Dame un nombre
+            ¿Cómo me llamo?
           </p>
 
           {/* Input */}
