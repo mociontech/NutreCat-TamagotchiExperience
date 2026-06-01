@@ -1,117 +1,260 @@
-import { motion } from 'framer-motion';
-import { useState, useRef } from 'react';
-import FloatingParticles from '../components/FloatingParticles';
-import PrimaryButton from '../components/PrimaryButton';
-import ScreenLayout from '../components/ScreenLayout';
-import BottomNav, { type NavTabDef } from '../components/BottomNav';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useRef, useCallback } from 'react';
 
-const NAV_ICONS = { game: '/assets/nav/icon-game.svg', food: '/assets/nav/icon-food.svg', hygiene: '/assets/nav/icon-hygiene.svg', sleep: '/assets/nav/icon-sleep.svg' };
+const NAV = [
+  { id: 'game',    icon: '/assets/nav/icon-game.svg'    },
+  { id: 'food',    icon: '/assets/nav/icon-food.svg'    },
+  { id: 'hygiene', icon: '/assets/nav/icon-hygiene.svg' },
+  { id: 'sleep',   icon: '/assets/nav/icon-sleep.svg'   },
+] as const;
 
-interface Props { onDone: () => void; onBack?: () => void; }
+interface Bubble { id: number; x: number; y: number; size: number; dx: number; }
 
-export default function CareScreen({ onDone, onBack }: Props) {
-  const [wellness, setWellness] = useState(15);
-  const [brushing, setBrushing] = useState(false);
-  const wellnessRef = useRef(15);
-  const brushInterval = useRef<ReturnType<typeof setInterval> | null>(null);
-  const handleBack = onBack ?? onDone;
-  const done = wellness >= 100;
+interface Props { onDone: () => void; onBack?: () => void; score?: number; }
 
-  const navTabs: NavTabDef[] = [
-    { id: 'game',    label: 'JUEGO',   iconSrc: NAV_ICONS.game,    isActive: false, isDone: false, onClick: handleBack },
-    { id: 'food',    label: 'COMER',   iconSrc: NAV_ICONS.food,    isActive: false, isDone: false, onClick: handleBack },
-    { id: 'hygiene', label: 'HIGIENE', iconSrc: NAV_ICONS.hygiene, isActive: true,  isDone: false, onClick: handleBack },
-    { id: 'sleep',   label: 'DORMIR',  iconSrc: NAV_ICONS.sleep,   isActive: false, isDone: false, onClick: handleBack },
-  ];
+export default function CareScreen({ onDone, onBack, score = 0 }: Props) {
+  const [cleanness,   setCleanness]   = useState(0);
+  const [scrubbing,   setScrubbing]   = useState(false);
+  const [sponge,      setSponge]      = useState<{ x: number; y: number } | null>(null);
+  const [bubbles,     setBubbles]     = useState<Bubble[]>([]);
+  const cleanRef  = useRef(0);
+  const lastPos   = useRef<{ x: number; y: number } | null>(null);
+  const bubbleId  = useRef(0);
+  const goBack    = onBack ?? onDone;
+  const done      = cleanness >= 100;
 
-  const startBrush = () => {
-    setBrushing(true);
-    brushInterval.current = setInterval(() => {
-      wellnessRef.current = Math.min(100, wellnessRef.current + 4);
-      setWellness(wellnessRef.current);
-    }, 80);
+  /* ── Spawn foam bubbles at pointer position ─────────────── */
+  const spawnBubbles = useCallback((x: number, y: number) => {
+    const count = 2 + Math.floor(Math.random() * 3);
+    const fresh: Bubble[] = Array.from({ length: count }, () => ({
+      id:   bubbleId.current++,
+      x:    x + (Math.random() - 0.5) * 70,
+      y:    y + (Math.random() - 0.5) * 50,
+      size: 7 + Math.random() * 18,
+      dx:   (Math.random() - 0.5) * 50,
+    }));
+    setBubbles(prev => [...prev.slice(-30), ...fresh]);
+    fresh.forEach(b => setTimeout(() =>
+      setBubbles(prev => prev.filter(bb => bb.id !== b.id)), 1300));
+  }, []);
+
+  /* ── Pointer handlers ────────────────────────────────────── */
+  const onDown = (e: React.PointerEvent) => {
+    if (done) return;
+    e.currentTarget.setPointerCapture(e.pointerId);
+    setScrubbing(true);
+    lastPos.current = { x: e.clientX, y: e.clientY };
+    setSponge({ x: e.clientX, y: e.clientY });
   };
-  const stopBrush = () => { setBrushing(false); if (brushInterval.current) clearInterval(brushInterval.current); };
+
+  const onMove = (e: React.PointerEvent) => {
+    setSponge({ x: e.clientX, y: e.clientY });
+    if (!scrubbing || done) return;
+    const prev = lastPos.current;
+    if (!prev) { lastPos.current = { x: e.clientX, y: e.clientY }; return; }
+    const dx = e.clientX - prev.x;
+    const dy = e.clientY - prev.y;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    if (dist > 4) {
+      const gain = Math.min(dist * 0.12, 0.8);
+      const next  = Math.min(100, cleanRef.current + gain);
+      cleanRef.current = next;
+      setCleanness(next);
+      spawnBubbles(e.clientX, e.clientY);
+      lastPos.current = { x: e.clientX, y: e.clientY };
+    }
+  };
+
+  const onUp   = () => { setScrubbing(false); lastPos.current = null; };
+  const onLeave = (e: React.PointerEvent) => {
+    setScrubbing(false);
+    setSponge(null);
+    e.currentTarget.releasePointerCapture(e.pointerId);
+  };
 
   return (
-    <ScreenLayout>
-      {(brushing || done) && <FloatingParticles type="hearts" count={10} active />}
-      {done && <FloatingParticles type="bubbles" count={8} active />}
+    <div
+      onPointerDown={onDown}
+      onPointerMove={onMove}
+      onPointerUp={onUp}
+      onPointerLeave={onLeave}
+      onPointerCancel={onUp}
+      style={{
+        width: '100%', height: '100%',
+        background: '#00b6ed',
+        position: 'relative', overflow: 'hidden',
+        touchAction: 'none', userSelect: 'none',
+      }}
+    >
+      {/* ── Escena de la bañera ── */}
+      {/* Posición Figma: left=-19.07%, top=24.43%, w=138.15%, h=80.73% */}
+      <div style={{ position: 'absolute', left: '-19.07%', top: '24.43%', width: '138.15%', height: '80.73%', pointerEvents: 'none' }}>
+        {/* Gato sucio → se va desvaneciendo */}
+        <img
+          src="/assets/cat/cat-bath-dirty.png"
+          alt=""
+          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', opacity: Math.max(0, 1 - cleanness / 100), transition: 'opacity 0.3s' }}
+        />
+        {/* Gato limpio → aparece */}
+        <img
+          src="/assets/cat/cat-bath-clean.png"
+          alt=""
+          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', opacity: cleanness / 100, transition: 'opacity 0.3s' }}
+        />
+      </div>
 
-      <div
-        style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-between', padding: '20px 20px 12px', minHeight: 0 }}
-        onMouseDown={startBrush} onMouseUp={stopBrush} onMouseLeave={stopBrush}
-        onTouchStart={startBrush} onTouchEnd={stopBrush}
-      >
-        {/* Header */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-          <img src="/assets/ui/logo-nutre-cat.svg" alt="Nutre Cat" style={{ width: 130 }} />
-          <div style={{ background: 'white', borderRadius: '40px', padding: '6px 18px', boxShadow: '0 2px 10px rgba(0,87,122,0.15)' }}>
-            <span style={{ fontSize: '14px', fontWeight: 900, color: '#00577a' }}>
-              {done ? '¡Simón reluciente! 💜' : 'Aseo y bienestar 🛁'}
-            </span>
-          </div>
-        </div>
+      {/* ── Logo ── */}
+      <div style={{ position: 'absolute', top: '4.79%', left: '9.07%', right: '62.31%', bottom: '83.7%', zIndex: 3 }}>
+        <img src="/assets/ui/logo-nutre-cat.svg" alt="Nutre Cat" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+      </div>
 
-        {/* Gato */}
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-          <motion.img
-            src="/assets/cat/cat-hygiene.png"
-            alt="Simón"
-            animate={brushing ? { rotate: [-3, 3, -3], scale: [1, 1.05, 1] } : done ? { y: [0, -10, 0] } : { y: [0, -6, 0] }}
-            transition={{ duration: brushing ? 0.4 : 2.5, repeat: Infinity }}
-            style={{
-              width: 300, height: 340,
-              objectFit: 'contain', objectPosition: 'bottom',
-              pointerEvents: 'none', userSelect: 'none',
-              filter: 'drop-shadow(0 14px 28px rgba(0,87,122,0.18))',
-              transition: 'filter 0.3s',
-            }}
+      {/* ── Score pill ── */}
+      <div style={{ position: 'absolute', top: '5%', right: '9%', zIndex: 3, background: 'white', borderRadius: 99, padding: 'min(1.5vw, 0.85vh) min(4.5vw, 2.5vh)', boxShadow: '0 2px 14px rgba(0,87,122,0.18)' }}>
+        <span style={{ fontFamily: 'var(--font-display)', fontSize: 'min(6.6vw, 3.7vh)', color: '#00577a', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>
+          Puntos: {score}
+        </span>
+      </div>
+
+      {/* ── Back arrow ── */}
+      <button onClick={goBack} style={{ position: 'absolute', top: '12.29%', right: '9.63%', width: 'min(9vw, 5.1vh)', aspectRatio: '1', background: 'rgba(255,255,255,0.25)', border: 'none', borderRadius: '50%', cursor: 'pointer', zIndex: 3, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <img src="/assets/ui/arrow-back.svg" alt="Volver" style={{ width: '55%', filter: 'brightness(0) invert(1)' }} />
+      </button>
+
+      {/* ── Barra de limpieza ── */}
+      <div style={{ position: 'absolute', top: '22.5%', left: '9%', right: '9%', zIndex: 4, pointerEvents: 'none' }}>
+        <div style={{ height: 'min(1.8vw, 1vh)', background: 'rgba(255,255,255,0.3)', borderRadius: 99, overflow: 'hidden' }}>
+          <motion.div
+            animate={{ width: `${cleanness}%` }}
+            transition={{ duration: 0.12 }}
+            style={{ height: '100%', background: 'white', borderRadius: 99, boxShadow: '0 0 10px rgba(255,255,255,0.6)' }}
           />
-          {brushing && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0 }} animate={{ opacity: 1, scale: 1 }}
-              style={{ background: 'white', borderRadius: '20px', padding: '8px 18px', fontSize: '16px', fontWeight: 800, color: '#00577a', marginTop: '8px' }}
-            >
-              Prrrrr… 💜
-            </motion.div>
-          )}
-          {!brushing && !done && (
-            <motion.p animate={{ x: [-20, 20, -20] }} transition={{ duration: 2, repeat: Infinity }}
-              style={{ color: '#00577a', fontSize: '14px', fontWeight: 700, opacity: 0.7, marginTop: '8px' }}>
-              ← Desliza para cepillarlo →
-            </motion.p>
-          )}
-        </div>
-
-        {/* Barra + botón */}
-        <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-          <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
-              <span style={{ fontSize: '13px', color: '#00577a', fontWeight: 700 }}>🐾 Bienestar</span>
-              <span style={{ fontSize: '13px', fontWeight: 900, color: '#00577a' }}>{Math.round(wellness)}/100</span>
-            </div>
-            <div style={{ height: '12px', background: 'rgba(0,87,122,0.15)', borderRadius: '99px', overflow: 'hidden' }}>
-              <motion.div animate={{ width: `${wellness}%` }} transition={{ duration: 0.15 }}
-                style={{ height: '100%', background: 'linear-gradient(90deg, #00577a, #00b6ed)', borderRadius: '99px' }} />
-            </div>
-          </div>
-          {done ? (
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <div style={{ background: 'white', borderRadius: '16px', padding: '10px 16px', textAlign: 'center', boxShadow: '0 4px 12px rgba(0,87,122,0.15)' }}>
-                <p style={{ color: '#00577a', fontSize: '13px', fontWeight: 700 }}>💕 Cariño +25 &nbsp; ⚡ Energía +10</p>
-              </div>
-              <PrimaryButton onClick={onDone} variant="cyan" size="lg" fullWidth>Volver al inicio 🏠</PrimaryButton>
-            </motion.div>
-          ) : (
-            <motion.div animate={{ opacity: [0.5, 1, 0.5] }} transition={{ duration: 1.2, repeat: Infinity }}
-              style={{ background: 'white', borderRadius: '16px', padding: '12px', textAlign: 'center', boxShadow: '0 4px 12px rgba(0,87,122,0.1)' }}>
-              <p style={{ color: '#00577a', fontSize: '15px', fontWeight: 800 }}>👆 Mantén presionado para cepillar</p>
-            </motion.div>
-          )}
         </div>
       </div>
-      <BottomNav tabs={navTabs} />
-    </ScreenLayout>
+
+      {/* ── Instrucción ── */}
+      {!done && (
+        <motion.p
+          animate={{ opacity: scrubbing ? 0 : [0.6, 1, 0.6] }}
+          transition={{ duration: 1.8, repeat: Infinity }}
+          style={{
+            position: 'absolute', bottom: '20%', left: 0, right: 0,
+            textAlign: 'center',
+            fontFamily: 'var(--font-display)',
+            fontSize: 'min(4.5vw, 2.5vh)',
+            color: 'white',
+            textShadow: '0 2px 8px rgba(0,87,122,0.4)',
+            pointerEvents: 'none', zIndex: 4,
+          }}
+        >
+          ¡Frota la esponja sobre el gato!
+        </motion.p>
+      )}
+
+      {/* ── Estrellas / celebración al quedar limpio ── */}
+      <AnimatePresence>
+        {done && [...Array(8)].map((_, i) => (
+          <motion.div
+            key={`star-${i}`}
+            initial={{ opacity: 0, scale: 0, x: '50%', y: '40%' }}
+            animate={{
+              opacity: [0, 1, 0],
+              scale: [0, 1.4, 0],
+              x: `${30 + Math.cos(i / 8 * Math.PI * 2) * 35}%`,
+              y: `${35 + Math.sin(i / 8 * Math.PI * 2) * 25}%`,
+            }}
+            transition={{ duration: 1.5, delay: i * 0.12, repeat: Infinity, repeatDelay: 0.5 }}
+            style={{ position: 'absolute', fontSize: 'min(6vw, 3.4vh)', pointerEvents: 'none', zIndex: 5 }}
+          >✨</motion.div>
+        ))}
+      </AnimatePresence>
+
+      {/* ── Botón ¡Listo! ── */}
+      <AnimatePresence>
+        {done && (
+          <motion.button
+            initial={{ opacity: 0, y: 20, scale: 0.9 }}
+            animate={{
+              opacity: 1, y: 0, scale: 1,
+              boxShadow: ['0 0 20px rgba(0,87,122,0.3)', '0 0 50px rgba(0,87,122,0.7)', '0 0 20px rgba(0,87,122,0.3)'],
+            }}
+            transition={{ duration: 0.35, boxShadow: { duration: 1.6, repeat: Infinity } }}
+            onClick={onDone}
+            style={{
+              position: 'absolute', bottom: '24%', left: '50%',
+              transform: 'translateX(-50%)',
+              background: '#00577a', color: 'white',
+              border: 'none', borderRadius: 99,
+              padding: 'min(2.8vw, 1.6vh) min(10vw, 5.6vh)',
+              fontFamily: 'var(--font-display)',
+              fontSize: 'min(6.5vw, 3.6vh)',
+              textTransform: 'uppercase',
+              cursor: 'pointer', whiteSpace: 'nowrap', zIndex: 6,
+            }}
+          >
+            ¡Listo! 🛁
+          </motion.button>
+        )}
+      </AnimatePresence>
+
+      {/* ── Nav botones circulares ── */}
+      <div style={{ position: 'absolute', top: '82.6%', left: 0, right: 0, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 'min(4.4vw, 2.5vh)', padding: '0 9%', zIndex: 3 }}>
+        {NAV.map(item => {
+          const isHygiene = item.id === 'hygiene';
+          return (
+            <motion.button key={item.id} onClick={goBack} whileTap={{ scale: 0.88 }}
+              style={{ width: 'min(17.13vw, 9.64vh)', height: 'min(17.13vw, 9.64vh)', borderRadius: '50%', border: 'none', cursor: 'pointer', background: isHygiene ? 'white' : '#00577a', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: isHygiene ? '0 0 0 3px rgba(255,255,255,0.8), 0 6px 22px rgba(0,87,122,0.25)' : '0 4px 16px rgba(0,0,0,0.2)', flexShrink: 0 }}>
+              <img src={item.icon} alt="" style={{ width: '54%', height: '54%', objectFit: 'contain', filter: isHygiene ? 'none' : 'brightness(0) invert(1)' }} />
+            </motion.button>
+          );
+        })}
+      </div>
+
+      {/* ── Espuma — burbujas CSS ── */}
+      <AnimatePresence>
+        {bubbles.map(b => (
+          <motion.div
+            key={b.id}
+            initial={{ opacity: 0.85, scale: 1, y: 0, x: 0 }}
+            animate={{ opacity: 0, scale: 1.6, y: -65, x: b.dx }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1.25, ease: 'easeOut' }}
+            style={{
+              position: 'fixed',
+              left:  b.x - b.size / 2,
+              top:   b.y - b.size / 2,
+              width: b.size, height: b.size,
+              borderRadius: '50%',
+              background: 'rgba(255,255,255,0.88)',
+              border: '1.5px solid rgba(255,255,255,0.55)',
+              boxShadow: '0 0 6px rgba(255,255,255,0.5)',
+              pointerEvents: 'none', zIndex: 90,
+            }}
+          />
+        ))}
+      </AnimatePresence>
+
+      {/* ── Esponja — sigue el puntero ── */}
+      {sponge && !done && (
+        <motion.div
+          animate={scrubbing
+            ? { rotate: [-8, 8, -8], scale: [1, 1.1, 1] }
+            : { rotate: 0, scale: 1 }}
+          transition={{ duration: 0.3, repeat: scrubbing ? Infinity : 0 }}
+          style={{
+            position: 'fixed',
+            left: sponge.x, top: sponge.y,
+            transform: 'translate(-50%, -50%)',
+            width: 'min(18vw, 10.2vh)', height: 'min(18vw, 10.2vh)',
+            pointerEvents: 'none', zIndex: 80,
+            filter: 'drop-shadow(0 4px 12px rgba(0,87,122,0.4))',
+          }}
+        >
+          {/* wrapper necesario: el SVG tiene overflow:visible */}
+          <div style={{ width: '100%', height: '100%', overflow: 'hidden', borderRadius: '4px' }}>
+            <img src="/assets/ui/sponge.svg" alt="" style={{ width: '100%', height: '100%', display: 'block' }} />
+          </div>
+        </motion.div>
+      )}
+    </div>
   );
 }

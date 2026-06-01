@@ -1,107 +1,257 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState } from 'react';
-import { talkOptions } from '../data/gameStates';
-import PrimaryButton from '../components/PrimaryButton';
-import ScreenLayout from '../components/ScreenLayout';
-import BottomNav, { type NavTabDef } from '../components/BottomNav';
+import { useState, useEffect, useRef } from 'react';
 
-const NAV_ICONS = { game: '/assets/nav/icon-game.svg', food: '/assets/nav/icon-food.svg', hygiene: '/assets/nav/icon-hygiene.svg', sleep: '/assets/nav/icon-sleep.svg' };
+const NAV = [
+  { id: 'game',    icon: '/assets/nav/icon-game.svg'    },
+  { id: 'food',    icon: '/assets/nav/icon-food.svg'    },
+  { id: 'hygiene', icon: '/assets/nav/icon-hygiene.svg' },
+  { id: 'sleep',   icon: '/assets/nav/icon-sleep.svg'   },
+] as const;
 
-interface Props { onDone: () => void; onBack?: () => void; }
+interface Zzz { id: number; x: number; y: number; size: number; rot: number; char: string; }
 
-export default function TalkScreen({ onDone, onBack }: Props) {
-  const [selected, setSelected] = useState<number | null>(null);
-  const [responded, setResponded] = useState(false);
-  const handleBack = onBack ?? onDone;
-  const opt = selected !== null ? talkOptions[selected] : null;
+interface Props { onDone: () => void; onBack?: () => void; score?: number; }
 
-  const navTabs: NavTabDef[] = [
-    { id: 'game',    label: 'JUEGO',   iconSrc: NAV_ICONS.game,    isActive: false, isDone: false, onClick: handleBack },
-    { id: 'food',    label: 'COMER',   iconSrc: NAV_ICONS.food,    isActive: false, isDone: false, onClick: handleBack },
-    { id: 'hygiene', label: 'HIGIENE', iconSrc: NAV_ICONS.hygiene, isActive: false, isDone: false, onClick: handleBack },
-    { id: 'sleep',   label: 'DORMIR',  iconSrc: NAV_ICONS.sleep,   isActive: true,  isDone: false, onClick: handleBack },
-  ];
+export default function TalkScreen({ onDone, onBack, score = 0 }: Props) {
+  const [phase,   setPhase]   = useState<'light' | 'dimming' | 'dark'>('light');
+  const [showBtn, setShowBtn] = useState(false);
+  const [zzzList, setZzzList] = useState<Zzz[]>([]);
+  const zzzId   = useRef(0);
+  const goBack  = onBack ?? onDone;
 
-  const handleSelect = (i: number) => { setSelected(i); setTimeout(() => setResponded(true), 600); };
+  /* ZZZ spawn loop while dark */
+  useEffect(() => {
+    if (phase !== 'dark') return;
+    const spawn = () => {
+      const id = zzzId.current++;
+      const chars = ['z', 'Z', 'z', '💤', 'Z', 'z'];
+      setZzzList(prev => [...prev.slice(-12), {
+        id,
+        x: 38 + Math.random() * 22,   /* % left — cat head area */
+        y: 28 + Math.random() * 12,   /* % top */
+        size: 18 + Math.random() * 22,
+        rot: -20 + Math.random() * 40,
+        char: chars[Math.floor(Math.random() * chars.length)],
+      }]);
+      setTimeout(() => setZzzList(p => p.filter(z => z.id !== id)), 2200);
+    };
+    const interval = setInterval(spawn, 700);
+    spawn();
+    return () => clearInterval(interval);
+  }, [phase]);
+
+  const tapLamp = () => {
+    if (phase !== 'light') return;
+    setPhase('dimming');
+    setTimeout(() => {
+      setPhase('dark');
+      setTimeout(() => setShowBtn(true), 2200);
+    }, 600);
+  };
 
   return (
-    <ScreenLayout>
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-between', padding: '20px 20px 12px', minHeight: 0 }}>
-        {/* Header */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-          <img src="/assets/ui/logo-nutre-cat.svg" alt="Nutre Cat" style={{ width: 130 }} />
-          <div style={{ background: 'white', borderRadius: '40px', padding: '6px 18px', boxShadow: '0 2px 10px rgba(0,87,122,0.15)' }}>
-            <span style={{ fontSize: '14px', fontWeight: 900, color: '#00577a' }}>Háblale a Simón 💬</span>
-          </div>
-        </div>
+    <div style={{
+      width: '100%', height: '100%',
+      background: '#1a0d2e',
+      position: 'relative', overflow: 'hidden',
+    }}>
 
-        {/* Gato */}
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '14px' }}>
-          <motion.img
-            src={responded ? '/assets/cat/cat-hub.png' : '/assets/cat/cat-sleep.png'}
-            alt="Simón"
-            animate={responded ? { rotate: [-5, 5, 0], y: [0, -15, 0] } : { y: [0, -6, 0] }}
-            transition={responded ? { duration: 0.6 } : { duration: 2.5, repeat: Infinity }}
+      {/* ── Fondo habitación — luz encendida ── */}
+      <motion.img
+        src="/assets/cat/cat-bed-light.png"
+        alt=""
+        animate={{ opacity: phase === 'light' ? 1 : 0 }}
+        transition={{ duration: 0.7 }}
+        style={{
+          position: 'absolute', inset: 0,
+          width: '100%', height: '100%',
+          objectFit: 'cover', objectPosition: 'center',
+          pointerEvents: 'none',
+        }}
+      />
+
+      {/* ── Fondo habitación — luz apagada ── */}
+      <motion.img
+        src="/assets/cat/cat-bed-dark.png"
+        alt=""
+        initial={{ opacity: 0 }}
+        animate={{ opacity: phase === 'dark' ? 1 : 0 }}
+        transition={{ duration: 0.8 }}
+        style={{
+          position: 'absolute', inset: 0,
+          width: '100%', height: '100%',
+          objectFit: 'cover', objectPosition: 'center',
+          pointerEvents: 'none',
+        }}
+      />
+
+      {/* ── Overlay oscuro al apagar ── */}
+      <AnimatePresence>
+        {phase === 'dimming' && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 0.85 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.55 }}
+            style={{ position: 'absolute', inset: 0, background: '#0d0820', zIndex: 8, pointerEvents: 'none' }}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* ── Logo ── */}
+      <div style={{ position: 'absolute', top: '4.79%', left: '9.07%', right: '62.31%', bottom: '83.7%', zIndex: 10 }}>
+        <img src="/assets/ui/logo-nutre-cat.svg" alt="Nutre Cat"
+          style={{ width: '100%', height: '100%', objectFit: 'contain',
+            filter: phase === 'dark' ? 'brightness(1.4)' : 'none', transition: 'filter 0.8s' }} />
+      </div>
+
+      {/* ── Score pill ── */}
+      <div style={{ position: 'absolute', top: '5%', right: '9%', zIndex: 10, background: 'white', borderRadius: 99, padding: 'min(1.5vw, 0.85vh) min(4.5vw, 2.5vh)', boxShadow: '0 2px 14px rgba(0,0,0,0.25)' }}>
+        <span style={{ fontFamily: 'var(--font-display)', fontSize: 'min(6.6vw, 3.7vh)', color: '#00577a', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>
+          Puntos: {score}
+        </span>
+      </div>
+
+      {/* ── Back arrow ── */}
+      <button onClick={goBack} style={{ position: 'absolute', top: '12.29%', right: '9.63%', width: 'min(9vw, 5.1vh)', aspectRatio: '1', background: 'rgba(255,255,255,0.2)', border: 'none', borderRadius: '50%', cursor: 'pointer', zIndex: 10, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <img src="/assets/ui/arrow-back.svg" alt="Volver" style={{ width: '55%', filter: 'brightness(0) invert(1)' }} />
+      </button>
+
+      {/* ── FASE LIGHT: zona de tap de la lámpara ── */}
+      {phase === 'light' && (
+        <>
+          {/* Zona clickeable sobre la lámpara (upper-left) */}
+          <div
+            onClick={tapLamp}
             style={{
-              width: 260, height: 280,
-              objectFit: 'contain', objectPosition: 'bottom',
-              userSelect: 'none', pointerEvents: 'none',
-              filter: 'drop-shadow(0 14px 28px rgba(0,87,122,0.18))',
+              position: 'absolute', left: 0, top: 0,
+              width: '45%', height: '42%',
+              zIndex: 9, cursor: 'pointer',
             }}
           />
 
+          {/* Mano apuntando a la lámpara */}
+          {/* Figma: inset[19.38%_55.77%_71.29%_24.17%], -scaleX + rotate 19.96deg */}
           <motion.div
-            animate={{ scale: [1, 1.08, 1], boxShadow: ['0 0 0 0 rgba(0,87,122,0)', '0 0 0 12px rgba(0,87,122,0.1)', '0 0 0 0 rgba(0,87,122,0)'] }}
-            transition={{ duration: 2, repeat: Infinity }}
-            style={{ width: 60, height: 60, background: '#00577a', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '28px' }}
-          >🎙️</motion.div>
-
-          <AnimatePresence>
-            {responded && opt && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }}
-                transition={{ type: 'spring', stiffness: 300 }}
-                style={{ background: 'white', borderRadius: '20px', padding: '12px 20px', fontSize: '16px', fontWeight: 800, color: '#00577a', maxWidth: '280px', textAlign: 'center', boxShadow: '0 8px 24px rgba(0,87,122,0.2)' }}
-              >
-                💬 {opt.response}
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-
-        {/* Opciones */}
-        <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          {!responded ? (
-            talkOptions.map((o, i) => (
-              <motion.button
-                key={i} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.07 }}
-                whileTap={{ scale: 0.96 }} onClick={() => handleSelect(i)}
+            animate={{ x: [-6, 6, -6], y: [-4, 4, -4] }}
+            transition={{ duration: 1.1, repeat: Infinity, ease: 'easeInOut' }}
+            style={{
+              position: 'absolute',
+              top: '19.38%', left: '24.17%',
+              width: '20%',
+              zIndex: 9, pointerEvents: 'none',
+              overflow: 'hidden',
+            }}
+          >
+            <div style={{ overflow: 'hidden', width: '100%', aspectRatio: '360 / 239' }}>
+              <img
+                src="/assets/ui/hand-pointer.svg"
+                alt=""
                 style={{
-                  background: selected === i ? 'rgba(0,87,122,0.12)' : 'white',
-                  border: selected === i ? '2px solid #00577a' : '2px solid rgba(0,87,122,0.15)',
-                  borderRadius: '16px', padding: '12px 16px',
-                  color: '#00577a', fontSize: '15px', fontWeight: 700,
-                  cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-                  boxShadow: '0 2px 8px rgba(0,87,122,0.1)',
+                  width: '100%', height: '100%', display: 'block',
+                  transform: 'scaleX(-1) rotate(20deg)',
+                  filter: 'brightness(0) invert(1)',
                 }}
-              >
-                <span>{o.text}</span>
-                {selected === i && <span>✓</span>}
-              </motion.button>
-            ))
-          ) : (
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <div style={{ background: 'white', borderRadius: '16px', padding: '12px 16px', textAlign: 'center', boxShadow: '0 4px 12px rgba(0,87,122,0.15)' }}>
-                <p style={{ color: '#00577a', fontSize: '13px', fontWeight: 700 }}>
-                  💕 Cariño +{opt?.affectionBonus} &nbsp; 😺 Ánimo +{opt?.moodBonus}
-                </p>
-              </div>
-              <PrimaryButton onClick={onDone} variant="cyan" size="lg" fullWidth>Volver al inicio 🏠</PrimaryButton>
-            </motion.div>
-          )}
-        </div>
+              />
+            </div>
+          </motion.div>
+
+          {/* Texto indicador pulsante */}
+          <motion.div
+            animate={{ opacity: [0.7, 1, 0.7] }}
+            transition={{ duration: 1.3, repeat: Infinity }}
+            style={{
+              position: 'absolute',
+              top: '14%', left: '9%',
+              background: 'rgba(255,255,255,0.9)',
+              borderRadius: 99,
+              padding: 'min(1.5vw, 0.85vh) min(3.5vw, 2vh)',
+              fontFamily: 'var(--font-display)',
+              fontSize: 'min(4vw, 2.3vh)',
+              color: '#00577a',
+              boxShadow: '0 2px 10px rgba(0,0,0,0.2)',
+              zIndex: 9,
+              whiteSpace: 'nowrap',
+            }}
+          >
+            💡 ¡Apaga la luz!
+          </motion.div>
+        </>
+      )}
+
+      {/* ── FASE DARK: ZZZ flotantes ── */}
+      <AnimatePresence>
+        {zzzList.map(z => (
+          <motion.span
+            key={z.id}
+            initial={{ opacity: 0.9, scale: 0.8, y: 0, x: 0 }}
+            animate={{ opacity: 0, scale: 1.4, y: -80, x: (Math.random() - 0.5) * 40 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 2.1, ease: 'easeOut' }}
+            style={{
+              position: 'absolute',
+              left: `${z.x}%`, top: `${z.y}%`,
+              fontSize: z.size,
+              color: 'white',
+              fontFamily: 'var(--font-display)',
+              fontWeight: 900,
+              rotate: `${z.rot}deg`,
+              pointerEvents: 'none',
+              zIndex: 9,
+              textShadow: '0 2px 8px rgba(0,0,0,0.4)',
+            }}
+          >
+            {z.char}
+          </motion.span>
+        ))}
+      </AnimatePresence>
+
+      {/* ── Botón ¡Listo! ── */}
+      <AnimatePresence>
+        {showBtn && (
+          <motion.button
+            initial={{ opacity: 0, y: 20, scale: 0.9 }}
+            animate={{
+              opacity: 1, y: 0, scale: 1,
+              boxShadow: [
+                '0 0 20px rgba(255,255,255,0.2)',
+                '0 0 50px rgba(255,255,255,0.5)',
+                '0 0 20px rgba(255,255,255,0.2)',
+              ],
+            }}
+            transition={{ duration: 0.35, boxShadow: { duration: 2, repeat: Infinity } }}
+            onClick={onDone}
+            style={{
+              position: 'absolute', bottom: '24%', left: '50%',
+              transform: 'translateX(-50%)',
+              background: 'rgba(255,255,255,0.15)',
+              backdropFilter: 'blur(10px)',
+              color: 'white', border: '2px solid rgba(255,255,255,0.5)',
+              borderRadius: 99,
+              padding: 'min(2.8vw, 1.6vh) min(10vw, 5.6vh)',
+              fontFamily: 'var(--font-display)',
+              fontSize: 'min(6.5vw, 3.6vh)',
+              textTransform: 'uppercase',
+              cursor: 'pointer', whiteSpace: 'nowrap', zIndex: 10,
+            }}
+          >
+            ¡Listo! 💤
+          </motion.button>
+        )}
+      </AnimatePresence>
+
+      {/* ── Nav botones circulares ── */}
+      <div style={{ position: 'absolute', top: '82.6%', left: 0, right: 0, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 'min(4.4vw, 2.5vh)', padding: '0 9%', zIndex: 10 }}>
+        {NAV.map(item => {
+          const isSleep = item.id === 'sleep';
+          return (
+            <motion.button key={item.id} onClick={goBack} whileTap={{ scale: 0.88 }}
+              style={{ width: 'min(17.13vw, 9.64vh)', height: 'min(17.13vw, 9.64vh)', borderRadius: '50%', border: 'none', cursor: 'pointer', background: isSleep ? 'white' : '#00577a', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: isSleep ? '0 0 0 3px rgba(255,255,255,0.8), 0 6px 22px rgba(0,87,122,0.25)' : '0 4px 16px rgba(0,0,0,0.2)', flexShrink: 0 }}>
+              <img src={item.icon} alt="" style={{ width: '54%', height: '54%', objectFit: 'contain', filter: isSleep ? 'none' : 'brightness(0) invert(1)' }} />
+            </motion.button>
+          );
+        })}
       </div>
-      <BottomNav tabs={navTabs} />
-    </ScreenLayout>
+    </div>
   );
 }

@@ -15,7 +15,13 @@
       "PowerShell(curl -o \"C:\\\\Users\\\\Pipec\\\\Downloads\\\\juego_contador.png\" \"https://www.figma.com/api/mcp/asset/087e66be-d7b5-4c6c-8feb-7ebbf494d1ee\")",
       "PowerShell(curl -o \"C:\\\\Users\\\\Pipec\\\\Downloads\\\\juego_cajas.png\" \"https://www.figma.com/api/mcp/asset/89c46710-c4c1-4ad1-8ee1-d72aeee11910\")",
       "PowerShell(curl -o \"C:\\\\Users\\\\Pipec\\\\Downloads\\\\juego_stars.png\" \"https://www.figma.com/api/mcp/asset/3383968e-c5b0-4512-ab9f-cb43afd57547\")",
-      "mcp__figma__get_design_context"
+      "mcp__figma__get_design_context",
+      "Bash(npm run *)",
+      "Bash(curl -s \"http://localhost:5199/assets/backgrounds/bg-pet.png\" -o /dev/null -w \"HTTP %{http_code}, size: %{size_download} bytes\\\\n\")",
+      "Bash(npx playwright *)",
+      "Bash(node -e ' *)",
+      "Bash(npm install *)",
+      "Bash(node -e \"require\\('playwright'\\); console.log\\('ok'\\)\")"
     ]
   }
 }

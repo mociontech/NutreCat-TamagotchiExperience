@@ -18,7 +18,6 @@ import CountdownScreen        from './screens/CountdownScreen';
 import FallingBagsGameScreen  from './screens/FallingBagsGameScreen';
 import CareScreen             from './screens/CareScreen';
 import TalkScreen             from './screens/TalkScreen';
-import ChampionResultScreen   from './screens/ChampionResultScreen';
 import RewardQrScreen         from './screens/RewardQrScreen';
 import SharePostcardScreen    from './screens/SharePostcardScreen';
 
@@ -87,10 +86,10 @@ export default function App() {
       case 'hub':
       case 'dashboard':  return <HubScreen cat={cat} onNavigate={nav} />;
 
-      case 'gameSelect':  return <GameSelectScreen onSelect={nav} onBack={() => nav('hub')} />;
+      case 'gameSelect':  return <GameSelectScreen onSelect={nav} onBack={() => nav('hub')} score={cat.score} />;
 
-      case 'feedSelect':  return <FeedSelectScreen onSelect={handleFeedSelect} onBack={() => nav('hub')} />;
-      case 'feedInteraction': return <FeedInteractionScreen selectedFood={cat.selectedFood} onDone={handleFeedDone} onBack={() => nav('hub')} />;
+      case 'feedSelect':  return <FeedSelectScreen onSelect={handleFeedSelect} onBack={() => nav('hub')} score={cat.score} />;
+      case 'feedInteraction': return <FeedInteractionScreen selectedFood={cat.selectedFood} onDone={handleFeedDone} onBack={() => nav('hub')} score={cat.score} />;
 
       case 'footballGame':    return <FootballGameScreen onGoal={handleGoal} onBack={() => nav('gameSelect')} />;
       case 'goalCelebration': return <GoalCelebrationScreen score={goalScore} onContinue={handleGoalContinue} />;
@@ -98,11 +97,11 @@ export default function App() {
       case 'fallingBagsCountdown': return <CountdownScreen onDone={() => nav('fallingBagsGame')} />;
       case 'fallingBagsGame':      return <FallingBagsGameScreen onDone={handleBagsDone} />;
 
-      case 'care':  return <CareScreen onDone={handleCareDone} onBack={() => nav('hub')} />;
-      case 'talk':  return <TalkScreen onDone={handleTalkDone} onBack={() => nav('hub')} />;
+      case 'care':  return <CareScreen onDone={handleCareDone} onBack={() => nav('hub')} score={cat.score} />;
+      case 'talk':  return <TalkScreen onDone={handleTalkDone} onBack={() => nav('hub')} score={cat.score} />;
 
-      case 'championResult': return <ChampionResultScreen cat={cat} onClaim={() => nav('rewardQr')} />;
-      case 'rewardQr':       return <RewardQrScreen cat={cat} onNext={() => nav('sharePostcard')} />;
+      case 'championResult': return <RewardQrScreen cat={cat} onNext={handleRestart} />;
+      case 'rewardQr':       return <RewardQrScreen cat={cat} onNext={handleRestart} />;
       case 'sharePostcard':  return <SharePostcardScreen cat={cat} onRestart={handleRestart} />;
 
       default: return <AttractLoop onStart={() => nav('wake')} />;

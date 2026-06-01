@@ -1,121 +1,157 @@
-import { motion } from 'framer-motion';
-import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useState, useEffect } from 'react';
 import type { FoodType } from '../data/gameStates';
-import { foods } from '../data/gameStates';
-import FloatingParticles from '../components/FloatingParticles';
-import PrimaryButton from '../components/PrimaryButton';
-import ScreenLayout from '../components/ScreenLayout';
-import BottomNav, { type NavTabDef } from '../components/BottomNav';
 
-const NAV_ICONS = { game: '/assets/nav/icon-game.svg', food: '/assets/nav/icon-food.svg', hygiene: '/assets/nav/icon-hygiene.svg', sleep: '/assets/nav/icon-sleep.svg' };
+const PRODUCTS: { id: FoodType; img: string; left: string; width: string }[] = [
+  { id: 'dry',    img: '/assets/products/product-3.png', left: '13.61%', width: '21.48%' },
+  { id: 'wet',    img: '/assets/products/product-2.png', left: '37.41%', width: '22.13%' },
+  { id: 'treats', img: '/assets/products/product-1.png', left: '63.52%', width: '21.48%' },
+];
 
-interface Props { selectedFood: FoodType; onDone: () => void; onBack?: () => void; }
+const NAV = [
+  { id: 'game',    icon: '/assets/nav/icon-game.svg'    },
+  { id: 'food',    icon: '/assets/nav/icon-food.svg'    },
+  { id: 'hygiene', icon: '/assets/nav/icon-hygiene.svg' },
+  { id: 'sleep',   icon: '/assets/nav/icon-sleep.svg'   },
+] as const;
 
-export default function FeedInteractionScreen({ selectedFood, onDone, onBack }: Props) {
-  const [fed, setFed] = useState(false);
-  const food = foods.find(f => f.id === selectedFood);
-  const handleBack = onBack ?? onDone;
+interface Props {
+  selectedFood: FoodType;
+  onDone: () => void;
+  onBack?: () => void;
+  score?: number;
+}
 
-  const navTabs: NavTabDef[] = [
-    { id: 'game',    label: 'JUEGO',   iconSrc: NAV_ICONS.game,    isActive: false, isDone: false, onClick: handleBack },
-    { id: 'food',    label: 'COMER',   iconSrc: NAV_ICONS.food,    isActive: true,  isDone: false, onClick: handleBack },
-    { id: 'hygiene', label: 'HIGIENE', iconSrc: NAV_ICONS.hygiene, isActive: false, isDone: false, onClick: handleBack },
-    { id: 'sleep',   label: 'DORMIR',  iconSrc: NAV_ICONS.sleep,   isActive: false, isDone: false, onClick: handleBack },
-  ];
+export default function FeedInteractionScreen({ selectedFood, onDone, onBack, score = 0 }: Props) {
+  const [showBtn, setShowBtn] = useState(false);
+  const goBack = onBack ?? onDone;
+
+  useEffect(() => {
+    const t = setTimeout(() => setShowBtn(true), 1600);
+    return () => clearTimeout(t);
+  }, []);
+
+  const selected = PRODUCTS.find(p => p.id === selectedFood)!;
+  const others   = PRODUCTS.filter(p => p.id !== selectedFood);
 
   return (
-    <ScreenLayout>
-      {fed && <FloatingParticles type="sparkles" count={16} active />}
+    <div style={{
+      width: '100%', height: '100%',
+      background: '#00b6ed',
+      position: 'relative', overflow: 'hidden',
+    }}>
+      {/* Fondo cuarto 44% */}
+      <div style={{ position: 'absolute', inset: 0, backgroundImage: 'url(/assets/backgrounds/bg-pet.png)', backgroundSize: 'cover', backgroundPosition: 'center bottom', opacity: 0.44, pointerEvents: 'none' }} />
 
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-between', padding: '20px 20px 12px', minHeight: 0 }}>
-        {/* Header */}
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%' }}>
-          <img src="/assets/ui/logo-nutre-cat.svg" alt="Nutre Cat" style={{ width: 130 }} />
-          <div style={{ background: 'white', borderRadius: '40px', padding: '6px 18px', boxShadow: '0 2px 10px rgba(0,87,122,0.15)' }}>
-            <span style={{ fontSize: '16px', fontWeight: 900, color: '#00577a' }}>
-              {fed ? '¡Mmm, delicioso!' : '¡Hora de comer!'}
-            </span>
-          </div>
-        </div>
-
-        {/* Gato comiendo */}
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', flex: 1, justifyContent: 'center' }}>
-          <motion.img
-            src={fed ? '/assets/cat/cat-food-eating.png' : '/assets/cat/cat-food-select.png'}
-            alt="Simón"
-            animate={fed ? { scale: [1, 1.05, 1], y: [0, -5, 0] } : { y: [0, -8, 0] }}
-            transition={fed ? { duration: 1.5, repeat: Infinity } : { duration: 2.5, repeat: Infinity }}
-            style={{
-              width: 280, height: 300,
-              objectFit: 'contain', objectPosition: 'bottom',
-              userSelect: 'none', pointerEvents: 'none',
-              filter: 'drop-shadow(0 14px 28px rgba(0,87,122,0.18))',
-              transition: 'filter 0.3s',
-            }}
-          />
-
-          {fed && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              transition={{ type: 'spring', stiffness: 300 }}
-              style={{ background: 'white', borderRadius: '20px', padding: '10px 20px', fontSize: '16px', fontWeight: 800, color: '#00577a', marginTop: '8px' }}
-            >
-              💬 ¡Miau! ¡Estaba delicioso!
-            </motion.div>
-          )}
-        </div>
-
-        {/* Productos o resultado */}
-        {!fed ? (
-          <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            <p style={{ color: '#00577a', fontSize: '14px', fontWeight: 700, textAlign: 'center' }}>
-              Toca para darle de comer
-            </p>
-            <motion.button
-              whileTap={{ scale: 0.94 }}
-              onClick={() => setFed(true)}
-              style={{
-                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px',
-                background: 'white', borderRadius: '20px', padding: '12px 20px',
-                cursor: 'pointer', border: 'none', boxShadow: '0 4px 16px rgba(0,87,122,0.2)',
-                width: '100%',
-              }}
-            >
-              <img src={`/assets/products/${selectedFood === 'dry' ? 'product-3' : selectedFood === 'wet' ? 'product-2' : 'product-1'}.png`}
-                alt={food?.name}
-                style={{ width: 60, height: 75, objectFit: 'contain' }}
-              />
-              <div style={{ textAlign: 'left' }}>
-                <p style={{ fontWeight: 900, color: '#00577a', fontSize: '16px' }}>{food?.name}</p>
-                <p style={{ color: 'rgba(0,87,122,0.6)', fontSize: '12px' }}>👆 Toca para alimentar</p>
-              </div>
-            </motion.button>
-          </div>
-        ) : (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '10px' }}
-          >
-            <div style={{ background: 'white', borderRadius: '20px', padding: '14px 18px', boxShadow: '0 4px 16px rgba(0,87,122,0.15)' }}>
-              {[{ label: 'Energía', value: '+20', icon: '⚡' }, { label: 'Hambre', value: '-40', icon: '🍗' }, { label: 'Cariño', value: '+5', icon: '💕' }].map(s => (
-                <div key={s.label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '3px 0' }}>
-                  <span style={{ color: 'rgba(0,87,122,0.7)', fontSize: '13px', fontWeight: 700 }}>{s.icon} {s.label}</span>
-                  <motion.span initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring' }}
-                    style={{ color: s.value.startsWith('+') ? '#22c55e' : '#ef4444', fontWeight: 900, fontSize: '15px' }}
-                  >{s.value}</motion.span>
-                </div>
-              ))}
-            </div>
-            <PrimaryButton onClick={onDone} variant="cyan" size="lg" fullWidth>
-              Volver al inicio 🏠
-            </PrimaryButton>
-          </motion.div>
-        )}
+      {/* Logo */}
+      <div style={{ position: 'absolute', top: '4.79%', left: '9.07%', right: '62.31%', bottom: '83.7%', zIndex: 2 }}>
+        <img src="/assets/ui/logo-nutre-cat.svg" alt="Nutre Cat" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
       </div>
 
-      <BottomNav tabs={navTabs} />
-    </ScreenLayout>
+      {/* Score pill */}
+      <div style={{ position: 'absolute', top: '5%', right: '9%', zIndex: 3, background: 'white', borderRadius: 99, padding: 'min(1.5vw, 0.85vh) min(4.5vw, 2.5vh)', boxShadow: '0 2px 14px rgba(0,87,122,0.18)' }}>
+        <span style={{ fontFamily: 'var(--font-display)', fontSize: 'min(6.6vw, 3.7vh)', color: '#00577a', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>
+          Puntos: {score}
+        </span>
+      </div>
+
+      {/* Back arrow */}
+      <button onClick={goBack} style={{ position: 'absolute', top: '10.36%', right: '9.63%', width: 'min(9vw, 5.1vh)', aspectRatio: '1', background: 'rgba(255,255,255,0.25)', border: 'none', borderRadius: '50%', cursor: 'pointer', zIndex: 3, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <img src="/assets/ui/arrow-back.svg" alt="Volver" style={{ width: '55%', filter: 'brightness(0) invert(1)' }} />
+      </button>
+
+      {/* Gato comiendo — animación de masticación */}
+      <div style={{ position: 'absolute', left: '18.15%', top: '20.73%', width: '69.17%', zIndex: 1, pointerEvents: 'none' }}>
+        <motion.img
+          src="/assets/cat/cat-food-eating.png"
+          alt=""
+          animate={{ scale: [1, 1.03, 1, 1.03, 1], y: [0, -4, 0] }}
+          transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut' }}
+          style={{ width: '100%', objectFit: 'contain', filter: 'drop-shadow(0 16px 36px rgba(0,87,122,0.2))' }}
+        />
+      </div>
+
+      {/* Bolsas no seleccionadas — en su posición normal abajo */}
+      {others.map(p => (
+        <div key={p.id as string} style={{ position: 'absolute', top: '60.68%', left: p.left, width: p.width, zIndex: 2, opacity: 0.55, pointerEvents: 'none' }}>
+          <img src={p.img} alt="" style={{ width: '100%', height: 'auto', objectFit: 'contain' }} />
+        </div>
+      ))}
+
+      {/* Bolsa seleccionada — elevada y rotada (Figma: left 57.96%, top 51.93%, rotate 22.18deg) */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.4, top: '60.68%', left: selected.left, rotate: 0 }}
+        animate={{ opacity: 1, scale: 1, top: '51.93%', left: '57.96%', rotate: 22 }}
+        transition={{ type: 'spring', stiffness: 200, damping: 18, delay: 0.1 }}
+        style={{ position: 'absolute', width: '21.48%', zIndex: 4, pointerEvents: 'none', transformOrigin: 'center center' }}
+      >
+        <img src={selected.img} alt="" style={{ width: '100%', height: 'auto', objectFit: 'contain', filter: 'drop-shadow(0 8px 20px rgba(0,87,122,0.35))' }} />
+      </motion.div>
+
+      {/* Destellos alrededor del gato mientras come */}
+      {[...Array(6)].map((_, i) => (
+        <motion.div
+          key={i}
+          initial={{ opacity: 0, scale: 0 }}
+          animate={{
+            opacity: [0, 1, 0],
+            scale:   [0, 1, 0],
+            x: Math.cos((i / 6) * Math.PI * 2) * 40,
+            y: Math.sin((i / 6) * Math.PI * 2) * 40,
+          }}
+          transition={{ duration: 1, delay: i * 0.18, repeat: Infinity, repeatDelay: 0.8 }}
+          style={{
+            position: 'absolute',
+            left: '50%', top: '38%',
+            fontSize: 'min(5vw, 2.8vh)',
+            pointerEvents: 'none', zIndex: 5,
+          }}
+        >✨</motion.div>
+      ))}
+
+      {/* Botón ¡Listo! */}
+      <AnimatePresence>
+        {showBtn && (
+          <motion.button
+            initial={{ opacity: 0, y: 20, scale: 0.9 }}
+            animate={{
+              opacity: 1, y: 0, scale: 1,
+              boxShadow: ['0 0 20px rgba(0,87,122,0.3)', '0 0 50px rgba(0,87,122,0.7)', '0 0 20px rgba(0,87,122,0.3)'],
+            }}
+            transition={{ duration: 0.35, boxShadow: { duration: 1.6, repeat: Infinity } }}
+            onClick={onDone}
+            style={{
+              position: 'absolute',
+              bottom: '24%', left: '50%',
+              transform: 'translateX(-50%)',
+              background: '#00577a', color: 'white',
+              border: 'none', borderRadius: 99,
+              padding: 'min(2.8vw, 1.6vh) min(10vw, 5.6vh)',
+              fontFamily: 'var(--font-display)',
+              fontSize: 'min(6.5vw, 3.6vh)',
+              textTransform: 'uppercase',
+              cursor: 'pointer',
+              whiteSpace: 'nowrap',
+              zIndex: 6,
+            }}
+          >
+            ¡Listo! 🐾
+          </motion.button>
+        )}
+      </AnimatePresence>
+
+      {/* Nav botones circulares */}
+      <div style={{ position: 'absolute', top: '82.6%', left: 0, right: 0, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 'min(4.4vw, 2.5vh)', padding: '0 9%', zIndex: 2 }}>
+        {NAV.map(item => {
+          const isFood = item.id === 'food';
+          return (
+            <motion.button key={item.id} onClick={goBack} whileTap={{ scale: 0.88 }}
+              style={{ width: 'min(17.13vw, 9.64vh)', height: 'min(17.13vw, 9.64vh)', borderRadius: '50%', border: 'none', cursor: 'pointer', background: isFood ? 'white' : '#00577a', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: isFood ? '0 0 0 3px rgba(255,255,255,0.8), 0 6px 22px rgba(0,87,122,0.25)' : '0 4px 16px rgba(0,0,0,0.2)', flexShrink: 0 }}>
+              <img src={item.icon} alt="" style={{ width: '54%', height: '54%', objectFit: 'contain', filter: isFood ? 'none' : 'brightness(0) invert(1)' }} />
+            </motion.button>
+          );
+        })}
+      </div>
+    </div>
   );
 }
