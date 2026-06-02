@@ -149,7 +149,7 @@ export default function App() {
       case 'feedSelect':      return <FeedSelectScreen onSelect={handleFeedSelect} onBack={() => nav('hub')} score={cat.score} />;
       case 'feedInteraction': return <FeedInteractionScreen selectedFood={cat.selectedFood} onDone={handleFeedDone} onBack={() => nav('hub')} score={cat.score} />;
 
-      case 'footballGame':    return <FootballGameScreen onGoal={handleGoal} onBack={() => nav('gameSelect')} />;
+      case 'footballGame':    return <FootballGameScreen onGoal={handleGoal} />;
 
       case 'fallingBagsCountdown': return <CountdownScreen onDone={() => nav('fallingBagsGame')} />;
       case 'fallingBagsGame':      return <FallingBagsGameScreen onDone={handleBagsDone} />;
