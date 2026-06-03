@@ -155,7 +155,7 @@ export default function App() {
       case 'fallingBagsGame':      return <FallingBagsGameScreen onDone={handleBagsDone} />;
 
       case 'care': return <CareScreen onDone={handleCareDone} onBack={() => nav('hub')} score={cat.score} />;
-      case 'talk': return <TalkScreen onDone={handleTalkDone} onBack={() => nav('hub')} score={cat.score} />;
+      case 'talk': return <TalkScreen onDone={handleTalkDone} hasFed={cat.hasFed} hasPlayed={cat.hasPlayed} hasCared={cat.hasCared} score={cat.score} />;
 
       case 'championResult': return <ChampionResultScreen cat={cat} onClaim={() => nav('rewardQr')} />;
       case 'rewardQr': return <RewardQrScreen cat={cat} onNext={handleRestart} />;

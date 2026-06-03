@@ -21,7 +21,8 @@
       "Bash(npx playwright *)",
       "Bash(node -e ' *)",
       "Bash(npm install *)",
-      "Bash(node -e \"require\\('playwright'\\); console.log\\('ok'\\)\")"
+      "Bash(node -e \"require\\('playwright'\\); console.log\\('ok'\\)\")",
+      "Bash(npx tsc *)"
     ]
   }
 }

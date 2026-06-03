@@ -1,15 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useRef, useEffect, useCallback } from 'react';
 import ScreenLayout from '../components/ScreenLayout';
-import BottomNav, { type NavTabDef } from '../components/BottomNav';
 import { bgPlay, bgStop } from '../utils/sounds';
-
-const NAV_ICONS = {
-  game:    '/assets/nav/icon-game.svg',
-  food:    '/assets/nav/icon-food.svg',
-  hygiene: '/assets/nav/icon-hygiene.svg',
-  sleep:   '/assets/nav/icon-sleep.svg',
-};
 
 const CAT_EYES_OPEN   = '/assets/cat/cat-hub.png';
 const CAT_EYES_CLOSED = '/assets/cat/cat-pet-closed.png';
@@ -20,6 +12,9 @@ interface Particle { id: number; x: number; y: number; text: string; }
 interface Props { onNext: () => void; }
 
 const PURRWORDS = ['Prrr…', 'Grrr…', 'Miau~', 'Prrr…', '💜'];
+
+// Llenado: +1.2 por tick de 80ms → ~6.7 segundos de caricias continuas para completar
+const FILL_RATE = 1.2;
 
 export default function PetScreen({ onNext }: Props) {
   const [affection, setAffection]   = useState(0);
@@ -32,13 +27,6 @@ export default function PetScreen({ onNext }: Props) {
   const petTimer   = useRef<ReturnType<typeof setInterval> | null>(null);
   const blinkTimer = useRef<ReturnType<typeof setInterval> | null>(null);
   const particleId = useRef(0);
-
-  const navTabs: NavTabDef[] = [
-    { id: 'game',    label: 'JUEGO',   iconSrc: NAV_ICONS.game,    isActive: false, isDone: false, onClick: onNext },
-    { id: 'food',    label: 'COMER',   iconSrc: NAV_ICONS.food,    isActive: false, isDone: false, onClick: onNext },
-    { id: 'hygiene', label: 'HIGIENE', iconSrc: NAV_ICONS.hygiene, isActive: false, isDone: false, onClick: onNext },
-    { id: 'sleep',   label: 'DORMIR',  iconSrc: NAV_ICONS.sleep,   isActive: false, isDone: false, onClick: onNext },
-  ];
 
   const addParticle = useCallback((x: number, y: number) => {
     const id   = particleId.current++;
@@ -54,7 +42,7 @@ export default function PetScreen({ onNext }: Props) {
     addParticle(pt.clientX, pt.clientY);
 
     petTimer.current = setInterval(() => {
-      affRef.current = Math.min(100, affRef.current + 3);
+      affRef.current = Math.min(100, affRef.current + FILL_RATE);
       setAffection(affRef.current);
       if (affRef.current >= 100) {
         clearInterval(petTimer.current!);
@@ -65,7 +53,6 @@ export default function PetScreen({ onNext }: Props) {
       }
     }, 80);
 
-    // Parpadeo: alterna ojos abiertos ↔ cerrados cada 700ms
     blinkTimer.current = setInterval(() => setEyesClosed(c => !c), 700);
   };
 
@@ -88,7 +75,6 @@ export default function PetScreen({ onNext }: Props) {
     clearInterval(blinkTimer.current!);
   }, []);
 
-  /* Ronroneo: loop mientras se consienta, para al soltar o terminar */
   useEffect(() => {
     if (petting && !done) {
       bgPlay('purr', 0.65);
@@ -102,7 +88,7 @@ export default function PetScreen({ onNext }: Props) {
 
   return (
     <ScreenLayout backgroundImage="/assets/backgrounds/bg-pet.png" backgroundOpacity={1}>
-      {/* Partículas Prrr/Grrr flotantes */}
+      {/* Partículas flotantes */}
       {particles.map(p => (
         <motion.div
           key={p.id}
@@ -111,7 +97,7 @@ export default function PetScreen({ onNext }: Props) {
           transition={{ duration: 1.4, ease: 'easeOut' }}
           style={{
             position: 'fixed', zIndex: 100, pointerEvents: 'none',
-            fontWeight: 900, fontSize: '18px', color: '#00577a',
+            fontWeight: 900, fontSize: '20px', color: '#00577a',
             textShadow: '0 1px 4px rgba(0,87,122,0.2)',
           }}
         >
@@ -119,7 +105,7 @@ export default function PetScreen({ onNext }: Props) {
         </motion.div>
       ))}
 
-      {/* Corazones cuando termina */}
+      {/* Corazones al terminar */}
       {done && [0,1,2,3,4].map(i => (
         <motion.div
           key={`heart-${i}`}
@@ -141,38 +127,63 @@ export default function PetScreen({ onNext }: Props) {
         {/* Header */}
         <div style={{
           display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-          padding: '20px 20px 0', flexShrink: 0, position: 'relative', zIndex: 2,
+          padding: 'min(4.8vw, 2.7vh) min(5vw, 2.8vh) 0',
+          flexShrink: 0, position: 'relative', zIndex: 2,
         }}>
-          <img src="/assets/ui/logo-nutre-cat.svg" alt="Nutre Cat" style={{ width: 130 }} />
-          <div style={{
-            background: 'white', borderRadius: '40px', padding: '8px 20px',
-            boxShadow: '0 2px 10px rgba(0,87,122,0.15)',
-          }}>
+          <img src="/assets/ui/logo-nutre-cat.svg" alt="Nutre Cat" style={{ width: 'min(28vw, 15.7vh)', objectFit: 'contain' }} />
+          <motion.div
+            animate={petting ? { scale: [1, 1.08, 1] } : {}}
+            transition={{ duration: 0.5, repeat: Infinity }}
+            style={{
+              background: 'white', borderRadius: 99,
+              padding: 'min(1.5vw, 0.85vh) min(4.5vw, 2.5vh)',
+              boxShadow: '0 2px 14px rgba(0,87,122,0.18)',
+            }}
+          >
             <span style={{
-              fontFamily: 'var(--font-display)', fontSize: '18px',
-              color: '#00577a', textTransform: 'uppercase',
+              fontFamily: 'var(--font-display)', fontSize: 'min(5vw, 2.8vh)',
+              color: '#00577a', textTransform: 'uppercase', whiteSpace: 'nowrap',
             }}>
-              {done ? '¡Listo!' : petting ? 'Prrr…' : 'Acaríciame'}
+              {done ? '¡Listo! 💜' : petting ? 'Prrr… 😸' : 'Consiénteme'}
             </span>
-          </div>
+          </motion.div>
         </div>
 
-        {/* Barra de cariño */}
-        <div style={{ padding: '10px 24px 0', flexShrink: 0, position: 'relative', zIndex: 2 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '5px' }}>
-            <span style={{ fontSize: '12px', color: '#00577a', fontWeight: 800 }}>💜 Cariño</span>
-            <span style={{ fontSize: '12px', color: '#00577a', fontWeight: 900 }}>{Math.round(affection)}/100</span>
+        {/* ── Barra de cariño — prominente como la del baño ── */}
+        <div style={{ padding: 'min(2vw, 1.1vh) min(5vw, 2.8vh) 0', flexShrink: 0, position: 'relative', zIndex: 2 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'min(1vw, 0.55vh)' }}>
+            <span style={{
+              fontFamily: 'var(--font-display)', fontSize: 'min(3.8vw, 2.1vh)',
+              color: 'white', textTransform: 'uppercase', letterSpacing: '0.04em', opacity: 0.9,
+            }}>
+              💜 Cariño
+            </span>
+            <span style={{
+              fontFamily: 'var(--font-display)', fontSize: 'min(3.8vw, 2.1vh)',
+              color: 'white', letterSpacing: '0.04em', opacity: 0.9,
+            }}>
+              {Math.round(affection)}%
+            </span>
           </div>
-          <div style={{ height: '10px', background: 'rgba(0,87,122,0.15)', borderRadius: '99px', overflow: 'hidden' }}>
+          <div style={{
+            height: 'min(4.5vw, 2.5vh)', background: 'rgba(255,255,255,0.25)',
+            borderRadius: 99, overflow: 'hidden',
+            boxShadow: 'inset 0 2px 6px rgba(0,87,122,0.2)',
+          }}>
             <motion.div
               animate={{ width: `${affection}%` }}
               transition={{ duration: 0.12 }}
-              style={{ height: '100%', background: 'linear-gradient(90deg, #00577a, #00b6ed)', borderRadius: '99px' }}
+              style={{
+                height: '100%',
+                background: 'linear-gradient(90deg, rgba(255,255,255,0.7), white)',
+                borderRadius: 99,
+                boxShadow: affection > 0 ? '0 0 14px rgba(255,255,255,0.7)' : 'none',
+              }}
             />
           </div>
         </div>
 
-        {/* Gato central — 67.22% de ancho (Figma: 726/1080) */}
+        {/* Gato central */}
         <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
           <AnimatePresence mode="wait">
             <motion.img
@@ -196,8 +207,7 @@ export default function PetScreen({ onNext }: Props) {
                   : { duration: 3, repeat: Infinity, ease: 'easeInOut', opacity: { duration: 0.15 } }
               }
               style={{
-                width: '67.22%',
-                height: 'auto',
+                width: '67.22%', height: 'auto',
                 userSelect: 'none', pointerEvents: 'none',
                 filter: done
                   ? 'drop-shadow(0 20px 50px rgba(0,87,122,0.3))'
@@ -208,7 +218,7 @@ export default function PetScreen({ onNext }: Props) {
             />
           </AnimatePresence>
 
-          {/* Burbuja "¡Estoy listo para jugar!" */}
+          {/* Burbuja al terminar */}
           <AnimatePresence>
             {done && (
               <motion.div
@@ -220,41 +230,39 @@ export default function PetScreen({ onNext }: Props) {
                   position: 'absolute', top: '6%', left: '50%',
                   transform: 'translateX(-50%)',
                   background: 'white', borderRadius: '24px',
-                  padding: '12px 24px',
+                  padding: 'min(2vw, 1.1vh) min(5vw, 2.8vh)',
                   boxShadow: '0 8px 28px rgba(0,87,122,0.25)',
                   whiteSpace: 'nowrap', zIndex: 10,
                 }}
               >
-                <p style={{
-                  fontFamily: 'var(--font-display)', fontSize: '19px',
-                  color: '#00577a', margin: 0,
-                }}>
+                <p style={{ fontFamily: 'var(--font-display)', fontSize: 'min(5vw, 2.8vh)', color: '#00577a', margin: 0 }}>
                   💬 ¡Estoy listo para jugar!
                 </p>
-                <div style={{
-                  position: 'absolute', bottom: -11, left: '50%', transform: 'translateX(-50%)',
-                  width: 0, height: 0,
-                  borderLeft: '10px solid transparent',
-                  borderRight: '10px solid transparent',
-                  borderTop: '12px solid white',
-                }} />
+                <div style={{ position: 'absolute', bottom: -11, left: '50%', transform: 'translateX(-50%)', width: 0, height: 0, borderLeft: '10px solid transparent', borderRight: '10px solid transparent', borderTop: '12px solid white' }} />
               </motion.div>
             )}
           </AnimatePresence>
 
-          {/* Instrucción mientras no está pettando */}
+          {/* Instrucción explícita de acariciar */}
           {!petting && !done && (
-            <motion.p
-              animate={{ opacity: [0.5, 1, 0.5] }}
+            <motion.div
+              animate={{ opacity: [0.6, 1, 0.6] }}
               transition={{ duration: 1.5, repeat: Infinity }}
               style={{
-                position: 'absolute', bottom: '4%', color: '#00577a',
-                fontSize: '15px', fontWeight: 700, pointerEvents: 'none',
-                textAlign: 'center',
+                position: 'absolute', bottom: '4%', left: '50%', transform: 'translateX(-50%)',
+                pointerEvents: 'none', textAlign: 'center', zIndex: 3,
+                background: 'rgba(255,255,255,0.18)', borderRadius: 99,
+                padding: 'min(1.5vw, 0.85vh) min(4vw, 2.2vh)', backdropFilter: 'blur(4px)',
               }}
             >
-              👆 Desliza para acariciarlo
-            </motion.p>
+              <span style={{
+                fontFamily: 'var(--font-display)', fontSize: 'min(4.2vw, 2.36vh)',
+                color: 'white', textTransform: 'uppercase', letterSpacing: '0.04em',
+                whiteSpace: 'nowrap',
+              }}>
+                👆 Acaricia el lomo del gato con el dedo
+              </span>
+            </motion.div>
           )}
         </div>
 
@@ -265,26 +273,19 @@ export default function PetScreen({ onNext }: Props) {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.7 }}
-              style={{ padding: '0 24px 14px', flexShrink: 0 }}
+              style={{ padding: '0 min(5vw, 2.8vh) min(4vw, 2.2vh)', flexShrink: 0 }}
             >
               <motion.button
                 onClick={onNext}
                 whileTap={{ scale: 0.95 }}
-                animate={{
-                  boxShadow: [
-                    '0 0 20px rgba(0,87,122,0.2)',
-                    '0 0 44px rgba(0,87,122,0.55)',
-                    '0 0 20px rgba(0,87,122,0.2)',
-                  ],
-                }}
+                animate={{ boxShadow: ['0 0 20px rgba(0,87,122,0.2)', '0 0 44px rgba(0,87,122,0.55)', '0 0 20px rgba(0,87,122,0.2)'] }}
                 transition={{ duration: 1.5, repeat: Infinity }}
                 style={{
-                  width: '100%', padding: '18px',
+                  width: '100%', padding: 'min(4vw, 2.2vh)',
                   background: '#00577a', color: 'white',
-                  border: 'none', borderRadius: '24px',
-                  fontFamily: 'var(--font-display)', fontSize: '20px',
-                  cursor: 'pointer', textTransform: 'uppercase',
-                  letterSpacing: '0.5px',
+                  border: 'none', borderRadius: 99,
+                  fontFamily: 'var(--font-display)', fontSize: 'min(6.5vw, 3.65vh)',
+                  cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.03em',
                 }}
               >
                 Continuar 💜
@@ -293,8 +294,6 @@ export default function PetScreen({ onNext }: Props) {
           )}
         </AnimatePresence>
       </div>
-
-      <BottomNav tabs={navTabs} />
     </ScreenLayout>
   );
 }

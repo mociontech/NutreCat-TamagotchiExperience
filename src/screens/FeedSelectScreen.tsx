@@ -215,7 +215,7 @@ export default function FeedSelectScreen({ onSelect, onBack, score = 0 }: Props)
           const isFood = item.id === 'food';
           return (
             <motion.button key={item.id} onClick={onBack} whileTap={{ scale: 0.88 }}
-              style={{ width: 'min(17.13vw, 9.64vh)', height: 'min(17.13vw, 9.64vh)', borderRadius: '50%', border: 'none', cursor: 'pointer', background: isFood ? 'white' : '#00577a', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: isFood ? '0 0 0 3px rgba(255,255,255,0.8), 0 6px 22px rgba(0,87,122,0.25)' : '0 4px 16px rgba(0,0,0,0.2)', flexShrink: 0 }}>
+              style={{ width: 'min(17.13vw, 9.64vh)', aspectRatio: '1', borderRadius: '50%', border: 'none', cursor: 'pointer', background: isFood ? 'white' : '#00577a', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: isFood ? '0 0 0 3px rgba(255,255,255,0.8), 0 6px 22px rgba(0,87,122,0.25)' : '0 4px 16px rgba(0,0,0,0.2)', flexShrink: 0 }}>
               <img src={item.icon} alt="" style={{ width: '54%', height: '54%', objectFit: 'contain', filter: isFood ? 'none' : 'brightness(0) invert(1)' }} />
             </motion.button>
           );

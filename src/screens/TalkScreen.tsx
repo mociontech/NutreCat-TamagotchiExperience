@@ -2,23 +2,29 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect, useRef } from 'react';
 import { sfx, bgPlay, bgStop } from '../utils/sounds';
 
-const NAV = [
-  { id: 'game',    label: 'Jugar',  icon: '/assets/nav/icon-game.svg'    },
-  { id: 'food',    label: 'Comer',  icon: '/assets/nav/icon-food.svg'    },
-  { id: 'hygiene', label: 'Bañar',  icon: '/assets/nav/icon-hygiene.svg' },
-  { id: 'sleep',   label: 'Hablar', icon: '/assets/nav/icon-sleep.svg'   },
+const ACTIVITY_NAV = [
+  { id: 'game',    label: 'Jugar',  icon: '/assets/nav/icon-game.svg',    doneKey: 'hasPlayed' as const },
+  { id: 'food',    label: 'Comer',  icon: '/assets/nav/icon-food.svg',    doneKey: 'hasFed'    as const },
+  { id: 'hygiene', label: 'Bañar',  icon: '/assets/nav/icon-hygiene.svg', doneKey: 'hasCared'  as const },
+  { id: 'sleep',   label: 'Dormir', icon: '/assets/nav/icon-sleep.svg',   doneKey: null },
 ] as const;
 
 interface Zzz { id: number; x: number; y: number; size: number; rot: number; char: string; }
 
-interface Props { onDone: () => void; onBack?: () => void; score?: number; }
+interface Props {
+  onDone: () => void;
+  score?: number;
+  hasFed?: boolean;
+  hasPlayed?: boolean;
+  hasCared?: boolean;
+}
 
-export default function TalkScreen({ onDone, onBack, score = 0 }: Props) {
+export default function TalkScreen({ onDone, score = 0, hasFed = true, hasPlayed = true, hasCared = true }: Props) {
   const [phase,   setPhase]   = useState<'light' | 'dimming' | 'dark'>('light');
   const [showBtn, setShowBtn] = useState(false);
   const [zzzList, setZzzList] = useState<Zzz[]>([]);
   const zzzId   = useRef(0);
-  const goBack  = onBack ?? onDone;
+  const doneMap = { hasPlayed, hasFed, hasCared };
 
   /* Musicbox suave solo mientras fase oscura */
   useEffect(() => {
@@ -121,10 +127,6 @@ export default function TalkScreen({ onDone, onBack, score = 0 }: Props) {
         </span>
       </div>
 
-      {/* ── Back arrow ── */}
-      <button onClick={goBack} style={{ position: 'absolute', top: '12.29%', right: '9.63%', width: 'min(9vw, 5.1vh)', aspectRatio: '1', background: 'rgba(255,255,255,0.2)', border: 'none', borderRadius: '50%', cursor: 'pointer', zIndex: 10, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <img src="/assets/ui/arrow-back.svg" alt="Volver" style={{ width: '55%', filter: 'brightness(0) invert(1)' }} />
-      </button>
 
       {/* ── FASE LIGHT: zona de tap de la lámpara ── */}
       {phase === 'light' && (
@@ -249,18 +251,25 @@ export default function TalkScreen({ onDone, onBack, score = 0 }: Props) {
         )}
       </AnimatePresence>
 
-      {/* ── Nav botones circulares ── */}
+      {/* ── Tracker de actividades completadas ── */}
       <div style={{ position: 'absolute', top: '80%', left: 0, right: 0, display: 'flex', justifyContent: 'center', alignItems: 'flex-end', gap: 'min(4.4vw, 2.5vh)', padding: '0 9%', zIndex: 10 }}>
-        {NAV.map(item => {
-          const isActive = item.id === 'sleep';
+        {ACTIVITY_NAV.map(item => {
+          const done = item.doneKey ? doneMap[item.doneKey] : false;
+          const isCurrent = item.id === 'sleep';
           return (
             <div key={item.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 'min(1.2vw, 0.68vh)', flexShrink: 0 }}>
-              <motion.button onClick={goBack} whileTap={{ scale: 0.88 }}
-                style={{ width: 'min(17.13vw, 9.64vh)', height: 'min(17.13vw, 9.64vh)', borderRadius: '50%', border: 'none', cursor: 'pointer', background: isActive ? 'white' : '#00577a', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: isActive ? '0 0 0 3px rgba(255,255,255,0.8), 0 6px 22px rgba(0,87,122,0.25)' : '0 4px 16px rgba(0,0,0,0.2)', flexShrink: 0 }}>
-                <img src={item.icon} alt="" style={{ width: '54%', height: '54%', objectFit: 'contain', filter: isActive ? 'none' : 'brightness(0) invert(1)' }} />
-              </motion.button>
-              <span style={{ fontFamily: 'var(--font-display)', fontSize: 'min(3.4vw, 1.9vh)', color: 'white', textTransform: 'uppercase', letterSpacing: '0.04em', opacity: isActive ? 1 : 0.75, whiteSpace: 'nowrap', pointerEvents: 'none' }}>
-                {isActive ? '✓ ' : ''}{item.label}
+              <div style={{
+                width: 'min(17.13vw, 9.64vh)', aspectRatio: '1',
+                borderRadius: '50%',
+                background: done ? 'white' : isCurrent ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.12)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                boxShadow: isCurrent ? '0 0 0 3px rgba(255,255,255,0.8), 0 6px 22px rgba(255,255,255,0.15)' : done ? '0 0 0 3px rgba(255,255,255,0.5)' : 'none',
+                flexShrink: 0,
+              }}>
+                <img src={item.icon} alt="" style={{ width: '62%', height: 'auto', objectFit: 'contain', filter: done ? 'none' : 'brightness(0) invert(1)' }} />
+              </div>
+              <span style={{ fontFamily: 'var(--font-display)', fontSize: 'min(3.4vw, 1.9vh)', color: 'white', textTransform: 'uppercase', letterSpacing: '0.04em', opacity: isCurrent || done ? 1 : 0.55, whiteSpace: 'nowrap', pointerEvents: 'none' }}>
+                {done ? '✓ ' : ''}{item.label}
               </span>
             </div>
           );

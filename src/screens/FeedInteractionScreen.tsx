@@ -13,7 +13,7 @@ const NAV = [
   { id: 'game',    label: 'Jugar',  icon: '/assets/nav/icon-game.svg'    },
   { id: 'food',    label: 'Comer',  icon: '/assets/nav/icon-food.svg'    },
   { id: 'hygiene', label: 'Bañar',  icon: '/assets/nav/icon-hygiene.svg' },
-  { id: 'sleep',   label: 'Hablar', icon: '/assets/nav/icon-sleep.svg'   },
+  { id: 'sleep',   label: 'Dormir', icon: '/assets/nav/icon-sleep.svg'   },
 ] as const;
 
 interface Props {
@@ -149,10 +149,12 @@ export default function FeedInteractionScreen({ selectedFood, onDone, onBack, sc
           const isActive = item.id === 'food';
           return (
             <div key={item.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 'min(1.2vw, 0.68vh)', flexShrink: 0 }}>
+              <div style={{ width: 'min(17.13vw, 9.64vh)', height: 'min(17.13vw, 9.64vh)', flexShrink: 0, position: 'relative' }}>
               <motion.button onClick={goBack} whileTap={{ scale: 0.88 }}
-                style={{ width: 'min(17.13vw, 9.64vh)', height: 'min(17.13vw, 9.64vh)', borderRadius: '50%', border: 'none', cursor: 'pointer', background: isActive ? 'white' : '#00577a', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: isActive ? '0 0 0 3px rgba(255,255,255,0.8), 0 6px 22px rgba(0,87,122,0.25)' : '0 4px 16px rgba(0,0,0,0.2)', flexShrink: 0 }}>
-                <img src={item.icon} alt="" style={{ width: '54%', height: '54%', objectFit: 'contain', filter: isActive ? 'none' : 'brightness(0) invert(1)' }} />
+                style={{ position: 'absolute', inset: 0, borderRadius: '50%', border: 'none', cursor: 'pointer', background: isActive ? 'white' : '#00577a', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: isActive ? '0 0 0 3px rgba(255,255,255,0.8), 0 6px 22px rgba(0,87,122,0.25)' : '0 4px 16px rgba(0,0,0,0.2)', overflow: 'hidden' }}>
+                <img src={item.icon} alt="" style={{ width: '62%', height: 'auto', objectFit: 'contain', filter: isActive ? 'none' : 'brightness(0) invert(1)' }} />
               </motion.button>
+              </div>
               <span style={{ fontFamily: 'var(--font-display)', fontSize: 'min(3.4vw, 1.9vh)', color: 'white', textTransform: 'uppercase', letterSpacing: '0.04em', opacity: isActive ? 1 : 0.75, whiteSpace: 'nowrap', pointerEvents: 'none' }}>
                 {isActive ? '✓ ' : ''}{item.label}
               </span>

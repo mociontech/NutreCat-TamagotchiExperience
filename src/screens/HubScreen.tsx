@@ -68,7 +68,7 @@ const NAV = [
   { id: 'game',    label: 'Jugar',  icon: '/assets/nav/icon-game.svg',    screen: 'gameSelect' as ScreenName, doneKey: 'hasPlayed' as keyof CatState },
   { id: 'food',    label: 'Comer',  icon: '/assets/nav/icon-food.svg',    screen: 'feedSelect' as ScreenName, doneKey: 'hasFed'    as keyof CatState },
   { id: 'hygiene', label: 'Bañar',  icon: '/assets/nav/icon-hygiene.svg', screen: 'care'       as ScreenName, doneKey: 'hasCared'  as keyof CatState },
-  { id: 'sleep',   label: 'Hablar', icon: '/assets/nav/icon-sleep.svg',   screen: 'talk'       as ScreenName, doneKey: 'hasTalked' as keyof CatState },
+  { id: 'sleep',   label: 'Dormir', icon: '/assets/nav/icon-sleep.svg',   screen: 'talk'       as ScreenName, doneKey: 'hasTalked' as keyof CatState },
 ] as const;
 
 export default function HubScreen({ cat, onNavigate, pointsEarned, onPointsShown }: Props) {
@@ -399,10 +399,13 @@ export default function HubScreen({ cat, onNavigate, pointsEarned, onPointsShown
 interface NavCircleProps { icon: string; label: string; done: boolean; onClick: () => void; }
 
 function NavCircle({ icon, label, done, onClick }: NavCircleProps) {
+  // 185×185px en el canvas Figma 1080×1920
   const SIZE = 'min(17.13vw, 9.64vh)';
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 'min(1.2vw, 0.68vh)', flexShrink: 0 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 'min(1.2vw, 0.68vh)', flexShrink: 0, flexGrow: 0 }}>
+      {/* Wrapper con dimensiones fijas para que el circle nunca se deforme */}
+      <div style={{ width: SIZE, height: SIZE, flexShrink: 0, flexGrow: 0, position: 'relative' }}>
       <motion.button
         onClick={() => { sfx('snap', 0.55); onClick(); }}
         whileTap={{ scale: 0.88 }}
@@ -415,11 +418,11 @@ function NavCircle({ icon, label, done, onClick }: NavCircleProps) {
         }}
         transition={{ duration: 0.45, ease: 'easeOut' }}
         style={{
-          width: SIZE, height: SIZE,
+          position: 'absolute', inset: 0,
           borderRadius: '50%', border: 'none',
-          cursor: 'pointer', flexShrink: 0,
+          cursor: 'pointer',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          position: 'relative', overflow: 'hidden',
+          overflow: 'hidden',
           backgroundColor: done ? '#ffffff' : '#00577a',
         }}
       >
@@ -446,7 +449,7 @@ function NavCircle({ icon, label, done, onClick }: NavCircleProps) {
           src={icon}
           alt=""
           style={{
-            width: '54%', height: '54%',
+            width: '62%', height: 'auto',
             objectFit: 'contain',
             position: 'relative', zIndex: 1,
             filter: done ? 'none' : 'brightness(0) invert(1)',
@@ -455,6 +458,7 @@ function NavCircle({ icon, label, done, onClick }: NavCircleProps) {
           }}
         />
       </motion.button>
+      </div>{/* fin wrapper cuadrado */}
 
       <span style={{
         fontFamily: 'var(--font-display)',
