@@ -60,7 +60,8 @@ export default function AttractLoop({ onStart }: Props) {
       onClick={handleTap}
       style={{
         width: '100%', height: '100%',
-        background: '#00b6ed',
+        backgroundImage: 'url(/assets/backgrounds/FondoPT1.png)',
+        backgroundSize: 'cover', backgroundPosition: 'center',
         position: 'relative', overflow: 'hidden',
         cursor: 'pointer',
       }}

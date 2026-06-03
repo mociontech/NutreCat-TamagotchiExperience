@@ -21,21 +21,18 @@ interface Drag { id: FoodType; img: string; cx: number; cy: number; }
 
 export default function FeedSelectScreen({ onSelect, onBack, score = 0 }: Props) {
   const [drag,     setDrag]     = useState<Drag | null>(null);
-  const [success,  setSuccess]  = useState(false);
+  const [selected, setSelected] = useState<FoodType | null>(null);
+  const [flash,    setFlash]    = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  /* ── Pointer handlers on the main container ──────────────── */
+  /* ── Pointer handlers ─────────────────────────────────────── */
   const onDown = (e: React.PointerEvent) => {
+    if (selected) return;
     const el = (e.target as HTMLElement).closest<HTMLElement>('[data-food-id]');
     if (!el) return;
     e.preventDefault();
     containerRef.current?.setPointerCapture(e.pointerId);
-    setDrag({
-      id:  el.dataset.foodId as FoodType,
-      img: el.dataset.foodImg!,
-      cx:  e.clientX,
-      cy:  e.clientY,
-    });
+    setDrag({ id: el.dataset.foodId as FoodType, img: el.dataset.foodImg!, cx: e.clientX, cy: e.clientY });
   };
 
   const onMove = (e: React.PointerEvent) => {
@@ -49,14 +46,15 @@ export default function FeedSelectScreen({ onSelect, onBack, score = 0 }: Props)
     const rx = (e.clientX - rect.left) / rect.width;
     const ry = (e.clientY - rect.top)  / rect.height;
 
-    /* Drop zone: cat's plate area ≈ (50%, 43%) radius 18% */
     const dx = rx - 0.50;
     const dy = ry - 0.43;
     if (Math.sqrt(dx * dx + dy * dy) < 0.18) {
       const food = drag.id;
-      setSuccess(true);
       setDrag(null);
-      setTimeout(() => { setSuccess(false); onSelect(food); }, 450);
+      setSelected(food);
+      setFlash(true);
+      setTimeout(() => setFlash(false), 420);
+      setTimeout(() => { setSelected(null); onSelect(food); }, 750);
     } else {
       setDrag(null);
     }
@@ -101,23 +99,18 @@ export default function FeedSelectScreen({ onSelect, onBack, score = 0 }: Props)
         </span>
       </div>
 
-      {/* Back arrow */}
-      <button onClick={onBack} style={{ position: 'absolute', top: '10.36%', right: '9.63%', width: 'min(9vw, 5.1vh)', aspectRatio: '1', background: 'rgba(255,255,255,0.25)', border: 'none', borderRadius: '50%', cursor: 'pointer', zIndex: 3, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <img src="/assets/ui/arrow-back.svg" alt="Volver" style={{ width: '55%', filter: 'brightness(0) invert(1)' }} />
-      </button>
-
-      {/* Gato con tenedor — detrás de las bolsas */}
+      {/* Gato con tenedor */}
       <div style={{ position: 'absolute', left: '18.15%', top: '20.73%', width: '69.17%', zIndex: 1, pointerEvents: 'none' }}>
         <motion.img
           src="/assets/cat/cat-food-select.png"
           alt=""
-          animate={success ? { scale: [1, 1.08, 1] } : { y: [0, -8, 0] }}
-          transition={success ? { duration: 0.35 } : { duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+          animate={selected ? { scale: [1, 1.08, 1] } : { y: [0, -8, 0] }}
+          transition={selected ? { duration: 0.35 } : { duration: 3, repeat: Infinity, ease: 'easeInOut' }}
           style={{ width: '100%', objectFit: 'contain', filter: 'drop-shadow(0 16px 36px rgba(0,87,122,0.2))' }}
         />
       </div>
 
-      {/* Indicador zona de drop — aparece mientras arrastra */}
+      {/* Indicador zona de drop */}
       <AnimatePresence>
         {drag && (
           <motion.div
@@ -143,36 +136,48 @@ export default function FeedSelectScreen({ onSelect, onBack, score = 0 }: Props)
         )}
       </AnimatePresence>
 
-      {/* Bolsas de comida — arrastrables */}
-      {PRODUCTS.map(p => (
-        <div
-          key={p.id as string}
-          data-food-id={p.id}
-          data-food-img={p.img}
-          style={{
-            position: 'absolute',
-            top: '60.68%',
-            left: p.left,
-            width: p.width,
-            zIndex: 4,
-            opacity: drag?.id === p.id ? 0.25 : 1,
-            transition: 'opacity 0.15s',
-            cursor: 'grab',
-          }}
-        >
-          <motion.img
-            src={p.img}
-            alt=""
-            draggable={false}
-            animate={!drag ? { y: [0, -6, 0] } : {}}
-            transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut', delay: PRODUCTS.indexOf(p) * 0.3 }}
-            style={{ width: '100%', height: 'auto', objectFit: 'contain', pointerEvents: 'none', filter: 'drop-shadow(0 6px 16px rgba(0,0,0,0.2))' }}
-          />
-        </div>
-      ))}
+      {/* Bolsas de comida */}
+      {PRODUCTS.map((p, i) => {
+        const isSelected = selected === p.id;
+        const isDimmed   = selected !== null && !isSelected;
+        const isGrabbed  = drag?.id === p.id;
+
+        return (
+          <motion.div
+            key={p.id as string}
+            data-food-id={p.id}
+            data-food-img={p.img}
+            animate={{
+              opacity: isGrabbed ? 0.25 : isDimmed ? 0.32 : 1,
+              scale:   isSelected ? 1.10 : 1,
+            }}
+            transition={{ duration: 0.22 }}
+            style={{
+              position: 'absolute',
+              top: '60.68%',
+              left: p.left,
+              width: p.width,
+              zIndex: isSelected ? 5 : 4,
+              cursor: selected ? 'default' : 'grab',
+              filter: isSelected
+                ? 'drop-shadow(0 0 18px rgba(255,255,255,0.85)) drop-shadow(0 6px 16px rgba(0,87,122,0.25))'
+                : 'drop-shadow(0 6px 16px rgba(0,0,0,0.2))',
+            }}
+          >
+            <motion.img
+              src={p.img}
+              alt=""
+              draggable={false}
+              animate={!drag && !selected ? { y: [0, -6, 0] } : { y: 0 }}
+              transition={{ duration: 2.2, repeat: (!drag && !selected) ? Infinity : 0, ease: 'easeInOut', delay: i * 0.3 }}
+              style={{ width: '100%', height: 'auto', objectFit: 'contain', pointerEvents: 'none' }}
+            />
+          </motion.div>
+        );
+      })}
 
       {/* Texto de instrucción */}
-      {!drag && (
+      {!drag && !selected && (
         <motion.p
           animate={{ opacity: [0.6, 1, 0.6] }}
           transition={{ duration: 2, repeat: Infinity }}
@@ -200,10 +205,11 @@ export default function FeedSelectScreen({ onSelect, onBack, score = 0 }: Props)
 
       {/* Flash al soltar correctamente */}
       <AnimatePresence>
-        {success && (
+        {flash && (
           <motion.div
+            key="flash"
             initial={{ opacity: 0 }} animate={{ opacity: [0, 0.55, 0] }} exit={{ opacity: 0 }}
-            transition={{ duration: 0.45 }}
+            transition={{ duration: 0.42 }}
             style={{ position: 'absolute', inset: 0, background: 'white', zIndex: 99, pointerEvents: 'none' }}
           />
         )}

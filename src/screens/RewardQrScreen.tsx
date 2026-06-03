@@ -141,7 +141,7 @@ export default function RewardQrScreen({ cat, onNext, onShare }: Props) {
         }}
       >
         <img
-          src="/assets/ui/qr-code.png"
+          src="/assets/backgrounds/QR.png"
           alt="QR"
           style={{ width: '88%', height: '88%', objectFit: 'contain', display: 'block' }}
         />

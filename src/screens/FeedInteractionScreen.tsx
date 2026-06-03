@@ -58,11 +58,6 @@ export default function FeedInteractionScreen({ selectedFood, onDone, onBack, sc
         </span>
       </div>
 
-      {/* Back arrow */}
-      <button onClick={goBack} style={{ position: 'absolute', top: '10.36%', right: '9.63%', width: 'min(9vw, 5.1vh)', aspectRatio: '1', background: 'rgba(255,255,255,0.25)', border: 'none', borderRadius: '50%', cursor: 'pointer', zIndex: 3, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <img src="/assets/ui/arrow-back.svg" alt="Volver" style={{ width: '55%', filter: 'brightness(0) invert(1)' }} />
-      </button>
-
       {/* Gato comiendo — animación de masticación */}
       <div style={{ position: 'absolute', left: '18.15%', top: '20.73%', width: '69.17%', zIndex: 1, pointerEvents: 'none' }}>
         <motion.img
@@ -74,22 +69,17 @@ export default function FeedInteractionScreen({ selectedFood, onDone, onBack, sc
         />
       </div>
 
-      {/* Bolsas no seleccionadas — en su posición normal abajo */}
+      {/* Bolsas no seleccionadas — atenuadas para dar protagonismo a la elegida */}
       {others.map(p => (
-        <div key={p.id as string} style={{ position: 'absolute', top: '60.68%', left: p.left, width: p.width, zIndex: 2, opacity: 0.55, pointerEvents: 'none' }}>
+        <div key={p.id as string} style={{ position: 'absolute', top: '60.68%', left: p.left, width: p.width, zIndex: 2, opacity: 0.22, pointerEvents: 'none', filter: 'blur(1px)' }}>
           <img src={p.img} alt="" style={{ width: '100%', height: 'auto', objectFit: 'contain' }} />
         </div>
       ))}
 
-      {/* Bolsa seleccionada — elevada y rotada (Figma: left 57.96%, top 51.93%, rotate 22.18deg) */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.4, top: '60.68%', left: selected.left, rotate: 0 }}
-        animate={{ opacity: 1, scale: 1, top: '51.93%', left: '57.96%', rotate: 22 }}
-        transition={{ type: 'spring', stiffness: 200, damping: 18, delay: 0.1 }}
-        style={{ position: 'absolute', width: '21.48%', zIndex: 4, pointerEvents: 'none', transformOrigin: 'center center' }}
-      >
-        <img src={selected.img} alt="" style={{ width: '100%', height: 'auto', objectFit: 'contain', filter: 'drop-shadow(0 8px 20px rgba(0,87,122,0.35))' }} />
-      </motion.div>
+      {/* Bolsa seleccionada — en su posición, sólida y con halo */}
+      <div style={{ position: 'absolute', top: '60.68%', left: selected.left, width: selected.width, zIndex: 4, pointerEvents: 'none', filter: 'drop-shadow(0 0 14px rgba(255,255,255,0.8)) drop-shadow(0 6px 16px rgba(0,87,122,0.25))' }}>
+        <img src={selected.img} alt="" style={{ width: '100%', height: 'auto', objectFit: 'contain' }} />
+      </div>
 
       {/* Destellos alrededor del gato mientras come */}
       {[...Array(6)].map((_, i) => (
