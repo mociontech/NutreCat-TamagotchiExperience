@@ -67,8 +67,7 @@ export default function AttractLoop({ onStart }: Props) {
       onClick={handleTap}
       style={{
         width: '100%', height: '100%',
-        backgroundImage: 'url(/assets/backgrounds/FondoPT1.png)',
-        backgroundSize: 'cover', backgroundPosition: 'center',
+        background: '#00b6ed',
         position: 'relative', overflow: 'hidden',
         cursor: 'pointer',
       }}
@@ -117,10 +116,9 @@ export default function AttractLoop({ onStart }: Props) {
         </motion.p>
       </motion.div>
 
-      {/* ── GATO — poster estático → video al tocar ── */}
+      {/* ── GATO — video al tocar ── */}
       <video
         ref={videoRef}
-        src={VIDEO_SRC}
         preload="auto"
         playsInline
         onEnded={handleEnded}
@@ -129,14 +127,17 @@ export default function AttractLoop({ onStart }: Props) {
           left: '50%',
           bottom: 0,
           transform: 'translateX(-50%)',
-          width: '115.8%',
+          width: '139%',
           height: 'auto',
           pointerEvents: 'none',
           userSelect: 'none',
           objectFit: 'contain',
           objectPosition: 'bottom',
         }}
-      />
+      >
+        <source src={VIDEO_SRC} type="video/mp4" />
+        <source src={VIDEO_SRC} type="video/quicktime" />
+      </video>
 
       {/* ── MANO — desaparece al tocar ── */}
       <AnimatePresence>

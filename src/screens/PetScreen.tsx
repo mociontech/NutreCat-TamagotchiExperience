@@ -9,13 +9,12 @@ const CAT_DONE        = '/assets/cat/cat-pet-done.png';
 
 interface Particle { id: number; x: number; y: number; text: string; }
 
-interface Props { onNext: () => void; }
+interface Props { onNext: () => void; name?: string; }
 
-const PURRWORDS = ['Prrr…', 'Grrr…', 'Miau~', 'Prrr…', '💜'];
-
+const PURRWORDS = ['Prrr…', 'Grrr…', 'Miau~', 'Prrr…', '💙'];
 const FILL_RATE = 1.2;
 
-export default function PetScreen({ onNext }: Props) {
+export default function PetScreen({ onNext, name = 'Simón' }: Props) {
   const [affection,  setAffection]  = useState(0);
   const [petting,    setPetting]    = useState(false);
   const [eyesClosed, setEyesClosed] = useState(false);
@@ -23,10 +22,10 @@ export default function PetScreen({ onNext }: Props) {
   const [particles,  setParticles]  = useState<Particle[]>([]);
   const [ripple,     setRipple]     = useState(false);
 
-  const affRef      = useRef(0);
-  const petTimer    = useRef<ReturnType<typeof setInterval> | null>(null);
-  const blinkTimer  = useRef<ReturnType<typeof setInterval> | null>(null);
-  const particleId  = useRef(0);
+  const affRef     = useRef(0);
+  const petTimer   = useRef<ReturnType<typeof setInterval> | null>(null);
+  const blinkTimer = useRef<ReturnType<typeof setInterval> | null>(null);
+  const particleId = useRef(0);
 
   const addParticle = useCallback((x: number, y: number) => {
     const id   = particleId.current++;
@@ -40,8 +39,6 @@ export default function PetScreen({ onNext }: Props) {
     setPetting(true);
     const pt = 'touches' in e ? e.touches[0] : (e as React.MouseEvent);
     addParticle(pt.clientX, pt.clientY);
-
-    // Llena la barra solo mientras toca
     petTimer.current = setInterval(() => {
       affRef.current = Math.min(100, affRef.current + FILL_RATE);
       setAffection(affRef.current);
@@ -53,7 +50,6 @@ export default function PetScreen({ onNext }: Props) {
         setDone(true);
       }
     }, 80);
-
     blinkTimer.current = setInterval(() => setEyesClosed(c => !c), 700);
   };
 
@@ -77,11 +73,8 @@ export default function PetScreen({ onNext }: Props) {
   }, []);
 
   useEffect(() => {
-    if (petting && !done) {
-      bgPlay('purr', 0.65);
-    } else {
-      bgStop('purr');
-    }
+    if (petting && !done) bgPlay('purr', 0.65);
+    else bgStop('purr');
     return () => bgStop('purr');
   }, [petting, done]);
 
@@ -101,11 +94,7 @@ export default function PetScreen({ onNext }: Props) {
           initial={{ opacity: 1, scale: 0.7, x: p.x - 20, y: p.y - 40 }}
           animate={{ opacity: 0, scale: 1.3, y: p.y - 140 }}
           transition={{ duration: 1.4, ease: 'easeOut' }}
-          style={{
-            position: 'fixed', zIndex: 100, pointerEvents: 'none',
-            fontWeight: 900, fontSize: '20px', color: '#00577a',
-            textShadow: '0 1px 4px rgba(0,87,122,0.2)',
-          }}
+          style={{ position: 'fixed', zIndex: 100, pointerEvents: 'none', fontWeight: 900, fontSize: '20px', color: '#00577a' }}
         >
           {p.text}
         </motion.div>
@@ -120,77 +109,57 @@ export default function PetScreen({ onNext }: Props) {
           transition={{ duration: 1.8, delay: i * 0.2, ease: 'easeOut' }}
           style={{ position: 'absolute', fontSize: '30px', pointerEvents: 'none', zIndex: 5 }}
         >
-          💜
+          💙
         </motion.div>
       ))}
 
-      {/* Área interactiva */}
+      {/* ── Área de interacción táctil — cubre toda la pantalla ── */}
       <div
-        style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0, position: 'relative' }}
+        style={{ position: 'absolute', inset: 0 }}
         onMouseDown={startPetting} onMouseMove={movePetting} onMouseUp={stopPetting} onMouseLeave={stopPetting}
         onTouchStart={startPetting} onTouchMove={movePetting} onTouchEnd={stopPetting}
       >
-        {/* Header */}
-        <div style={{
-          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
-          padding: 'min(4.8vw, 2.7vh) min(5vw, 2.8vh) 0',
-          flexShrink: 0, position: 'relative', zIndex: 2,
-        }}>
-          <img src="/assets/ui/logo-nutre-cat.svg" alt="Nutre Cat" style={{ width: 'min(28vw, 15.7vh)', objectFit: 'contain' }} />
+        {/* Logo — centrado, doble tamaño, 100px abajo */}
+        <img
+          src="/assets/ui/logo-nutre-cat.svg"
+          alt="Nutre Cat"
+          draggable={false}
+          style={{
+            position: 'absolute',
+            top: 'calc(4.79% + 30px)',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            width: '57%',
+            height: 'auto',
+            zIndex: 3,
+            pointerEvents: 'none',
+          }}
+        />
+
+        {/* Pills "Acaricia a" + estado — solo cuando no está done */}
+        {!done && <motion.div
+          animate={!petting && !done ? { opacity: [0.7, 1, 0.7] } : { opacity: 1 }}
+          transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
+          style={{ position: 'absolute', top: 'calc(28% + 80px)', left: 'calc(52% + 150px)', right: '2%', zIndex: 3, display: 'flex', flexDirection: 'column', gap: 'min(2vw, 1.1vh)' }}
+        >
+          <div style={{ background: 'white', borderRadius: 99, padding: 'min(1.8vw, 1vh) min(4vw, 2.2vh)', boxShadow: '0 2px 12px rgba(0,87,122,0.18)', alignSelf: 'flex-start' }}>
+            <span style={{ fontFamily: 'var(--font-display)', fontSize: 'min(5.5vw, 3.1vh)', color: '#00577a', textTransform: 'uppercase', letterSpacing: '0.04em', whiteSpace: 'nowrap' }}>
+              Acaricia a
+            </span>
+          </div>
           <motion.div
-            animate={petting ? { scale: [1, 1.08, 1] } : {}}
+            animate={petting ? { scale: [1, 1.06, 1] } : {}}
             transition={{ duration: 0.5, repeat: Infinity }}
-            style={{
-              background: 'white', borderRadius: 99,
-              padding: 'min(1.5vw, 0.85vh) min(4.5vw, 2.5vh)',
-              boxShadow: '0 2px 14px rgba(0,87,122,0.18)',
-            }}
+            style={{ background: 'white', borderRadius: 99, padding: 'min(1.5vw, 0.85vh) min(4vw, 2.2vh)', boxShadow: '0 2px 12px rgba(0,87,122,0.18)', alignSelf: 'flex-start' }}
           >
-            <span style={{
-              fontFamily: 'var(--font-display)', fontSize: 'min(5vw, 2.8vh)',
-              color: '#00577a', textTransform: 'uppercase', whiteSpace: 'nowrap',
-            }}>
-              {done ? '¡Listo! 💜' : petting ? 'Prrr… 😸' : 'Consiénteme'}
+            <span style={{ fontFamily: 'var(--font-display)', fontSize: 'min(5vw, 2.8vh)', color: '#00577a', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>
+              {done ? '¡Listo! 💙' : petting ? 'Prrr… 😸' : `${name} 🐱`}
             </span>
           </motion.div>
-        </div>
+        </motion.div>}
 
-        {/* ── Barra de cariño — prominente como la del baño ── */}
-        <div style={{ padding: 'min(2vw, 1.1vh) min(5vw, 2.8vh) 0', flexShrink: 0, position: 'relative', zIndex: 2 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'min(1vw, 0.55vh)' }}>
-            <span style={{
-              fontFamily: 'var(--font-display)', fontSize: 'min(3.8vw, 2.1vh)',
-              color: 'white', textTransform: 'uppercase', letterSpacing: '0.04em', opacity: 0.9,
-            }}>
-              💜 Cariño
-            </span>
-            <span style={{
-              fontFamily: 'var(--font-display)', fontSize: 'min(3.8vw, 2.1vh)',
-              color: 'white', letterSpacing: '0.04em', opacity: 0.9,
-            }}>
-              {Math.round(affection)}%
-            </span>
-          </div>
-          <div style={{
-            height: 'min(4.5vw, 2.5vh)', background: 'rgba(255,255,255,0.25)',
-            borderRadius: 99, overflow: 'hidden',
-            boxShadow: 'inset 0 2px 6px rgba(0,87,122,0.2)',
-          }}>
-            <motion.div
-              animate={{ width: `${affection}%` }}
-              transition={{ duration: 0.12 }}
-              style={{
-                height: '100%',
-                background: 'linear-gradient(90deg, rgba(255,255,255,0.7), white)',
-                borderRadius: 99,
-                boxShadow: affection > 0 ? '0 0 14px rgba(255,255,255,0.7)' : 'none',
-              }}
-            />
-          </div>
-        </div>
-
-        {/* Gato central */}
-        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
+        {/* Gato central — grande */}
+        <div style={{ position: 'absolute', top: 'calc(28% + 100px)', bottom: '18%', left: 0, right: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <AnimatePresence mode="wait">
             <motion.img
               key={catSrc}
@@ -199,32 +168,26 @@ export default function PetScreen({ onNext }: Props) {
               draggable={false}
               initial={{ opacity: 0.7, scale: 0.95 }}
               animate={
-                done
-                  ? { opacity: 1, scale: 1, y: [0, -18, 0, -18, 0] }
-                  : petting
-                  ? { opacity: 1, scale: [1, 1.04, 1], rotate: [-2, 2, -2] }
-                  : { opacity: 1, scale: 1, y: [0, -6, 0] }
+                done    ? { opacity: 1, scale: 1, y: [0, -18, 0, -18, 0] }
+                : petting ? { opacity: 1, scale: [1, 1.04, 1], rotate: [-2, 2, -2] }
+                : { opacity: 1, scale: 1, y: [0, -6, 0] }
               }
               transition={
-                done
-                  ? { y: { duration: 1.2, repeat: Infinity, ease: 'easeInOut' }, opacity: { duration: 0.15 } }
-                  : petting
-                  ? { duration: 0.4, repeat: Infinity, opacity: { duration: 0.1 } }
-                  : { duration: 3, repeat: Infinity, ease: 'easeInOut', opacity: { duration: 0.15 } }
+                done    ? { y: { duration: 1.2, repeat: Infinity, ease: 'easeInOut' }, opacity: { duration: 0.15 } }
+                : petting ? { duration: 0.4, repeat: Infinity, opacity: { duration: 0.1 } }
+                : { duration: 3, repeat: Infinity, ease: 'easeInOut', opacity: { duration: 0.15 } }
               }
               style={{
-                width: '67.22%', height: 'auto',
+                width: '62%', height: 'auto',
                 userSelect: 'none', pointerEvents: 'none',
-                filter: done
-                  ? 'drop-shadow(0 20px 50px rgba(0,87,122,0.3))'
-                  : petting
-                  ? 'drop-shadow(0 0 30px rgba(0,87,122,0.35))'
+                filter: done ? 'drop-shadow(0 20px 50px rgba(0,87,122,0.3))'
+                  : petting ? 'drop-shadow(0 0 30px rgba(0,87,122,0.35))'
                   : 'drop-shadow(0 16px 32px rgba(0,87,122,0.15))',
               }}
             />
           </AnimatePresence>
 
-          {/* Burbuja al terminar */}
+          {/* Burbuja glass al terminar */}
           <AnimatePresence>
             {done && (
               <motion.div
@@ -232,55 +195,29 @@ export default function PetScreen({ onNext }: Props) {
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0 }}
                 transition={{ type: 'spring', stiffness: 280, delay: 0.35 }}
-                style={{ position: 'absolute', top: '6%', left: '5%', zIndex: 10, maxWidth: '65%' }}
+                style={{ position: 'absolute', top: '6%', left: 'calc(5% + 480px)', zIndex: 10, maxWidth: '65%' }}
               >
-                {/* Inner: respiración continua */}
                 <motion.div
                   animate={{ scale: [1, 1.05, 1] }}
                   transition={{ duration: 2.6, repeat: Infinity, ease: 'easeInOut', delay: 1.0 }}
                   style={{
-                    background: 'rgba(255,255,255,0.45)',
-                    backdropFilter: 'blur(12px)',
-                    WebkitBackdropFilter: 'blur(12px)',
-                    border: '1px solid rgba(255,255,255,0.7)',
-                    borderRadius: '24px',
-                    padding: 'min(2vw, 1.1vh) min(4vw, 2.2vh)',
+                    background: 'rgba(255,255,255,0.45)', backdropFilter: 'blur(12px)',
+                    WebkitBackdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.7)',
+                    borderRadius: '24px', padding: 'min(2vw, 1.1vh) min(4vw, 2.2vh)',
                     boxShadow: '0 8px 28px rgba(0,87,122,0.18), inset 0 1px 0 rgba(255,255,255,0.8)',
-                    textAlign: 'center',
-                    position: 'relative',
+                    textAlign: 'center', position: 'relative',
                   }}
                 >
                   <p style={{ fontFamily: 'var(--font-display)', fontSize: 'min(5vw, 2.8vh)', color: '#00577a', margin: 0 }}>
-                    💬 ¡Estoy listo para jugar!
+                    ¡Estoy listo para jugar!
                   </p>
                   <div style={{ position: 'absolute', bottom: -11, left: '50%', transform: 'translateX(-50%)', width: 0, height: 0, borderLeft: '10px solid transparent', borderRight: '10px solid transparent', borderTop: '12px solid rgba(255,255,255,0.45)' }} />
                 </motion.div>
               </motion.div>
             )}
           </AnimatePresence>
-
-          {/* Instrucción explícita de acariciar */}
-          {!petting && !done && (
-            <motion.div
-              animate={{ opacity: [0.6, 1, 0.6] }}
-              transition={{ duration: 1.5, repeat: Infinity }}
-              style={{
-                position: 'absolute', bottom: '4%', left: '50%', transform: 'translateX(-50%)',
-                pointerEvents: 'none', textAlign: 'center', zIndex: 3,
-                background: 'rgba(255,255,255,0.18)', borderRadius: 99,
-                padding: 'min(1.5vw, 0.85vh) min(4vw, 2.2vh)', backdropFilter: 'blur(4px)',
-              }}
-            >
-              <span style={{
-                fontFamily: 'var(--font-display)', fontSize: 'min(4.2vw, 2.36vh)',
-                color: 'white', textTransform: 'uppercase', letterSpacing: '0.04em',
-                whiteSpace: 'nowrap',
-              }}>
-                👆 Acaricia el lomo del gato con el dedo
-              </span>
-            </motion.div>
-          )}
         </div>
+
 
         {/* Botón continuar */}
         <AnimatePresence>
@@ -289,7 +226,7 @@ export default function PetScreen({ onNext }: Props) {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.7 }}
-              style={{ padding: '0 min(5vw, 2.8vh) min(4vw, 2.2vh)', flexShrink: 0 }}
+              style={{ position: 'absolute', bottom: 'calc(7% - 70px)', left: '7.3%', right: '7.3%', zIndex: 4 }}
             >
               <motion.button
                 onClick={() => { setRipple(true); setTimeout(() => { setRipple(false); onNext(); }, 420); }}
@@ -299,8 +236,7 @@ export default function PetScreen({ onNext }: Props) {
                 transition={{ duration: 1.5, repeat: Infinity }}
                 style={{
                   width: '100%', padding: 'min(4vw, 2.2vh)',
-                  background: '#00577a', color: 'white',
-                  border: 'none', borderRadius: 99,
+                  background: '#00577a', color: 'white', border: 'none', borderRadius: 99,
                   fontFamily: 'var(--font-display)', fontSize: 'min(8.5vw, 4.8vh)',
                   cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.03em',
                   textAlign: 'center', position: 'relative', overflow: 'hidden',
@@ -308,16 +244,9 @@ export default function PetScreen({ onNext }: Props) {
               >
                 {ripple && (
                   <motion.span
-                    initial={{ scale: 0, opacity: 0.5 }}
-                    animate={{ scale: 5, opacity: 0 }}
+                    initial={{ scale: 0, opacity: 0.5 }} animate={{ scale: 5, opacity: 0 }}
                     transition={{ duration: 0.42, ease: 'easeOut' }}
-                    style={{
-                      position: 'absolute', inset: 0,
-                      background: 'rgba(255,255,255,0.55)',
-                      borderRadius: '50%',
-                      pointerEvents: 'none',
-                      transformOrigin: 'center',
-                    }}
+                    style={{ position: 'absolute', inset: 0, background: 'rgba(255,255,255,0.55)', borderRadius: '50%', pointerEvents: 'none', transformOrigin: 'center' }}
                   />
                 )}
                 Continuar
@@ -325,6 +254,25 @@ export default function PetScreen({ onNext }: Props) {
             </motion.div>
           )}
         </AnimatePresence>
+
+        {/* ── Barra de cariño — solo mientras no termina ── */}
+        {!done && <div style={{ position: 'absolute', bottom: '7%', left: '7.3%', right: '7.3%', zIndex: 3 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'min(1vw, 0.55vh)' }}>
+            <span style={{ fontFamily: 'var(--font-display)', fontSize: 'min(3.8vw, 2.1vh)', color: 'white', textTransform: 'uppercase', letterSpacing: '0.04em', opacity: 0.9 }}>
+              💙 Cariño
+            </span>
+            <span style={{ fontFamily: 'var(--font-display)', fontSize: 'min(3.8vw, 2.1vh)', color: 'white', letterSpacing: '0.04em', opacity: 0.9 }}>
+              {Math.round(affection)}%
+            </span>
+          </div>
+          <div style={{ height: 'min(4.5vw, 2.5vh)', background: 'rgba(255,255,255,0.25)', borderRadius: 99, overflow: 'hidden', boxShadow: 'inset 0 2px 6px rgba(0,87,122,0.2)' }}>
+            <motion.div
+              animate={{ width: `${affection}%` }}
+              transition={{ duration: 0.12 }}
+              style={{ height: '100%', background: 'linear-gradient(90deg, rgba(255,255,255,0.7), white)', borderRadius: 99, boxShadow: affection > 0 ? '0 0 14px rgba(255,255,255,0.7)' : 'none' }}
+            />
+          </div>
+        </div>}
       </div>
     </ScreenLayout>
   );

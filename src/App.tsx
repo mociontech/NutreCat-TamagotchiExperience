@@ -139,7 +139,7 @@ export default function App() {
     switch (screen) {
       case 'attract':      return <AttractLoop onStart={() => nav('registration')} />;
       case 'registration': return <RegistrationScreen onNext={handleRegistration} />;
-      case 'pet':          return <PetScreen onNext={() => { updateCat({ affection: clamp(cat.affection + 30), level: 'Despierto' }); nav('hub'); }} />;
+      case 'pet':          return <PetScreen name={cat.name} onNext={() => { updateCat({ affection: clamp(cat.affection + 30), level: 'Despierto' }); nav('hub'); }} />;
       case 'hub':
       case 'dashboard':    return <HubScreen cat={cat} onNavigate={nav} pointsEarned={pointsEarned} onPointsShown={() => setPointsEarned(null)} />;
 

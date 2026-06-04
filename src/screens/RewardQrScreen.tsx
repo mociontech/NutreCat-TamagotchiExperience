@@ -6,6 +6,28 @@ const TOTAL_SECS   = 20;
 const RADIUS       = 36;
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 
+/* Logo con shimmer */
+function ShimmerLogo() {
+  return (
+    <div style={{ position: 'relative', width: '52%', flexShrink: 0 }}>
+      <motion.img
+        src="/assets/ui/logo-nutre-cat.svg"
+        alt="Nutre Cat"
+        animate={{ filter: ['brightness(1)', 'brightness(1.22)', 'brightness(1)'] }}
+        transition={{ duration: 3.8, repeat: Infinity, ease: 'easeInOut', repeatDelay: 0.8 }}
+        style={{ width: '100%', height: 'auto', display: 'block' }}
+      />
+      <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none' }}>
+        <motion.div
+          animate={{ x: ['-140%', '200%'] }}
+          transition={{ duration: 1.5, repeat: Infinity, repeatDelay: 3.5, ease: 'easeInOut' }}
+          style={{ position: 'absolute', top: '-20%', bottom: '-20%', width: '55%', background: 'linear-gradient(105deg, transparent 20%, rgba(255,255,255,0.65) 50%, transparent 80%)' }}
+        />
+      </div>
+    </div>
+  );
+}
+
 interface Props { cat?: CatState; onNext: () => void; }
 
 export default function RewardQrScreen({ cat, onNext }: Props) {
@@ -26,16 +48,20 @@ export default function RewardQrScreen({ cat, onNext }: Props) {
   return (
     <div style={{
       width: '100%', height: '100%',
-      backgroundImage: 'url(/assets/backgrounds/bg-ptFinal.png)',
-      backgroundSize: 'cover', backgroundPosition: 'center',
+      background: '#00b6ed',
       display: 'flex', flexDirection: 'column',
       alignItems: 'center',
       position: 'relative', overflow: 'hidden',
       padding: '0 9%',
-      paddingTop: '22%',   /* deja espacio al logo del fondo */
+      paddingTop: '8%',
       paddingBottom: '2%',
       boxSizing: 'border-box',
     }}>
+
+      {/* Logo */}
+      <ShimmerLogo />
+
+      <div style={{ flex: '0.35' }} />
 
       {/* "¡Gracias por participar!" */}
       <motion.div style={{ flexShrink: 0, width: '100%', overflow: 'hidden' }}>
