@@ -6,37 +6,9 @@ const TOTAL_SECS   = 20;
 const RADIUS       = 36;
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 
-/* Logo con shimmer diagonal + respiración de brillo */
-function ShimmerLogo({ style }: { style?: React.CSSProperties }) {
-  return (
-    <div style={{ position: 'relative', ...style }}>
-      <motion.img
-        src="/assets/ui/logo-nutre-cat.svg"
-        alt="Nutre Cat"
-        animate={{ filter: ['brightness(1)', 'brightness(1.22)', 'brightness(1)'] }}
-        transition={{ duration: 3.8, repeat: Infinity, ease: 'easeInOut', repeatDelay: 0.8 }}
-        style={{ width: '100%', height: 'auto', display: 'block' }}
-      />
-      {/* Clip solo en el shimmer, no en el logo */}
-      <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none' }}>
-        <motion.div
-          animate={{ x: ['-140%', '200%'] }}
-          transition={{ duration: 1.5, repeat: Infinity, repeatDelay: 3.5, ease: 'easeInOut' }}
-          style={{
-            position: 'absolute',
-            top: '-20%', bottom: '-20%',
-            width: '55%',
-            background: 'linear-gradient(105deg, transparent 20%, rgba(255,255,255,0.65) 50%, transparent 80%)',
-          }}
-        />
-      </div>
-    </div>
-  );
-}
+interface Props { cat?: CatState; onNext: () => void; }
 
-interface Props { cat?: CatState; onNext: () => void; onShare?: () => void; }
-
-export default function RewardQrScreen({ cat, onNext, onShare }: Props) {
+export default function RewardQrScreen({ cat, onNext }: Props) {
   const [secs, setSecs] = useState(TOTAL_SECS);
 
   useEffect(() => {
@@ -49,7 +21,7 @@ export default function RewardQrScreen({ cat, onNext, onShare }: Props) {
     return () => clearInterval(interval);
   }, [onNext]);
 
-  const strokeDash = CIRCUMFERENCE * (secs / TOTAL_SECS);
+  const strokeDash = CIRCUMFERENCE * (secs / TOTAL_SECS) * 0.82;
 
   return (
     <div style={{
@@ -217,7 +189,7 @@ export default function RewardQrScreen({ cat, onNext, onShare }: Props) {
               <circle
                 cx={36} cy={36} r={RADIUS - 4}
                 fill="none" stroke="#00577a" strokeWidth={5} strokeLinecap="round"
-                strokeDasharray={`${CIRCUMFERENCE * (secs / TOTAL_SECS) * 0.82} ${CIRCUMFERENCE * 0.82}`}
+                strokeDasharray={`${strokeDash} ${CIRCUMFERENCE * 0.82}`}
                 style={{ transition: 'stroke-dasharray 1s linear' }}
               />
             </svg>
