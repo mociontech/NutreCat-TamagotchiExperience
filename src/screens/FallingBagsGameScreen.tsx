@@ -235,6 +235,46 @@ export default function FallingBagsGameScreen({ onDone }: Props) {
       {/* Filtro azul */}
       <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,182,237,0.45)', pointerEvents: 'none', zIndex: 0 }} />
 
+      {/* Indicadores de combo y doble puntos — superpuestos, fuera del flujo */}
+      <div style={{
+        position: 'absolute', top: 'min(16vw, 9vh)', right: '9%',
+        zIndex: 15, display: 'flex', flexDirection: 'column',
+        alignItems: 'flex-end', gap: 'min(1.5vw, 0.85vh)', pointerEvents: 'none',
+      }}>
+        <AnimatePresence>
+          {isComboActive && (
+            <motion.div
+              key={`combo-${combo}`}
+              initial={{ scale: 1.6, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              style={{ background: 'linear-gradient(135deg, #ff6b35, #fcd116)', borderRadius: 99, padding: 'min(1vw, 0.55vh) min(3vw, 1.7vh)', boxShadow: '0 2px 12px rgba(255,107,53,0.5)' }}
+            >
+              <span style={{ fontFamily: 'var(--font-display)', fontSize: 'min(4.5vw, 2.5vh)', color: 'white', whiteSpace: 'nowrap' }}>
+                🔥 {combo}x COMBO
+              </span>
+            </motion.div>
+          )}
+        </AnimatePresence>
+        <AnimatePresence>
+          {doublePts && (
+            <motion.div
+              key="double-pts"
+              initial={{ scale: 1.6, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.8, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              style={{ background: 'linear-gradient(135deg, #ffd700, #ff8c00)', borderRadius: 99, padding: 'min(1vw, 0.55vh) min(3vw, 1.7vh)', boxShadow: '0 2px 12px rgba(255,215,0,0.7)' }}
+            >
+              <span style={{ fontFamily: 'var(--font-display)', fontSize: 'min(4.5vw, 2.5vh)', color: 'white', whiteSpace: 'nowrap' }}>
+                x2 PUNTOS
+              </span>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
       {/* Flash dorado al atrapar ratón */}
       <AnimatePresence>
         {mouseFlash && (
@@ -255,7 +295,6 @@ export default function FallingBagsGameScreen({ onDone }: Props) {
       }}>
         <img src="/assets/ui/logo-nutre-cat.svg" alt="Nutre Cat" style={{ width: '28.5%', objectFit: 'contain' }} />
 
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 'min(1.5vw, 0.85vh)' }}>
           <motion.div
             key={score}
             animate={{ scale: [1.15, 1] }}
@@ -266,43 +305,6 @@ export default function FallingBagsGameScreen({ onDone }: Props) {
               Puntos: {score}
             </span>
           </motion.div>
-
-          {/* Indicador de combo */}
-          <AnimatePresence>
-            {isComboActive && (
-              <motion.div
-                key={`combo-${combo}`}
-                initial={{ scale: 1.6, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.8, opacity: 0 }}
-                transition={{ duration: 0.2 }}
-                style={{ background: 'linear-gradient(135deg, #ff6b35, #fcd116)', borderRadius: 99, padding: 'min(1vw, 0.55vh) min(3vw, 1.7vh)', boxShadow: '0 2px 12px rgba(255,107,53,0.5)' }}
-              >
-                <span style={{ fontFamily: 'var(--font-display)', fontSize: 'min(4.5vw, 2.5vh)', color: 'white', whiteSpace: 'nowrap' }}>
-                  🔥 {combo}x COMBO
-                </span>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          {/* Indicador doble puntos */}
-          <AnimatePresence>
-            {doublePts && (
-              <motion.div
-                key="double-pts"
-                initial={{ scale: 1.6, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.8, opacity: 0 }}
-                transition={{ duration: 0.2 }}
-                style={{ background: 'linear-gradient(135deg, #ffd700, #ff8c00)', borderRadius: 99, padding: 'min(1vw, 0.55vh) min(3vw, 1.7vh)', boxShadow: '0 2px 12px rgba(255,215,0,0.7)' }}
-              >
-                <span style={{ fontFamily: 'var(--font-display)', fontSize: 'min(4.5vw, 2.5vh)', color: 'white', whiteSpace: 'nowrap' }}>
-                  x2 PUNTOS
-                </span>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
       </div>
 
       {/* ── Campo de juego ── */}
