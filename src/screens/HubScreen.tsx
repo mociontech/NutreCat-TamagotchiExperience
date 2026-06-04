@@ -268,7 +268,7 @@ export default function HubScreen({ cat, onNavigate, pointsEarned, onPointsShown
                 pointerEvents: 'none',
               }}
             >
-              +{pointsEarned} puntos 🐾
+              +{pointsEarned} puntos
             </motion.div>
           )}
         </AnimatePresence>
@@ -370,7 +370,7 @@ export default function HubScreen({ cat, onNavigate, pointsEarned, onPointsShown
                 letterSpacing: '0.03em',
               }}
             >
-              🏆 ¡Ver resultado campeón!
+            ¡Ver resultado campeón!
             </motion.button>
           </motion.div>
         )}
