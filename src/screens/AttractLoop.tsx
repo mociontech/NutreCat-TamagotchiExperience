@@ -4,11 +4,7 @@ import { sfx, bgPlay, bgStop } from '../utils/sounds';
 
 interface Props { onStart: () => void; }
 
-// 28 frames: frame-02.png → frame-29.png
-const FRAMES = Array.from({ length: 28 }, (_, i) =>
-  `/assets/cat/box-sprite/frame-${String(i + 2).padStart(2, '0')}.png`
-);
-
+const VIDEO_SRC = '/assets/cat/box-sprite/BoxVideo.webm';
 
 /* Logo con shimmer + respiración de brillo */
 function ShimmerLogo({ src, alt, style }: { src: string; alt: string; style?: React.CSSProperties }) {
@@ -37,13 +33,15 @@ function ShimmerLogo({ src, alt, style }: { src: string; alt: string; style?: Re
 }
 
 export default function AttractLoop({ onStart }: Props) {
-  const [frameIdx,  setFrameIdx]  = useState(0);
-  const [animating, setAnimating] = useState(false);
-  const animRef = useRef(false);
+  const [playing,   setPlaying]   = useState(false);
+  const videoRef  = useRef<HTMLVideoElement>(null);
+  const tappedRef = useRef(false);
 
-  // Precarga de todos los sprites
+  // Precarga del video
   useEffect(() => {
-    FRAMES.forEach(src => { const img = new Image(); img.src = src; });
+    if (videoRef.current) {
+      videoRef.current.load();
+    }
   }, []);
 
   // Música de fondo
@@ -52,23 +50,16 @@ export default function AttractLoop({ onStart }: Props) {
     return () => bgStop('musicbox');
   }, []);
 
-
-  // Al tocar: reproduce todos los frames y navega al final
   const handleTap = () => {
-    if (animRef.current) return;
-    animRef.current = true;
+    if (tappedRef.current) return;
+    tappedRef.current = true;
     sfx('meow', 0.8);
-    setAnimating(true);
-    let f = 0;
-    const t = setInterval(() => {
-      f++;
-      if (f >= FRAMES.length) {
-        clearInterval(t);
-        setTimeout(onStart, 350);
-        return;
-      }
-      setFrameIdx(f);
-    }, 72); // ~14 fps → animación completa en ~2s
+    setPlaying(true);
+    videoRef.current?.play();
+  };
+
+  const handleEnded = () => {
+    onStart();
   };
 
   return (
@@ -126,25 +117,30 @@ export default function AttractLoop({ onStart }: Props) {
         </motion.p>
       </motion.div>
 
-      {/* ── SPRITE — gato saliendo de la caja ── */}
-      <img
-        src={FRAMES[frameIdx]}
-        alt=""
-        draggable={false}
+      {/* ── GATO — poster estático → video al tocar ── */}
+      <video
+        ref={videoRef}
+        src={VIDEO_SRC}
+        preload="auto"
+        playsInline
+        onEnded={handleEnded}
         style={{
           position: 'absolute',
-          left: '6.76%',
+          left: '50%',
           bottom: 0,
-          width: '89.07%',
+          transform: 'translateX(-50%)',
+          width: '115.8%',
           height: 'auto',
-          userSelect: 'none',
           pointerEvents: 'none',
+          userSelect: 'none',
+          objectFit: 'contain',
+          objectPosition: 'bottom',
         }}
       />
 
-      {/* ── MANO — desaparece al iniciar animación ── */}
+      {/* ── MANO — desaparece al tocar ── */}
       <AnimatePresence>
-        {!animating && (
+        {!playing && (
           <motion.div
             key="hand"
             initial={{ opacity: 1 }}

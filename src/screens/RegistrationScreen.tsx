@@ -21,10 +21,10 @@ export default function RegistrationScreen({ onNext }: Props) {
       {/* Cuarto al 14% de opacidad */}
       <div style={{
         position: 'absolute', inset: 0,
-        backgroundImage: 'url(/assets/backgrounds/bg-pet.png)',
+        backgroundImage: 'url(/assets/backgrounds/bg-pet2.png)',
         backgroundSize: 'cover',
         backgroundPosition: 'center bottom',
-        opacity: 0.14,
+        opacity: 0.44,
         pointerEvents: 'none',
       }} />
 

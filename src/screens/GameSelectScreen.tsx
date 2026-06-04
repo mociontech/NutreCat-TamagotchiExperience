@@ -111,7 +111,7 @@ export default function GameSelectScreen({ onSelect, onBack, score = 0 }: Props)
       {/* Fondo habitación */}
       <div style={{
         position:'absolute', inset:0,
-        backgroundImage:'url(/assets/backgrounds/bg-pet.png)',
+        backgroundImage:'url(/assets/backgrounds/bg-pet2.png)',
         backgroundSize:'cover', backgroundPosition:'center bottom',
         opacity:0.44, pointerEvents:'none',
       }}/>
