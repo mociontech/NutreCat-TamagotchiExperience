@@ -26,6 +26,7 @@ export default function PetScreen({ onNext, name = 'Simón' }: Props) {
   const petTimer   = useRef<ReturnType<typeof setInterval> | null>(null);
   const blinkTimer = useRef<ReturnType<typeof setInterval> | null>(null);
   const particleId = useRef(0);
+  const videoRef   = useRef<HTMLVideoElement>(null);
 
   const addParticle = useCallback((x: number, y: number) => {
     const id   = particleId.current++;
@@ -71,6 +72,16 @@ export default function PetScreen({ onNext, name = 'Simón' }: Props) {
     clearInterval(petTimer.current!);
     clearInterval(blinkTimer.current!);
   }, []);
+
+  useEffect(() => {
+    if (!videoRef.current) return;
+    if (petting && !done) {
+      videoRef.current.play();
+    } else {
+      videoRef.current.pause();
+      videoRef.current.currentTime = 0;
+    }
+  }, [petting, done]);
 
   useEffect(() => {
     if (petting && !done) bgPlay('purr', 0.65);
@@ -160,31 +171,49 @@ export default function PetScreen({ onNext, name = 'Simón' }: Props) {
 
         {/* Gato central — grande */}
         <div style={{ position: 'absolute', top: 'calc(28% + 100px)', bottom: '18%', left: 0, right: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          {/* Video de consentir — visible solo mientras se acaricia */}
+          <video
+            ref={videoRef}
+            src="/assets/cat/Animation/Concentir.webm"
+            loop
+            muted
+            playsInline
+            style={{
+              position: 'absolute',
+              width: '62%', height: 'auto',
+              objectFit: 'contain',
+              userSelect: 'none', pointerEvents: 'none',
+              opacity: petting && !done ? 1 : 0,
+              transition: 'opacity 0.2s ease',
+              filter: 'drop-shadow(0 0 30px rgba(0,87,122,0.35))',
+            }}
+          />
+
+          {/* Imagen estática — visible cuando no se acaricia o cuando termina */}
           <AnimatePresence mode="wait">
-            <motion.img
-              key={catSrc}
-              src={catSrc}
-              alt="Simón"
-              draggable={false}
-              initial={{ opacity: 0.7, scale: 0.95 }}
-              animate={
-                done    ? { opacity: 1, scale: 1, y: [0, -18, 0, -18, 0] }
-                : petting ? { opacity: 1, scale: [1, 1.04, 1], rotate: [-2, 2, -2] }
-                : { opacity: 1, scale: 1, y: [0, -6, 0] }
-              }
-              transition={
-                done    ? { y: { duration: 1.2, repeat: Infinity, ease: 'easeInOut' }, opacity: { duration: 0.15 } }
-                : petting ? { duration: 0.4, repeat: Infinity, opacity: { duration: 0.1 } }
-                : { duration: 3, repeat: Infinity, ease: 'easeInOut', opacity: { duration: 0.15 } }
-              }
-              style={{
-                width: '62%', height: 'auto',
-                userSelect: 'none', pointerEvents: 'none',
-                filter: done ? 'drop-shadow(0 20px 50px rgba(0,87,122,0.3))'
-                  : petting ? 'drop-shadow(0 0 30px rgba(0,87,122,0.35))'
-                  : 'drop-shadow(0 16px 32px rgba(0,87,122,0.15))',
-              }}
-            />
+            {(!petting || done) && (
+              <motion.img
+                key={catSrc}
+                src={catSrc}
+                alt="Simón"
+                draggable={false}
+                initial={{ opacity: 0.7, scale: 0.95 }}
+                animate={
+                  done ? { opacity: 1, scale: 1, y: [0, -18, 0, -18, 0] }
+                       : { opacity: 1, scale: 1, y: [0, -6, 0] }
+                }
+                transition={
+                  done ? { y: { duration: 1.2, repeat: Infinity, ease: 'easeInOut' }, opacity: { duration: 0.15 } }
+                       : { duration: 3, repeat: Infinity, ease: 'easeInOut', opacity: { duration: 0.15 } }
+                }
+                style={{
+                  width: '62%', height: 'auto',
+                  userSelect: 'none', pointerEvents: 'none',
+                  filter: done ? 'drop-shadow(0 20px 50px rgba(0,87,122,0.3))'
+                               : 'drop-shadow(0 16px 32px rgba(0,87,122,0.15))',
+                }}
+              />
+            )}
           </AnimatePresence>
 
           {/* Burbuja glass al terminar */}

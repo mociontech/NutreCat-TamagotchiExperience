@@ -28,7 +28,11 @@
       "Bash(curl -sL \"https://www.figma.com/api/mcp/asset/b3a13713-b91c-4975-8737-db08ebf34a81\" -o \"c:/Users/Pipec/Downloads/nutre-cat-totem \\(2\\)/nutre-cat/public/assets/cat/box-sprite/frame-04.png\")",
       "Bash(curl -sL \"https://www.figma.com/api/mcp/asset/88496f5d-fc7c-4a34-ba60-463ebaab4275\" -o \"c:/Users/Pipec/Downloads/nutre-cat-totem \\(2\\)/nutre-cat/public/assets/cat/box-sprite/frame-05.png\")",
       "Bash(curl -sL \"https://www.figma.com/api/mcp/asset/95d822b5-5886-496c-aa80-b74edfaa219b\" -o \"c:/Users/Pipec/Downloads/nutre-cat-totem \\(2\\)/nutre-cat/public/assets/cat/box-sprite/frame-06.png\")",
-      "PowerShell(winget install ffmpeg 2>&1)"
+      "PowerShell(winget install ffmpeg 2>&1)",
+      "Bash(cd \"c:\\\\Users\\\\Pipec\\\\Downloads\\\\nutre-cat-totem \\(2\\)\\\\nutre-cat\" && rm -rf \"public/assets/cat/pet-sprite\" \"public/assets/cat/wave-sprite\" \"public/assets/cat/bored-sprite\" && rm public/assets/cat/box-sprite/frame-*.png)"
+    ],
+    "additionalDirectories": [
+      "C:\\Users\\Pipec\\Downloads\\nutre-cat-totem (2)\\nutre-cat\\public\\assets\\cat\\box-sprite"
     ]
   }
 }

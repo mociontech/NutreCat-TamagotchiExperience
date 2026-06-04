@@ -85,10 +85,16 @@ export default function HubScreen({ cat, onNavigate, pointsEarned, onPointsShown
   const blinkSrc  = useBlink();
   const sleepySrc = useSleepy();
   const [phraseIdx, setPhraseIdx] = useState(0);
-  const [showPoints, setShowPoints] = useState(false);
-  const [pointsKey, setPointsKey]   = useState(0);
-  const [confetti, setConfetti]     = useState<ConfettiPiece[]>([]);
+  const [showPoints,  setShowPoints]  = useState(false);
+  const [pointsKey,   setPointsKey]   = useState(0);
+  const [confetti,    setConfetti]    = useState<ConfettiPiece[]>([]);
+  const [showLabels,  setShowLabels]  = useState(true);
   const prevAllDone = useRef(false);
+
+  useEffect(() => {
+    const t = setTimeout(() => setShowLabels(false), 3000);
+    return () => clearTimeout(t);
+  }, []);
 
   useEffect(() => {
     if (!isSleepy) return;
@@ -191,18 +197,23 @@ export default function HubScreen({ cat, onNavigate, pointsEarned, onPointsShown
           transition={{ duration: 0.3 }}
           style={{
             background: 'white',
-            borderRadius: 99,
-            padding: 'min(1.5vw, 0.85vh) min(4.5vw, 2.5vh)',
+            borderRadius: 'min(3.8vw, 2.14vh)',
+            width: 'min(33.3vw, 18.75vh)',
+            height: 'min(7.6vw, 4.27vh)',
             boxShadow: '0 2px 14px rgba(0,87,122,0.18)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            flexShrink: 0,
           }}
         >
           <span style={{
             fontFamily: 'var(--font-display)',
-            fontSize: 'min(6.6vw, 3.7vh)',
+            fontSize: 'min(6.57vw, 3.7vh)',
             color: '#00577a',
             textTransform: 'uppercase',
-            letterSpacing: '0.02em',
+            textAlign: 'center',
             whiteSpace: 'nowrap',
+            lineHeight: 1,
+            paddingTop: '0.25em',
           }}>
             Puntos: {cat.score}
           </span>
@@ -254,7 +265,10 @@ export default function HubScreen({ cat, onNavigate, pointsEarned, onPointsShown
                 position: 'absolute',
                 top: '30%', left: '50%',
                 transform: 'translateX(-50%)',
-                background: '#00577a',
+                background: 'rgba(255,255,255,0.25)',
+                backdropFilter: 'blur(16px)',
+                WebkitBackdropFilter: 'blur(16px)',
+                border: '1.5px solid rgba(255,255,255,0.5)',
                 color: 'white',
                 borderRadius: 99,
                 padding: 'min(2vw, 1.1vh) min(5vw, 2.8vh)',
@@ -263,7 +277,7 @@ export default function HubScreen({ cat, onNavigate, pointsEarned, onPointsShown
                 textTransform: 'uppercase',
                 letterSpacing: '0.04em',
                 whiteSpace: 'nowrap',
-                boxShadow: '0 8px 30px rgba(0,87,122,0.45)',
+                boxShadow: '0 8px 30px rgba(0,87,122,0.2)',
                 zIndex: 15,
                 pointerEvents: 'none',
               }}
@@ -280,38 +294,11 @@ export default function HubScreen({ cat, onNavigate, pointsEarned, onPointsShown
           display: 'flex', flexDirection: 'column', alignItems: 'center',
           gap: 'min(1vw, 0.55vh)', zIndex: 2, pointerEvents: 'none',
         }}>
-          {/* Badge con nombre del gato */}
-          <motion.div
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            style={{
-              background: 'rgba(255,255,255,0.22)',
-              borderRadius: 99,
-              padding: 'min(0.9vw, 0.5vh) min(4vw, 2.2vh)',
-              display: 'flex', alignItems: 'center', gap: 'min(1.5vw, 0.85vh)',
-              backdropFilter: 'blur(4px)',
-              border: '1.5px solid rgba(255,255,255,0.35)',
-            }}
-          >
-            <span style={{ fontSize: 'min(4vw, 2.3vh)' }}>🐱</span>
-            <span style={{
-              fontFamily: 'var(--font-display)',
-              fontSize: 'min(4.8vw, 2.7vh)',
-              color: 'white',
-              textTransform: 'uppercase',
-              letterSpacing: '0.06em',
-              whiteSpace: 'nowrap',
-            }}>
-              {cat.name}
-            </span>
-          </motion.div>
-
           {!allDone && (
             <motion.span
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 0.35 }}
+              transition={{ delay: 0.2 }}
               style={{
                 fontFamily: 'var(--font-body)',
                 fontSize: 'min(3.8vw, 2.1vh)',
@@ -324,6 +311,34 @@ export default function HubScreen({ cat, onNavigate, pointsEarned, onPointsShown
               {[cat.hasFed, cat.hasPlayed, cat.hasCared, cat.hasTalked].filter(Boolean).length} de 4 actividades completadas
             </motion.span>
           )}
+
+          {/* Badge con nombre del gato */}
+          <motion.div
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.35 }}
+            style={{
+              marginTop: 'min(2.78vw, 1.56vh)',
+              background: 'rgba(255,255,255,0.22)',
+              borderRadius: 99,
+              padding: 'min(0.9vw, 0.5vh) min(4vw, 2.2vh)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              backdropFilter: 'blur(4px)',
+              border: '1.5px solid rgba(255,255,255,0.35)',
+            }}
+          >
+            <span style={{
+              fontFamily: 'var(--font-display)',
+              fontSize: 'min(6vw, 3.38vh)',
+              color: 'white',
+              textTransform: 'uppercase',
+              letterSpacing: '0.06em',
+              whiteSpace: 'nowrap',
+              textAlign: 'center',
+            }}>
+              {cat.name}
+            </span>
+          </motion.div>
         </div>
 
         <motion.img
@@ -338,7 +353,7 @@ export default function HubScreen({ cat, onNavigate, pointsEarned, onPointsShown
             userSelect: 'none', pointerEvents: 'none',
             filter: 'drop-shadow(0 20px 40px rgba(0,87,122,0.2))',
             marginTop: 150,
-            marginLeft: 50,
+            marginLeft: 105,
           }}
         />
 
@@ -389,6 +404,7 @@ export default function HubScreen({ cat, onNavigate, pointsEarned, onPointsShown
             icon={item.icon}
             label={item.label}
             done={cat[item.doneKey] as boolean}
+            showLabel={showLabels}
             onClick={() => onNavigate(item.screen)}
           />
         ))}
@@ -398,9 +414,9 @@ export default function HubScreen({ cat, onNavigate, pointsEarned, onPointsShown
 }
 
 /* ── Botón circular individual ─────────────────────────────── */
-interface NavCircleProps { icon: string; label: string; done: boolean; onClick: () => void; }
+interface NavCircleProps { icon: string; label: string; done: boolean; showLabel: boolean; onClick: () => void; }
 
-function NavCircle({ icon, label, done, onClick }: NavCircleProps) {
+function NavCircle({ icon, label, done, showLabel, onClick }: NavCircleProps) {
   // 185×185px en el canvas Figma 1080×1920
   const SIZE = 'min(17.13vw, 9.64vh)';
 
@@ -462,19 +478,21 @@ function NavCircle({ icon, label, done, onClick }: NavCircleProps) {
       </motion.button>
       </div>{/* fin wrapper cuadrado */}
 
-      <span style={{
-        fontFamily: 'var(--font-display)',
-        fontSize: 'min(3.4vw, 1.9vh)',
-        color: 'white',
-        textTransform: 'uppercase',
-        letterSpacing: '0.04em',
-        opacity: done ? 1 : 0.75,
-        transition: 'opacity 0.3s ease',
-        pointerEvents: 'none',
-        whiteSpace: 'nowrap',
-      }}>
+      <motion.span
+        animate={{ opacity: showLabel ? (done ? 1 : 0.75) : 0 }}
+        transition={{ duration: 0.6 }}
+        style={{
+          fontFamily: 'var(--font-display)',
+          fontSize: 'min(3.4vw, 1.9vh)',
+          color: 'white',
+          textTransform: 'uppercase',
+          letterSpacing: '0.04em',
+          pointerEvents: 'none',
+          whiteSpace: 'nowrap',
+        }}
+      >
         {done ? '✓ ' : ''}{label}
-      </span>
+      </motion.span>
     </div>
   );
 }

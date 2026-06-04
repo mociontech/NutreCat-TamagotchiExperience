@@ -24,9 +24,14 @@ interface Props {
 }
 
 export default function FeedInteractionScreen({ selectedFood, onDone, onBack, score = 0 }: Props) {
-  const [showBtn, setShowBtn] = useState(false);
+  const [showBtn,  setShowBtn]  = useState(false);
+  const [ripple,   setRipple]   = useState(false);
   const goBack = onBack ?? onDone;
   const handleDone = () => { sfxStop('eat'); onDone(); };
+  const handlePress = () => {
+    setRipple(true);
+    setTimeout(() => { setRipple(false); handleDone(); }, 420);
+  };
 
   useEffect(() => {
     sfx('eat', 0.7);
@@ -111,14 +116,19 @@ export default function FeedInteractionScreen({ selectedFood, onDone, onBack, sc
               opacity: 1, y: 0, scale: 1,
               boxShadow: ['0 0 20px rgba(0,87,122,0.3)', '0 0 50px rgba(0,87,122,0.7)', '0 0 20px rgba(0,87,122,0.3)'],
             }}
+            whileTap={{ scale: 0.95 }}
             transition={{ duration: 0.35, boxShadow: { duration: 1.6, repeat: Infinity } }}
-            onClick={handleDone}
+            onClick={handlePress}
             style={{
               position: 'absolute',
               bottom: '24%', left: '50%',
               transform: 'translateX(-50%)',
-              background: '#00577a', color: 'white',
-              border: 'none', borderRadius: 99,
+              background: 'rgba(0,87,122,0.55)',
+              backdropFilter: 'blur(14px)',
+              WebkitBackdropFilter: 'blur(14px)',
+              border: '1.5px solid rgba(255,255,255,0.28)',
+              color: 'white',
+              borderRadius: 99,
               padding: 'min(2.8vw, 1.6vh) min(10vw, 5.6vh)',
               fontFamily: 'var(--font-display)',
               fontSize: 'min(6.5vw, 3.6vh)',
@@ -126,9 +136,28 @@ export default function FeedInteractionScreen({ selectedFood, onDone, onBack, sc
               cursor: 'pointer',
               whiteSpace: 'nowrap',
               zIndex: 6,
+              overflow: 'hidden',
             }}
           >
-            ¡Listo! 🐾
+            <AnimatePresence>
+              {ripple && (
+                <motion.span
+                  key="ripple"
+                  initial={{ scale: 0, opacity: 0.55 }}
+                  animate={{ scale: 6, opacity: 0 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.42, ease: 'easeOut' }}
+                  style={{
+                    position: 'absolute', inset: 0,
+                    background: 'rgba(255,255,255,0.6)',
+                    borderRadius: '50%',
+                    pointerEvents: 'none',
+                    transformOrigin: 'center',
+                  }}
+                />
+              )}
+            </AnimatePresence>
+            ¡Listo!
           </motion.button>
         )}
       </AnimatePresence>

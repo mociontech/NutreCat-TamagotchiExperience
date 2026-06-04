@@ -299,9 +299,17 @@ export default function FallingBagsGameScreen({ onDone }: Props) {
             key={score}
             animate={{ scale: [1.15, 1] }}
             transition={{ duration: 0.25 }}
-            style={{ background: 'white', borderRadius: 99, padding: 'min(1.5vw, 0.85vh) min(4.5vw, 2.5vh)', boxShadow: '0 2px 14px rgba(0,87,122,0.18)' }}
+            style={{
+              background: 'white',
+              borderRadius: 'min(3.8vw, 2.14vh)',
+              width: 'min(33.3vw, 18.75vh)',
+              height: 'min(7.6vw, 4.27vh)',
+              boxShadow: '0 2px 14px rgba(0,87,122,0.18)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              flexShrink: 0,
+            }}
           >
-            <span style={{ fontFamily: 'var(--font-display)', fontSize: 'min(6.6vw, 3.7vh)', color: '#00577a', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>
+            <span style={{ fontFamily: 'var(--font-display)', fontSize: 'min(6.57vw, 3.7vh)', color: '#00577a', textTransform: 'uppercase', textAlign: 'center', whiteSpace: 'nowrap', lineHeight: 1, paddingTop: '0.25em' }}>
               Puntos: {score}
             </span>
           </motion.div>
