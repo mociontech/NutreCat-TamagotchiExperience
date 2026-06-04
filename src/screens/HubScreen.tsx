@@ -3,49 +3,11 @@ import { useState, useEffect, useRef } from 'react';
 import type { CatState, ScreenName } from '../data/gameStates';
 import { sfx, bgPlay, bgStop } from '../utils/sounds';
 
-const BLINK_FRAMES = [
-  '/assets/cat/cat-hub.png',
-  '/assets/cat/cat-hub-blink1.png',
-  '/assets/cat/cat-hub-blink2.png',
-];
 
 const SLEEPY_PHRASES = ['Tiene sueño... 😴', 'Zzz... 💤', 'Se está durmiendo...', '💤 Zzz...'];
 
 const CONFETTI_COLORS = ['#FCD116', '#ffffff', '#00577a', '#ff6b6b', '#a8edea', '#fed330'];
 
-function useBlink() {
-  const [frame, setFrame] = useState(0);
-  useEffect(() => {
-    let t: ReturnType<typeof setTimeout>;
-    const blink = () => {
-      setFrame(1);
-      t = setTimeout(() => {
-        setFrame(2);
-        t = setTimeout(() => {
-          setFrame(1);
-          t = setTimeout(() => {
-            setFrame(0);
-            t = setTimeout(blink, 3000 + Math.random() * 3000);
-          }, 80);
-        }, 120);
-      }, 80);
-    };
-    t = setTimeout(blink, 1500 + Math.random() * 2000);
-    return () => clearTimeout(t);
-  }, []);
-  return BLINK_FRAMES[frame];
-}
-
-function useSleepy() {
-  const [frame, setFrame] = useState(1);
-  useEffect(() => {
-    const t = setInterval(() => {
-      setFrame(f => f === 1 ? 2 : 1);
-    }, 1400 + Math.random() * 400);
-    return () => clearInterval(t);
-  }, []);
-  return BLINK_FRAMES[frame];
-}
 
 interface ConfettiPiece {
   id: number;
@@ -79,22 +41,33 @@ export default function HubScreen({ cat, onNavigate, pointsEarned, onPointsShown
     bgPlay('ukulele', 0.08);
     return () => bgStop('ukulele');
   }, []);
-  const isDirty  = cat.hasFed && !cat.hasCared;
-  const isSleepy = cat.hasCared && !cat.hasTalked;
-
-  const blinkSrc  = useBlink();
-  const sleepySrc = useSleepy();
+  const isSleepy  = cat.hasCared && !cat.hasTalked;
+  const isHungry  = cat.hasPlayed && !cat.hasFed;
   const [phraseIdx, setPhraseIdx] = useState(0);
   const [showPoints,  setShowPoints]  = useState(false);
   const [pointsKey,   setPointsKey]   = useState(0);
   const [confetti,    setConfetti]    = useState<ConfettiPiece[]>([]);
   const [showLabels,  setShowLabels]  = useState(true);
-  const prevAllDone = useRef(false);
+  const [animState,   setAnimState]   = useState<{ name: 'Saludar' | 'Aburrido' | 'ConHambreLobby'; key: number }>({ name: 'Saludar', key: 0 });
+  const saludarCount       = useRef(0);
+  const aburridoHungryCount = useRef(0);
+  const prevAllDone        = useRef(false);
 
   useEffect(() => {
     const t = setTimeout(() => setShowLabels(false), 3000);
     return () => clearTimeout(t);
   }, []);
+
+  /* Resetea el ciclo de animación al cambiar estado hambre */
+  useEffect(() => {
+    if (isHungry) {
+      aburridoHungryCount.current = 0;
+      setAnimState(prev => ({ name: 'Aburrido', key: prev.key + 1 }));
+    } else {
+      saludarCount.current = 0;
+      setAnimState(prev => ({ name: 'Saludar', key: prev.key + 1 }));
+    }
+  }, [isHungry]);
 
   useEffect(() => {
     if (!isSleepy) return;
@@ -138,9 +111,6 @@ export default function HubScreen({ cat, onNavigate, pointsEarned, onPointsShown
     prevAllDone.current = allDone;
   }, [allDone]);
 
-  const catSrc = isDirty ? '/assets/cat/cat-dirty.png'
-               : isSleepy ? sleepySrc
-               : blinkSrc;
 
   return (
     <div style={{
@@ -341,18 +311,43 @@ export default function HubScreen({ cat, onNavigate, pointsEarned, onPointsShown
           </motion.div>
         </div>
 
-        <motion.img
-          src={catSrc}
-          alt="Gato"
-          animate={{ y: [0, -10, 0] }}
-          transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+        <video
+          key={animState.key}
+          autoPlay
+          muted
+          playsInline
+          src={`/assets/cat/Animation/${animState.name}.webm`}
+          onEnded={() => {
+            setAnimState(prev => {
+              if (isHungry) {
+                if (prev.name === 'Aburrido') {
+                  aburridoHungryCount.current += 1;
+                  if (aburridoHungryCount.current >= 3) {
+                    aburridoHungryCount.current = 0;
+                    return { name: 'ConHambreLobby', key: prev.key + 1 };
+                  }
+                  return { name: 'Aburrido', key: prev.key + 1 };
+                }
+                return { name: 'Aburrido', key: prev.key + 1 };
+              }
+              if (prev.name === 'Saludar') {
+                saludarCount.current += 1;
+                if (saludarCount.current >= 3) {
+                  saludarCount.current = 0;
+                  return { name: 'Aburrido', key: prev.key + 1 };
+                }
+                return { name: 'Saludar', key: prev.key + 1 };
+              }
+              return { name: 'Saludar', key: prev.key + 1 };
+            });
+          }}
           style={{
-            width: '62.69%',
-            objectFit: 'contain',
-            objectPosition: 'bottom',
+            width: animState.name === 'Saludar' ? '82%' : '139%',
+            height: 'auto',
+            flexShrink: 0,
             userSelect: 'none', pointerEvents: 'none',
             filter: 'drop-shadow(0 20px 40px rgba(0,87,122,0.2))',
-            marginTop: 150,
+            marginTop: 220,
             marginLeft: 105,
           }}
         />
