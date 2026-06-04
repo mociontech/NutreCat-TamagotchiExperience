@@ -100,6 +100,17 @@ export default function TalkScreen({ onDone, score = 0, hasFed = true, hasPlayed
         }}
       />
 
+      {/* Tapa UI capturada en el screenshot (logo, puntos, flecha, nav) */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: phase === 'dark' ? 1 : 0 }}
+        transition={{ duration: 0.8 }}
+        style={{
+          position: 'absolute', inset: 0, zIndex: 2, pointerEvents: 'none',
+          background: 'linear-gradient(to bottom, #1a0d2e 20%, transparent 32%, transparent 60%, #1a0d2e 76%)',
+        }}
+      />
+
       {/* ── Overlay oscuro al apagar ── */}
       <AnimatePresence>
         {phase === 'dimming' && (

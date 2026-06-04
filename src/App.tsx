@@ -17,7 +17,6 @@ import CountdownScreen        from './screens/CountdownScreen';
 import FallingBagsGameScreen  from './screens/FallingBagsGameScreen';
 import CareScreen             from './screens/CareScreen';
 import TalkScreen             from './screens/TalkScreen';
-import ChampionResultScreen   from './screens/ChampionResultScreen';
 import RewardQrScreen         from './screens/RewardQrScreen';
 
 const IDLE_MS         = 3 * 60 * 1000; // 3 min → aviso
@@ -100,7 +99,7 @@ export default function App() {
     });
   }, []);
 
-  const handleRegistration = (name: string) => { updateCat({ name }); nav('hub'); };
+  const handleRegistration = (name: string) => { updateCat({ name }); nav('pet'); };
   const handleFeedSelect   = (food: FoodType) => { updateCat({ selectedFood: food }); nav('feedInteraction'); };
 
   const flashPoints = (pts: number) => setPointsEarned(pts);
@@ -138,9 +137,9 @@ export default function App() {
 
   const renderScreen = () => {
     switch (screen) {
-      case 'attract':      return <AttractLoop onStart={() => nav('pet')} />;
-      case 'pet':          return <PetScreen onNext={() => { updateCat({ affection: clamp(cat.affection + 30), level: 'Despierto' }); nav('registration'); }} />;
+      case 'attract':      return <AttractLoop onStart={() => nav('registration')} />;
       case 'registration': return <RegistrationScreen onNext={handleRegistration} />;
+      case 'pet':          return <PetScreen onNext={() => { updateCat({ affection: clamp(cat.affection + 30), level: 'Despierto' }); nav('hub'); }} />;
       case 'hub':
       case 'dashboard':    return <HubScreen cat={cat} onNavigate={nav} pointsEarned={pointsEarned} onPointsShown={() => setPointsEarned(null)} />;
 
@@ -157,7 +156,6 @@ export default function App() {
       case 'care': return <CareScreen onDone={handleCareDone} onBack={() => nav('hub')} score={cat.score} />;
       case 'talk': return <TalkScreen onDone={handleTalkDone} hasFed={cat.hasFed} hasPlayed={cat.hasPlayed} hasCared={cat.hasCared} score={cat.score} />;
 
-      case 'championResult': return <ChampionResultScreen cat={cat} onClaim={() => nav('rewardQr')} />;
       case 'rewardQr': return <RewardQrScreen cat={cat} onNext={handleRestart} />;
 
       default: return <AttractLoop onStart={() => nav('attract')} />;

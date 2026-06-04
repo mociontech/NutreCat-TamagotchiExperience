@@ -39,12 +39,21 @@ export function sfx(name: SoundName, volume = 1.0): void {
 }
 
 /** Inicia un loop de música de fondo */
-export function bgPlay(name: SoundName, volume = 0.35): void {
+export function bgPlay(name: SoundName, volume = 0.35, playbackRate = 1.0): void {
   try {
     const a = get(name);
     a.loop = true;
     a.volume = Math.max(0, Math.min(1, volume));
+    a.playbackRate = Math.max(0.5, Math.min(4, playbackRate));
     if (a.paused) { a.currentTime = 0; a.play().catch(() => {}); }
+  } catch { /* ignore */ }
+}
+
+/** Cambia la velocidad de reproducción de un loop en curso */
+export function bgSetRate(name: SoundName, playbackRate: number): void {
+  try {
+    const a = cache[name];
+    if (a) a.playbackRate = Math.max(0.5, Math.min(4, playbackRate));
   } catch { /* ignore */ }
 }
 

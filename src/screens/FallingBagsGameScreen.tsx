@@ -1,7 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { sfx } from '../utils/sounds';
-import { sfx as _sfx } from '../utils/sounds'; // eslint-disable-line @typescript-eslint/no-unused-vars
+import { sfx, bgPlay, bgStop, bgSetRate } from '../utils/sounds';
 
 const PRODUCTS = [
   '/assets/products/product-1.png',
@@ -51,9 +50,10 @@ export default function FallingBagsGameScreen({ onDone }: Props) {
   const [timeLeft,     setTimeLeft]     = useState(GAME_TIME);
   const [phase,        setPhase]        = useState<'playing' | 'done'>('playing');
   const [catchEffects, setCatchEffects] = useState<Effect[]>([]);
-  const nextId   = useRef(0);
-  const effectId = useRef(0);
-  const scoreRef = useRef(0);
+  const nextId    = useRef(0);
+  const effectId  = useRef(0);
+  const scoreRef  = useRef(0);
+  const speedMult = useRef(1.0);
 
   const spawnBag = useCallback(() => {
     const type  = pickType();
@@ -82,6 +82,11 @@ export default function FallingBagsGameScreen({ onDone }: Props) {
 
   /* Spawn + timer */
   useEffect(() => {
+    bgPlay('ukulele', 0.16, 1.0);
+    return () => bgStop('ukulele');
+  }, []);
+
+  useEffect(() => {
     if (phase !== 'playing') return;
     const spawn = setInterval(spawnBag, 820);
     const timer = setInterval(() => {
@@ -93,6 +98,21 @@ export default function FallingBagsGameScreen({ onDone }: Props) {
     return () => { clearInterval(spawn); clearInterval(timer); };
   }, [phase, spawnBag]);
 
+  /* Etapas de velocidad — audio + caída en 3 tramos de 10s */
+  useEffect(() => {
+    if (phase !== 'playing') return;
+    if (timeLeft <= 10) {
+      bgSetRate('ukulele', 1.28);
+      speedMult.current = 1.18;
+    } else if (timeLeft <= 20) {
+      bgSetRate('ukulele', 1.14);
+      speedMult.current = 1.09;
+    } else {
+      bgSetRate('ukulele', 1.0);
+      speedMult.current = 1.0;
+    }
+  }, [timeLeft, phase]);
+
   /* Mover items — mouse con oscilación sinusoidal */
   useEffect(() => {
     if (phase !== 'playing') return;
@@ -100,8 +120,7 @@ export default function FallingBagsGameScreen({ onDone }: Props) {
       setBags(prev => prev
         .map(b => {
           const newT = b.t + 0.10;
-          const newY = b.y + b.speed * 0.5;
-          // Mouse: figura-8 / Lissajous  (sin en x, cos en y-extra)
+          const newY = b.y + b.speed * 0.5 * speedMult.current;
           const newX = b.type === 'mouse'
             ? b.baseX + 24 * Math.sin(newT * 1.1)
             : b.x;
@@ -143,6 +162,9 @@ export default function FallingBagsGameScreen({ onDone }: Props) {
       position: 'relative', overflow: 'hidden',
       display: 'flex', flexDirection: 'column',
     }}>
+
+      {/* Filtro azul del lobby */}
+      <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,182,237,0.45)', pointerEvents: 'none', zIndex: 0 }} />
 
       {/* ── Header ── */}
       <div style={{

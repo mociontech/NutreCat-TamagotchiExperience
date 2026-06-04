@@ -146,7 +146,7 @@ export default function HubScreen({ cat, onNavigate, pointsEarned, onPointsShown
       {/* Fondo cuarto 44% */}
       <div style={{
         position: 'absolute', inset: 0,
-        backgroundImage: 'url(/assets/backgrounds/bg-pet.png)',
+        backgroundImage: 'url(/assets/backgrounds/bg-pet2.png)',
         backgroundSize: 'cover',
         backgroundPosition: 'center bottom',
         opacity: 0.44,
@@ -337,6 +337,8 @@ export default function HubScreen({ cat, onNavigate, pointsEarned, onPointsShown
             objectPosition: 'bottom',
             userSelect: 'none', pointerEvents: 'none',
             filter: 'drop-shadow(0 20px 40px rgba(0,87,122,0.2))',
+            marginTop: 150,
+            marginLeft: 50,
           }}
         />
 
@@ -355,7 +357,7 @@ export default function HubScreen({ cat, onNavigate, pointsEarned, onPointsShown
             <motion.button
               animate={{ boxShadow: ['0 0 20px rgba(0,87,122,0.3)', '0 0 55px rgba(0,87,122,0.75)', '0 0 20px rgba(0,87,122,0.3)'] }}
               transition={{ boxShadow: { duration: 1.8, repeat: Infinity } }}
-              onClick={() => { sfx('snap', 0.6); onNavigate('championResult'); }}
+              onClick={() => { sfx('snap', 0.6); onNavigate('rewardQr'); }}
               style={{
                 width: '100%',
                 background: '#00577a', color: 'white', border: 'none',

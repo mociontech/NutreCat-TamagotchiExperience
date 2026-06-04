@@ -18,13 +18,15 @@ export default function CountdownScreen({ onDone }: Props) {
       background: '#00b6ed',
       position: 'relative', overflow: 'hidden',
     }}>
-      {/* Fondo cuarto 44% */}
+      {/* Fondo del juego */}
       <div style={{
         position: 'absolute', inset: 0,
-        backgroundImage: 'url(/assets/backgrounds/bg-pet.png)',
-        backgroundSize: 'cover', backgroundPosition: 'center bottom',
-        opacity: 0.44, pointerEvents: 'none',
+        backgroundImage: 'url(/assets/backgrounds/FondoJuego2.png)',
+        backgroundSize: 'cover', backgroundPosition: 'center',
+        pointerEvents: 'none',
       }} />
+      {/* Filtro azul del lobby */}
+      <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,182,237,0.45)', pointerEvents: 'none' }} />
 
       {/* Logo */}
       <div style={{

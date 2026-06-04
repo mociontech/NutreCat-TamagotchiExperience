@@ -3,7 +3,7 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import ScreenLayout from '../components/ScreenLayout';
 import { bgPlay, bgStop } from '../utils/sounds';
 
-const CAT_EYES_OPEN   = '/assets/cat/cat-hub.png';
+const CAT_IDLE        = '/assets/cat/cat-hub.png';
 const CAT_EYES_CLOSED = '/assets/cat/cat-pet-closed.png';
 const CAT_DONE        = '/assets/cat/cat-pet-done.png';
 
@@ -13,20 +13,20 @@ interface Props { onNext: () => void; }
 
 const PURRWORDS = ['Prrr…', 'Grrr…', 'Miau~', 'Prrr…', '💜'];
 
-// Llenado: +1.2 por tick de 80ms → ~6.7 segundos de caricias continuas para completar
 const FILL_RATE = 1.2;
 
 export default function PetScreen({ onNext }: Props) {
-  const [affection, setAffection]   = useState(0);
-  const [petting, setPetting]       = useState(false);
+  const [affection,  setAffection]  = useState(0);
+  const [petting,    setPetting]    = useState(false);
   const [eyesClosed, setEyesClosed] = useState(false);
-  const [done, setDone]             = useState(false);
-  const [particles, setParticles]   = useState<Particle[]>([]);
+  const [done,       setDone]       = useState(false);
+  const [particles,  setParticles]  = useState<Particle[]>([]);
+  const [ripple,     setRipple]     = useState(false);
 
-  const affRef     = useRef(0);
-  const petTimer   = useRef<ReturnType<typeof setInterval> | null>(null);
-  const blinkTimer = useRef<ReturnType<typeof setInterval> | null>(null);
-  const particleId = useRef(0);
+  const affRef      = useRef(0);
+  const petTimer    = useRef<ReturnType<typeof setInterval> | null>(null);
+  const blinkTimer  = useRef<ReturnType<typeof setInterval> | null>(null);
+  const particleId  = useRef(0);
 
   const addParticle = useCallback((x: number, y: number) => {
     const id   = particleId.current++;
@@ -41,6 +41,7 @@ export default function PetScreen({ onNext }: Props) {
     const pt = 'touches' in e ? e.touches[0] : (e as React.MouseEvent);
     addParticle(pt.clientX, pt.clientY);
 
+    // Llena la barra solo mientras toca
     petTimer.current = setInterval(() => {
       affRef.current = Math.min(100, affRef.current + FILL_RATE);
       setAffection(affRef.current);
@@ -84,10 +85,15 @@ export default function PetScreen({ onNext }: Props) {
     return () => bgStop('purr');
   }, [petting, done]);
 
-  const catSrc = done ? CAT_DONE : eyesClosed ? CAT_EYES_CLOSED : CAT_EYES_OPEN;
+  const catSrc = done ? CAT_DONE : eyesClosed ? CAT_EYES_CLOSED : CAT_IDLE;
 
   return (
-    <ScreenLayout backgroundImage="/assets/backgrounds/bg-pet.png" backgroundOpacity={1}>
+    <ScreenLayout
+      backgroundImage="/assets/backgrounds/bg-pet2.png"
+      backgroundOpacity={0.44}
+      backgroundFilter="blur(5px) brightness(1.08) saturate(0.78)"
+      tintColor="rgba(255, 185, 90, 0.10)"
+    >
       {/* Partículas flotantes */}
       {particles.map(p => (
         <motion.div
@@ -226,19 +232,29 @@ export default function PetScreen({ onNext }: Props) {
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0 }}
                 transition={{ type: 'spring', stiffness: 280, delay: 0.35 }}
-                style={{
-                  position: 'absolute', top: '6%', left: '50%',
-                  transform: 'translateX(-50%)',
-                  background: 'white', borderRadius: '24px',
-                  padding: 'min(2vw, 1.1vh) min(5vw, 2.8vh)',
-                  boxShadow: '0 8px 28px rgba(0,87,122,0.25)',
-                  whiteSpace: 'nowrap', zIndex: 10,
-                }}
+                style={{ position: 'absolute', top: '6%', left: '5%', zIndex: 10, maxWidth: '65%' }}
               >
-                <p style={{ fontFamily: 'var(--font-display)', fontSize: 'min(5vw, 2.8vh)', color: '#00577a', margin: 0 }}>
-                  💬 ¡Estoy listo para jugar!
-                </p>
-                <div style={{ position: 'absolute', bottom: -11, left: '50%', transform: 'translateX(-50%)', width: 0, height: 0, borderLeft: '10px solid transparent', borderRight: '10px solid transparent', borderTop: '12px solid white' }} />
+                {/* Inner: respiración continua */}
+                <motion.div
+                  animate={{ scale: [1, 1.05, 1] }}
+                  transition={{ duration: 2.6, repeat: Infinity, ease: 'easeInOut', delay: 1.0 }}
+                  style={{
+                    background: 'rgba(255,255,255,0.45)',
+                    backdropFilter: 'blur(12px)',
+                    WebkitBackdropFilter: 'blur(12px)',
+                    border: '1px solid rgba(255,255,255,0.7)',
+                    borderRadius: '24px',
+                    padding: 'min(2vw, 1.1vh) min(4vw, 2.2vh)',
+                    boxShadow: '0 8px 28px rgba(0,87,122,0.18), inset 0 1px 0 rgba(255,255,255,0.8)',
+                    textAlign: 'center',
+                    position: 'relative',
+                  }}
+                >
+                  <p style={{ fontFamily: 'var(--font-display)', fontSize: 'min(5vw, 2.8vh)', color: '#00577a', margin: 0 }}>
+                    💬 ¡Estoy listo para jugar!
+                  </p>
+                  <div style={{ position: 'absolute', bottom: -11, left: '50%', transform: 'translateX(-50%)', width: 0, height: 0, borderLeft: '10px solid transparent', borderRight: '10px solid transparent', borderTop: '12px solid rgba(255,255,255,0.45)' }} />
+                </motion.div>
               </motion.div>
             )}
           </AnimatePresence>
@@ -276,19 +292,35 @@ export default function PetScreen({ onNext }: Props) {
               style={{ padding: '0 min(5vw, 2.8vh) min(4vw, 2.2vh)', flexShrink: 0 }}
             >
               <motion.button
-                onClick={onNext}
-                whileTap={{ scale: 0.95 }}
+                onClick={() => { setRipple(true); setTimeout(() => { setRipple(false); onNext(); }, 420); }}
+                whileHover={{ scale: 1.03, filter: 'brightness(1.18)' }}
+                whileTap={{ scale: 0.96 }}
                 animate={{ boxShadow: ['0 0 20px rgba(0,87,122,0.2)', '0 0 44px rgba(0,87,122,0.55)', '0 0 20px rgba(0,87,122,0.2)'] }}
                 transition={{ duration: 1.5, repeat: Infinity }}
                 style={{
                   width: '100%', padding: 'min(4vw, 2.2vh)',
                   background: '#00577a', color: 'white',
                   border: 'none', borderRadius: 99,
-                  fontFamily: 'var(--font-display)', fontSize: 'min(6.5vw, 3.65vh)',
+                  fontFamily: 'var(--font-display)', fontSize: 'min(8.5vw, 4.8vh)',
                   cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.03em',
+                  textAlign: 'center', position: 'relative', overflow: 'hidden',
                 }}
               >
-                Continuar 💜
+                {ripple && (
+                  <motion.span
+                    initial={{ scale: 0, opacity: 0.5 }}
+                    animate={{ scale: 5, opacity: 0 }}
+                    transition={{ duration: 0.42, ease: 'easeOut' }}
+                    style={{
+                      position: 'absolute', inset: 0,
+                      background: 'rgba(255,255,255,0.55)',
+                      borderRadius: '50%',
+                      pointerEvents: 'none',
+                      transformOrigin: 'center',
+                    }}
+                  />
+                )}
+                Continuar
               </motion.button>
             </motion.div>
           )}

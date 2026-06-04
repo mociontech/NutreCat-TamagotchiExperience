@@ -145,7 +145,7 @@ export default function DashboardScreen({ cat, onNavigate }: Props) {
             animate={{ boxShadow: ['0 0 20px rgba(252,209,22,0.3)', '0 0 50px rgba(252,209,22,0.8)', '0 0 20px rgba(252,209,22,0.3)'] }}
             transition={{ duration: 1.5, repeat: Infinity }}
           >
-            <PrimaryButton onClick={() => onNavigate('championResult')} variant="colombia" size="lg" fullWidth>
+            <PrimaryButton onClick={() => onNavigate('rewardQr')} variant="colombia" size="lg" fullWidth>
               🏆 ¡Ver resultado campeón!
             </PrimaryButton>
           </motion.div>
