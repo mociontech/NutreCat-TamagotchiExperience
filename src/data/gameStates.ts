@@ -5,7 +5,7 @@ export type ScreenName =
   | 'attract' | 'wake' | 'pet' | 'registration' | 'hub' | 'dashboard'
   | 'gameSelect' | 'feedSelect' | 'feedInteraction'
   | 'footballGame' | 'goalCelebration'
-  | 'fallingBagsCountdown' | 'fallingBagsGame'
+  | 'fallingBagsBenefits' | 'fallingBagsInstructions' | 'fallingBagsCountdown' | 'fallingBagsGame'
   | 'care' | 'talk'
   | 'championResult' | 'rewardQr' | 'sharePostcard';
 

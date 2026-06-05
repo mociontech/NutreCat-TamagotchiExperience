@@ -20,7 +20,7 @@ const GAMES = [
     visual: 'football' as const,
   },
   {
-    id:    'fallingBagsCountdown' as ScreenName,
+    id:    'fallingBagsBenefits' as ScreenName,
     title: 'ATRÁPALO',
     sub:   'Atrapa los productos NutreCat',
     visual: 'bags' as const,

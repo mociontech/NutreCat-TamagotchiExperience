@@ -13,8 +13,10 @@ import GameSelectScreen       from './screens/GameSelectScreen';
 import FeedSelectScreen       from './screens/FeedSelectScreen';
 import FeedInteractionScreen  from './screens/FeedInteractionScreen';
 import FootballGameScreen     from './screens/FootballGameScreen';
-import CountdownScreen        from './screens/CountdownScreen';
-import FallingBagsGameScreen  from './screens/FallingBagsGameScreen';
+import CountdownScreen                  from './screens/CountdownScreen';
+import FallingBagsGameScreen           from './screens/FallingBagsGameScreen';
+import FallingBagsBenefitsScreen       from './screens/FallingBagsBenefitsScreen';
+import FallingBagsInstructionsScreen   from './screens/FallingBagsInstructionsScreen';
 import CareScreen             from './screens/CareScreen';
 import TalkScreen             from './screens/TalkScreen';
 import RewardQrScreen         from './screens/RewardQrScreen';
@@ -150,8 +152,10 @@ export default function App() {
 
       case 'footballGame':    return <FootballGameScreen onGoal={handleGoal} />;
 
-      case 'fallingBagsCountdown': return <CountdownScreen onDone={() => nav('fallingBagsGame')} />;
-      case 'fallingBagsGame':      return <FallingBagsGameScreen onDone={handleBagsDone} />;
+      case 'fallingBagsBenefits':     return <FallingBagsBenefitsScreen     onDone={() => nav('fallingBagsInstructions')} />;
+      case 'fallingBagsInstructions': return <FallingBagsInstructionsScreen onDone={() => nav('fallingBagsCountdown')} />;
+      case 'fallingBagsCountdown':    return <CountdownScreen               onDone={() => nav('fallingBagsGame')} />;
+      case 'fallingBagsGame':         return <FallingBagsGameScreen         onDone={handleBagsDone} />;
 
       case 'care': return <CareScreen onDone={handleCareDone} onBack={() => nav('hub')} score={cat.score} />;
       case 'talk': return <TalkScreen onDone={handleTalkDone} hasFed={cat.hasFed} hasPlayed={cat.hasPlayed} hasCared={cat.hasCared} score={cat.score} />;
