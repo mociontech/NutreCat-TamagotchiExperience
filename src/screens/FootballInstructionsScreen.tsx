@@ -233,14 +233,15 @@ function StepText({ lines }: { lines: { text: string; color: string }[] }) {
 }
 
 function Divider({ cy }: { cy: string }) {
-  // Figma node 356:319 — stroke #00B6ED, stroke-width 4px, full card width
+  // Figma node 356:319 — 624px wide on 887px card = 70.35%, centered → 14.82% margin each side
   return (
     <div style={{
       position: 'absolute',
-      left: 0, right: 0, top: cy,
+      left: '14.82%', width: '70.35%', top: cy,
       height: 4,
       background: '#00b6ed',
       transform: 'translateY(-50%)',
+      borderRadius: 2,
       zIndex: 1,
     }} />
   );
