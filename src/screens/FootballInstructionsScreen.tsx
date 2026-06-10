@@ -3,17 +3,6 @@ import { useState } from 'react';
 
 interface Props { onDone: () => void; score?: number; }
 
-// ─── Assets ─────────────────────────────────────────────────────────────────
-const A = {
-  goalScene:  '/assets/instructions/football-goal-scene.png',
-  ballCheck:  '/assets/instructions/football-ball-check.png',
-  ballCross:  '/assets/instructions/football-ball-cross.png',
-  paw:        '/assets/instructions/football-paw.png',
-  checkBadge: '/assets/instructions/football-check-badge.png',
-  ballTilted: '/assets/instructions/football-ball-tilted.png',
-  arrow:      '/assets/instructions/football-arrow.png',
-};
-
 // ─── Absolute-positioned layout matches Figma 356:274 (1080×1920 canvas) ────
 // All percentage values: x = px/1080*100, y = px/1920*100
 
@@ -97,18 +86,8 @@ export default function FootballInstructionsScreen({ onDone, score = 0 }: Props)
             { text: 'PRODUCTOS', color: '#00b6ed' },
           ]} />
         </div>
-        {/* Illustration: goal scene + product bags + tilted ball */}
-        <div style={{ position: 'absolute', left: '24.3%', top: '16.5%', width: '31.4%', height: '14%', zIndex: 1, overflow: 'hidden', borderRadius: 'min(2.5vw, 1.4vh)' }}>
-          <img src={A.goalScene} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center center' }} />
-          {/* Products in goal */}
-          <img src="/assets/products/product-3.png" alt="" style={{ position: 'absolute', left: '18%', top: '30%', height: '38%', objectFit: 'contain', pointerEvents: 'none', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))' }} />
-          <img src="/assets/products/product-2.png" alt="" style={{ position: 'absolute', left: '36%', top: '48%', height: '36%', objectFit: 'contain', pointerEvents: 'none', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))' }} />
-          <img src="/assets/products/product-1.png" alt="" style={{ position: 'absolute', left: '60%', top: '30%', height: '38%', objectFit: 'contain', pointerEvents: 'none', filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.3))' }} />
-          {/* Tilted ball */}
-          <img src={A.ballTilted} alt="" style={{ position: 'absolute', left: '42%', top: '18%', height: '42%', objectFit: 'contain', pointerEvents: 'none', transform: 'rotate(17.45deg)' }} />
-          {/* Check badge */}
-          <img src={A.checkBadge} alt="" style={{ position: 'absolute', right: '8%', top: '8%', height: '22%', objectFit: 'contain', pointerEvents: 'none' }} />
-        </div>
+        {/* Illustration 1 */}
+        <img src="/assets/games/FG-Instruction1.png" alt="" style={{ position: 'absolute', left: '17%', top: '15%', width: '38%', height: '19%', objectFit: 'contain', zIndex: 1, pointerEvents: 'none' }} />
 
         {/* ── Divider 1 @ canvas top:846px → within card: 465px → 36.4% ── */}
         <Divider cy="36.4%" />
@@ -123,12 +102,8 @@ export default function FootballInstructionsScreen({ onDone, score = 0 }: Props)
             { text: '3 INTENTOS', color: '#00b6ed' },
           ]} />
         </div>
-        {/* Illustration: 3 balls with check/X */}
-        <div style={{ position: 'absolute', left: '24%', top: '38.5%', width: '31.4%', height: '11%', zIndex: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <img src={A.ballCheck} alt="" style={{ height: '100%', objectFit: 'contain', filter: 'drop-shadow(0 3px 8px rgba(0,0,0,0.2))' }} />
-          <img src={A.ballCross} alt="" style={{ height: '100%', objectFit: 'contain', filter: 'drop-shadow(0 3px 8px rgba(0,0,0,0.2))' }} />
-          <img src={A.ballCross} alt="" style={{ height: '100%', objectFit: 'contain', filter: 'drop-shadow(0 3px 8px rgba(0,0,0,0.2))' }} />
-        </div>
+        {/* Illustration 2 */}
+        <img src="/assets/games/FG-Instruction2.png" alt="" style={{ position: 'absolute', left: '17%', top: '36.5%', width: '38%', height: '16%', objectFit: 'contain', zIndex: 1, pointerEvents: 'none' }} />
 
         {/* ── Divider 2 @ canvas top:1102px → within card: 721px → 56.4% ── */}
         <Divider cy="56.4%" />
@@ -143,16 +118,8 @@ export default function FootballInstructionsScreen({ onDone, score = 0 }: Props)
             { text: 'ATAJA', color: '#00b6ed' },
           ]} />
         </div>
-        {/* Illustration: goal scene + ball + arrow */}
-        <div style={{ position: 'absolute', left: '24.3%', top: '56.5%', width: '31.4%', height: '14%', zIndex: 1, overflow: 'hidden', borderRadius: 'min(2.5vw, 1.4vh)' }}>
-          <img src={A.goalScene} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center center' }} />
-          {/* Ball centered */}
-          <img src="/assets/games/football-ball.svg" alt="" style={{ position: 'absolute', left: '38%', top: '22%', height: '32%', objectFit: 'contain', pointerEvents: 'none' }} />
-          {/* Arrow + dashes */}
-          <img src={A.arrow} alt="" style={{ position: 'absolute', left: '18%', bottom: '12%', width: '64%', objectFit: 'contain', pointerEvents: 'none' }} />
-          {/* Check badge */}
-          <img src={A.checkBadge} alt="" style={{ position: 'absolute', right: '6%', top: '8%', height: '22%', objectFit: 'contain', pointerEvents: 'none' }} />
-        </div>
+        {/* Illustration 3 */}
+        <img src="/assets/games/FG-Instruction3.png" alt="" style={{ position: 'absolute', left: '17%', top: '55%', width: '38%', height: '19%', objectFit: 'contain', zIndex: 1, pointerEvents: 'none' }} />
 
         {/* ── Divider 3 @ canvas top:1352px → within card: 971px → 76% ── */}
         <Divider cy="76%" />
@@ -167,23 +134,8 @@ export default function FootballInstructionsScreen({ onDone, score = 0 }: Props)
             { text: 'TRES TIROS', color: '#00b6ed' },
           ]} />
         </div>
-        {/* Illustration: 3 paws with check/X */}
-        <div style={{ position: 'absolute', left: '24%', top: '78%', width: '31.4%', height: '12%', zIndex: 1, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          {[A.paw, A.paw, A.paw].map((src, i) => (
-            <div key={i} style={{ position: 'relative', height: '100%', aspectRatio: '1' }}>
-              <img src={src} alt="" style={{ height: '100%', objectFit: 'contain', filter: 'drop-shadow(0 3px 8px rgba(0,0,0,0.2))' }} />
-              <img
-                src={i === 0 ? A.checkBadge : A.checkBadge}
-                alt=""
-                style={{
-                  position: 'absolute', bottom: '-4%', right: '-4%',
-                  height: '38%', objectFit: 'contain',
-                  filter: i === 0 ? 'none' : 'hue-rotate(120deg) saturate(1.4)',
-                }}
-              />
-            </div>
-          ))}
-        </div>
+        {/* Illustration 4 */}
+        <img src="/assets/games/FG-Instruction4.png" alt="" style={{ position: 'absolute', left: '17%', top: '76.5%', width: '38%', height: '16%', objectFit: 'contain', zIndex: 1, pointerEvents: 'none' }} />
 
       </motion.div>
 
@@ -281,14 +233,14 @@ function StepText({ lines }: { lines: { text: string; color: string }[] }) {
 }
 
 function Divider({ cy }: { cy: string }) {
-  // Line @ canvas left:calc(50%+34px)=574px, width 624px → within card: left 574-98=476px=53.7% of card, width 624/887=70.3% of card
+  // Figma node 356:319 — stroke #00B6ED, stroke-width 4px, full card width
   return (
     <div style={{
       position: 'absolute',
-      left: '43.7%', top: cy,
-      width: '49.3%', height: 2,
-      background: 'rgba(0,87,122,0.18)',
-      transform: 'translateX(-50%)',
+      left: 0, right: 0, top: cy,
+      height: 4,
+      background: '#00b6ed',
+      transform: 'translateY(-50%)',
       zIndex: 1,
     }} />
   );
