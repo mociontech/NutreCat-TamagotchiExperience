@@ -1,240 +1,343 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
 
-interface Props { onDone: () => void; }
+interface Props { onDone: () => void; score?: number; }
 
-const STEPS = [
-  {
-    num: 1,
-    imgs: ['/assets/products/product-1.png'],
-    prohibit: false,
-    badge: null,
-    title: 'TOCA LAS BOLSAS',
-    subtitle: '+10 PUNTOS',
-    subtitleColor: '#00b6ed',
-    subtitle2: '-5 si cae al suelo',
-    subtitle2Color: '#e63c3c',
-  },
-  {
-    num: 2,
-    imgs: ['/assets/games/fishbone_no_bg.png'],
-    prohibit: true,
-    badge: null,
-    title: 'EVITA LAS ESPINAS',
-    subtitle: '-10 PUNTOS',
-    subtitleColor: '#e63c3c',
-    subtitle2: null, subtitle2Color: '',
-  },
-  {
-    num: 3,
-    imgs: ['/assets/games/mouse_no_bg.png'],
-    prohibit: false,
-    badge: 'x2',
-    title: 'ATRAPA EL RATÓN DORADO',
-    subtitle: 'x2 POR 5 SEG',
-    subtitleColor: '#00b6ed',
-    subtitle2: null, subtitle2Color: '',
-  },
-  {
-    num: 4,
-    imgs: ['/assets/products/product-1.png', '/assets/products/product-2.png', '/assets/products/product-3.png'],
-    prohibit: false,
-    badge: '3',
-    title: 'HAZ COMBO',
-    subtitle: '3 SEGUIDOS =\nMÁS PUNTOS',
-    subtitleColor: '#00b6ed',
-    subtitle2: null, subtitle2Color: '',
-  },
-];
+const A = {
+  deadCreature: '/assets/instructions/bags-dead-creature.png',
+  mouse:        '/assets/instructions/bags-mouse.png',
+};
 
-export default function FallingBagsInstructionsScreen({ onDone }: Props) {
+// ─── Absolute-positioned layout matches Figma 346:162 (1080×1920 canvas) ────
+// Same card & button positions as FootballInstructionsScreen.
+// All % values: x = px/1080*100  (or within-card: (px-98)/887*100)
+//               y = px/1920*100  (or within-card: (px-381)/1278*100)
+
+export default function FallingBagsInstructionsScreen({ onDone, score = 0 }: Props) {
   const [refill, setRefill] = useState(false);
 
   const handlePress = () => {
     setRefill(true);
-    setTimeout(() => { setRefill(false); onDone(); }, 380);
+    setTimeout(() => { setRefill(false); onDone(); }, 360);
   };
 
   return (
-    <div style={{
-      width: '100%', height: '100%',
-      backgroundImage: 'url(/assets/backgrounds/FondoJuego2.png)',
-      backgroundSize: 'cover', backgroundPosition: 'center',
-      position: 'relative', overflow: 'hidden',
-      display: 'flex', flexDirection: 'column',
-      alignItems: 'center',
-      padding: 'min(3vw, 1.7vh) 0 min(4vw, 2.25vh)',
-    }}>
-      <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,182,237,0.45)', pointerEvents: 'none' }} />
+    <div style={{ width: '100%', height: '100%', position: 'relative', overflow: 'hidden', background: '#00b6ed' }}>
 
-      {/* Logo */}
-      <div style={{ position: 'relative', zIndex: 1, marginBottom: 'min(1.5vw, 0.85vh)' }}>
-        <img src="/assets/ui/logo-nutre-cat.svg" alt="Nutre Cat" style={{ width: 'min(32vw, 18vh)', objectFit: 'contain' }} />
+      {/* ── Logo ─────────────────────────────────────────────────────── */}
+      <div style={{ position: 'absolute', top: '4.79%', left: '9.07%', right: '62.31%', bottom: '83.7%', zIndex: 5, pointerEvents: 'none' }}>
+        <img src="/assets/ui/logo-nutre-cat.svg" alt="Nutre Cat" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
       </div>
 
-      {/* Título INSTRUCCIONES */}
-      <div style={{ position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', gap: 'min(2.5vw, 1.4vh)', marginBottom: 'min(2vw, 1.1vh)', marginTop: 80 }}>
-        <span style={{ fontFamily: 'var(--font-display)', fontSize: 'min(8.5vw, 4.8vh)', color: 'white', textTransform: 'uppercase', textShadow: '0 4px 14px rgba(0,87,122,0.4)' }}>
-          Instrucciones
+      {/* ── Puntos pill ──────────────────────────────────────────────── */}
+      <div style={{
+        position: 'absolute',
+        left: '57.4%', top: '5.1%',
+        width: '33.3%', height: '4.27%',
+        background: 'white', borderRadius: 99,
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        zIndex: 5,
+      }}>
+        <span style={{
+          fontFamily: 'var(--font-display)',
+          fontSize: 'min(5vw, 2.8vh)',
+          color: '#00577a',
+          textTransform: 'uppercase',
+          letterSpacing: '0.04em',
+          lineHeight: 1, paddingTop: '0.18em',
+        }}>
+          PUNTOS: {score}
         </span>
       </div>
 
-      {/* Tarjeta blanca con pasos */}
-      <div style={{
-        position: 'relative', zIndex: 1,
-        background: 'rgba(255,255,255,0.97)',
-        borderRadius: 'min(5.5vw, 3.1vh)',
-        width: '79%',
-        padding: 'min(2.5vw, 1.4vh) min(5vw, 2.8vh)',
-        display: 'flex', flexDirection: 'column',
-        boxShadow: '0 8px 40px rgba(0,87,122,0.22)',
-      }}>
-        {STEPS.map((step, i) => (
-          <div key={i}>
-            {/* Fila del paso */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: 'min(3vw, 1.7vh)', padding: 'min(2.8vw, 1.58vh) 0' }}>
+      {/* ── Card (#b0e8f9) ───────────────────────────────────────────── */}
+      <motion.div
+        initial={{ opacity: 0, y: 18 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+        style={{
+          position: 'absolute',
+          top: '19.84%', left: '9.07%', right: '9.07%', height: '66.56%',
+          background: '#b0e8f9',
+          borderRadius: 'min(3.4vw, 1.93vh)',
+          overflow: 'hidden',
+          zIndex: 3,
+        }}
+      >
 
-              {/* Número */}
-              <div style={{
-                width: 'min(9.5vw, 5.35vh)', height: 'min(9.5vw, 5.35vh)', borderRadius: '50%',
-                background: '#00b6ed', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
-                boxShadow: '0 3px 10px rgba(0,182,237,0.4)',
-              }}>
-                <span style={{ fontFamily: 'var(--font-display)', fontSize: 'min(5vw, 2.8vh)', color: 'white', lineHeight: 1 }}>{step.num}</span>
-              </div>
-
-              {/* Visual del ítem */}
-              <div style={{ width: 'min(17vw, 9.6vh)', height: 'min(17vw, 9.6vh)', flexShrink: 0, position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                {step.imgs.length === 1 ? (
-                  <img
-                    src={step.imgs[0]}
-                    alt=""
-                    style={{
-                      width: '100%', height: '100%', objectFit: 'contain',
-                      filter: step.imgs[0].includes('mouse')
-                        ? 'drop-shadow(0 0 8px rgba(255,215,0,0.8))'
-                        : 'drop-shadow(0 3px 8px rgba(0,87,122,0.25))',
-                    }}
-                  />
-                ) : (
-                  <div style={{ display: 'flex', alignItems: 'flex-end', gap: 2 }}>
-                    {step.imgs.map((src, j) => (
-                      <img key={j} src={src} alt="" style={{ width: 'min(5vw, 2.8vh)', height: 'auto', objectFit: 'contain', opacity: 0.9 }} />
-                    ))}
-                  </div>
-                )}
-
-                {/* Badge x2 */}
-                {step.badge === 'x2' && (
-                  <div style={{ position: 'absolute', bottom: 0, right: 0, background: '#fcd116', borderRadius: 99, padding: '2px 7px', boxShadow: '0 2px 6px rgba(0,0,0,0.15)' }}>
-                    <span style={{ fontFamily: 'var(--font-display)', fontSize: 'min(3vw, 1.69vh)', color: '#00577a' }}>x2</span>
-                  </div>
-                )}
-
-                {/* Badge combo */}
-                {step.badge === '3' && (
-                  <div style={{ position: 'absolute', bottom: -4, left: '50%', transform: 'translateX(-50%)', background: '#00577a', borderRadius: 99, padding: '1px 8px' }}>
-                    <span style={{ fontFamily: 'var(--font-display)', fontSize: 'min(2.8vw, 1.58vh)', color: 'white' }}>×3</span>
-                  </div>
-                )}
-
-                {/* Miss — flecha abajo */}
-                {step.badge === 'miss' && (
-                  <div style={{ position: 'absolute', bottom: 0, right: -2, background: '#e63c3c', borderRadius: 99, width: 'min(5.5vw, 3.1vh)', height: 'min(5.5vw, 3.1vh)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                      <path d="M7 2V12M7 12L3 8M7 12L11 8" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  </div>
-                )}
-
-                {/* Prohibit */}
-                {step.prohibit && (
-                  <div style={{ position: 'absolute', bottom: 0, right: -2, fontSize: 'min(5.5vw, 3.1vh)' }}>🚫</div>
-                )}
-              </div>
-
-              {/* Flecha */}
-              <div style={{ flexShrink: 0, display: 'flex', alignItems: 'center' }}>
-                <svg width="28" height="20" viewBox="0 0 28 20" fill="none">
-                  <path d="M2 10H22M22 10L14 3M22 10L14 17" stroke="#00577a" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </div>
-
-              {/* Texto */}
-              <div style={{ flex: 1 }}>
-                <p style={{ fontFamily: 'var(--font-display)', fontSize: 'min(4.2vw, 2.36vh)', color: '#00577a', margin: 0, lineHeight: 1.1, textTransform: 'uppercase' }}>
-                  {step.title}
-                </p>
-                <p style={{ fontFamily: 'var(--font-display)', fontSize: 'min(3.8vw, 2.14vh)', color: step.subtitleColor, margin: 'min(0.5vw, 0.28vh) 0 0', lineHeight: 1.1, whiteSpace: 'pre-line' }}>
-                  {step.subtitle}
-                </p>
-                {step.subtitle2 && (
-                  <p style={{ fontFamily: 'var(--font-body)', fontSize: 'min(3vw, 1.69vh)', color: step.subtitle2Color, margin: 'min(0.3vw, 0.17vh) 0 0', lineHeight: 1.1, fontWeight: 700 }}>
-                    {step.subtitle2}
-                  </p>
-                )}
-              </div>
-            </div>
-
-            {/* Divisor */}
-            {i < STEPS.length - 1 && (
-              <div style={{ height: 1, background: 'rgba(0,182,237,0.18)', margin: '0 min(1vw, 0.55vh)' }} />
-            )}
-          </div>
-        ))}
-
-        {/* Texto disclaimer */}
+        {/* ¿CÓMO SE JUEGA? */}
         <p style={{
-          fontFamily: 'var(--font-display)', fontSize: 'min(3.3vw, 1.86vh)',
-          color: '#00577a', textAlign: 'center', margin: 'min(2vw, 1.1vh) 0 0',
-          textTransform: 'uppercase', opacity: 0.75, lineHeight: 1.3,
+          position: 'absolute',
+          top: '9.3%', left: 0, right: 0,
+          fontFamily: 'var(--font-display)',
+          fontSize: 'min(8.24vw, 4.64vh)',
+          color: '#00577a',
+          textAlign: 'center',
+          textTransform: 'uppercase',
+          letterSpacing: '0.05em',
+          lineHeight: 0.866,
+          margin: 0, zIndex: 1,
         }}>
-          Toca los productos{' '}
-          <span style={{ color: '#00b6ed' }}>antes</span>
-          {' '}de que toquen el suelo.
+          ¿CÓMO SE JUEGA?
         </p>
-      </div>
 
-      {/* Botón Entendido */}
+        {/* ── Step 1 ─────────────────────────────────────────────────── */}
+        {/* Circle @ canvas (144, 669) → within card (144, 288) → 13.3%, 22.5% */}
+        <StepCircle n={1} cx="13.3%" cy="22.5%" />
+        {/* Text @ canvas left:631 top:624 → within card (533, 243) → 60.1%, 19% */}
+        <div style={{ position: 'absolute', left: '58.4%', top: '19%', width: '33%', zIndex: 1 }}>
+          <BagsStepText
+            main={{ text: 'TOCAS LAS BOLSAS', color: '#00577a' }}
+            sub={{ text: '+10 PUNTOS', color: '#a049bb' }}
+            extra={{ text: '-5 SI CAE AL SUELO', color: '#d23d22' }}
+          />
+        </div>
+        {/* Illustration — 3 product bags scattered / rotated */}
+        {/* Relative container covers the illustration zone within the card */}
+        <div style={{ position: 'absolute', left: '17%', top: '13%', width: '38%', height: '19%', zIndex: 1 }}>
+          {/* product-3 — left, small, +7.02° */}
+          <img src="/assets/products/product-3.png" alt="" style={{
+            position: 'absolute', left: '10%', top: '15%',
+            height: '54%', width: 'auto', objectFit: 'contain',
+            transform: 'rotate(7.02deg)', transformOrigin: 'center center',
+            filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.22))', pointerEvents: 'none',
+          }} />
+          {/* product-2 — center, larger, +38.14° */}
+          <img src="/assets/products/product-2.png" alt="" style={{
+            position: 'absolute', left: '25%', top: '22%',
+            height: '70%', width: 'auto', objectFit: 'contain',
+            transform: 'rotate(38.14deg)', transformOrigin: 'center center',
+            filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.22))', pointerEvents: 'none',
+          }} />
+          {/* product-1 — right, small, -38.09° */}
+          <img src="/assets/products/product-1.png" alt="" style={{
+            position: 'absolute', right: '8%', top: '18%',
+            height: '48%', width: 'auto', objectFit: 'contain',
+            transform: 'rotate(-38.09deg)', transformOrigin: 'center center',
+            filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.22))', pointerEvents: 'none',
+          }} />
+        </div>
+
+        {/* ── Divider 1 @ canvas 846px → within card 465px → 36.4% ── */}
+        <Divider cy="36.4%" />
+
+        {/* ── Step 2 ─────────────────────────────────────────────────── */}
+        {/* Circle @ canvas (144, 921) → within card (144, 540) → 13.3%, 42.3% */}
+        <StepCircle n={2} cx="13.3%" cy="42.3%" />
+        <div style={{ position: 'absolute', left: '58.4%', top: '40.4%', width: '33%', zIndex: 1 }}>
+          <BagsStepText
+            main={{ text: 'EVITA LA ESPINA', color: '#00577a' }}
+            sub={{ text: '-10 PUNTOS', color: '#d23d22' }}
+          />
+        </div>
+        {/* imgMuerto1 @ canvas left:307 top:909 w:262 h:141 → within card: 23.6%, 41.2%, 29.5% wide */}
+        <img src={A.deadCreature} alt="" style={{
+          position: 'absolute',
+          left: '23.6%', top: '39.5%',
+          width: '29.5%', height: 'auto',
+          objectFit: 'contain',
+          zIndex: 1, pointerEvents: 'none',
+          filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.18))',
+        }} />
+
+        {/* ── Divider 2 @ canvas 1102px → within card 721px → 56.4% ── */}
+        <Divider cy="56.4%" />
+
+        {/* ── Step 3 ─────────────────────────────────────────────────── */}
+        {/* Circle @ canvas (144, 1167) → within card (144, 786) → 13.3%, 61.5% */}
+        <StepCircle n={3} cx="13.3%" cy="61.5%" />
+        <div style={{ position: 'absolute', left: '58.4%', top: '59.4%', width: '33%', zIndex: 1 }}>
+          <BagsStepText
+            main={{ text: 'ATRAPA EL RATÓN', color: '#00577a' }}
+            sub={{ text: 'x2 POR 5 SEG', color: '#a049bb' }}
+          />
+        </div>
+        {/* imgRaton1 @ canvas left:307 top:1125 w:262 h:182 → within card: 23.6%, 58.1%, 29.5% wide */}
+        <img src={A.mouse} alt="" style={{
+          position: 'absolute',
+          left: '23.6%', top: '57%',
+          width: '29.5%', height: 'auto',
+          objectFit: 'contain',
+          zIndex: 1, pointerEvents: 'none',
+          filter: 'drop-shadow(0 0 12px rgba(255,215,0,0.55))',
+        }} />
+
+        {/* ── Divider 3 @ canvas 1352px → within card 971px → 76% ── */}
+        <Divider cy="76%" />
+
+        {/* ── Step 4 ─────────────────────────────────────────────────── */}
+        {/* Circle @ canvas (144, 1443) → within card (144, 1062) → 13.3%, 83.1% */}
+        <StepCircle n={4} cx="13.3%" cy="83.1%" />
+        <div style={{ position: 'absolute', left: '58.4%', top: '80%', width: '33%', zIndex: 1 }}>
+          <BagsStepText
+            main={{ text: 'HAZ COMBO', color: '#00577a' }}
+            sub={{ text: '3 SEGUIDOS =', color: '#a049bb' }}
+            sub2={{ text: 'MÁS PUNTOS', color: '#a049bb' }}
+          />
+        </div>
+        {/* 3 products side by side — canvas left ~291–521px, top ~1402px */}
+        {/* Within card: left ~21.8% top ~79.9%, each bag ~8% wide */}
+        <div style={{ position: 'absolute', left: '18%', top: '78.5%', width: '37%', height: '11%', zIndex: 1 }}>
+          <img src="/assets/products/product-3.png" alt="" style={{
+            position: 'absolute', left: '2%', top: 0,
+            height: '100%', width: 'auto', objectFit: 'contain',
+            transform: 'rotate(-14.36deg)', transformOrigin: 'bottom center',
+            filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.2))', pointerEvents: 'none',
+          }} />
+          <img src="/assets/products/product-2.png" alt="" style={{
+            position: 'absolute', left: '30%', top: 0,
+            height: '100%', width: 'auto', objectFit: 'contain',
+            filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.2))', pointerEvents: 'none',
+          }} />
+          <img src="/assets/products/product-1.png" alt="" style={{
+            position: 'absolute', left: '58%', top: 0,
+            height: '100%', width: 'auto', objectFit: 'contain',
+            transform: 'rotate(8.21deg)', transformOrigin: 'bottom center',
+            filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.2))', pointerEvents: 'none',
+          }} />
+        </div>
+
+      </motion.div>
+
+      {/* ── ENTIENDO button ── canvas top:1719px → 89.5% ─────────────── */}
       <motion.button
         onClick={handlePress}
-        whileHover={{ scale: 1.04 }}
-        whileTap={{ scale: 0.94 }}
-        animate={{
-          scale: [1, 1.05, 1],
-          boxShadow: ['0 0 18px rgba(252,209,22,0.4)', '0 0 42px rgba(252,209,22,0.85)', '0 0 18px rgba(252,209,22,0.4)'],
-        }}
-        transition={{ duration: 1.6, repeat: Infinity, ease: 'easeInOut' }}
+        initial={{ opacity: 0, y: 14 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2, duration: 0.3 }}
         style={{
-          position: 'relative', zIndex: 1, overflow: 'hidden',
-          marginTop: 'calc(min(3vw, 1.7vh) + 15px)',
-          background: '#fcd116', border: 'none', borderRadius: 99,
-          padding: 'min(1.07vw, 0.61vh) min(21vw, 11.82vh)',
-          fontFamily: 'var(--font-display)', fontSize: 'min(8.5vw, 4.8vh)',
-          color: '#00577a', textTransform: 'uppercase',
-          cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
-          lineHeight: 1, paddingTop: 'calc(min(1.07vw, 0.61vh) + 0.22em)',
+          position: 'absolute',
+          left: '9.07%', right: '9.07%',
+          top: '89.5%',
+          height: '4.27%',
+          background: 'white', border: 'none',
+          borderRadius: 99,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          fontFamily: 'var(--font-display)',
+          fontSize: 'min(7.5vw, 4.22vh)',
+          color: '#00577a',
+          textTransform: 'uppercase',
+          letterSpacing: '0.04em',
+          lineHeight: 1, paddingTop: '0.18em',
+          cursor: 'pointer',
+          zIndex: 5,
+          overflow: 'hidden',
         }}
       >
         <AnimatePresence>
           {refill && (
             <motion.span
               key="refill"
-              initial={{ x: '-100%' }}
-              animate={{ x: '0%' }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.36, ease: 'easeOut' }}
-              style={{
-                position: 'absolute', inset: 0,
-                background: 'rgba(255,255,255,0.45)',
-                pointerEvents: 'none',
-                borderRadius: 99,
-              }}
+              initial={{ x: '-100%' }} animate={{ x: '0%' }} exit={{ opacity: 0 }}
+              transition={{ duration: 0.34, ease: 'easeOut' }}
+              style={{ position: 'absolute', inset: 0, background: 'rgba(0,182,237,0.18)', borderRadius: 99, pointerEvents: 'none' }}
             />
           )}
         </AnimatePresence>
-        Entendido
+        ENTIENDO
       </motion.button>
     </div>
+  );
+}
+
+// ─── Helpers ─────────────────────────────────────────────────────────────────
+
+function StepCircle({ n, cx, cy }: { n: number; cx: string; cy: string }) {
+  return (
+    <div style={{
+      position: 'absolute', left: cx, top: cy,
+      width: 'min(8.06vw, 4.53vh)', height: 'min(8.06vw, 4.53vh)',
+      transform: 'translate(-50%, -50%)',
+      background: '#00b6ed', borderRadius: '50%',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      zIndex: 2,
+      boxShadow: '0 4px 14px rgba(0,182,237,0.45)',
+    }}>
+      <span style={{
+        fontFamily: 'var(--font-display)',
+        fontSize: 'min(5vw, 2.8vh)',
+        color: 'white', lineHeight: 1, paddingTop: '0.18em',
+      }}>
+        {n}
+      </span>
+    </div>
+  );
+}
+
+function BagsStepText({
+  main, sub, sub2, extra,
+}: {
+  main:  { text: string; color: string };
+  sub:   { text: string; color: string };
+  sub2?: { text: string; color: string };
+  extra?: { text: string; color: string };
+}) {
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
+      <span style={{
+        fontFamily: 'var(--font-display)',
+        fontSize: 'min(5.56vw, 3.13vh)',
+        color: main.color,
+        textTransform: 'uppercase',
+        letterSpacing: '0.028em',
+        lineHeight: 0.94,
+        display: 'block',
+      }}>
+        {main.text}
+      </span>
+      <span style={{
+        fontFamily: 'var(--font-display)',
+        fontSize: 'min(4.63vw, 2.6vh)',
+        color: sub.color,
+        textTransform: 'uppercase',
+        letterSpacing: '0.028em',
+        lineHeight: 0.94,
+        display: 'block',
+        marginTop: '0.15em',
+      }}>
+        {sub.text}
+      </span>
+      {sub2 && (
+        <span style={{
+          fontFamily: 'var(--font-display)',
+          fontSize: 'min(4.63vw, 2.6vh)',
+          color: sub2.color,
+          textTransform: 'uppercase',
+          letterSpacing: '0.028em',
+          lineHeight: 0.94,
+          display: 'block',
+        }}>
+          {sub2.text}
+        </span>
+      )}
+      {extra && (
+        <span style={{
+          fontFamily: 'var(--font-body)',
+          fontSize: 'min(3.06vw, 1.72vh)',
+          color: extra.color,
+          textTransform: 'uppercase',
+          letterSpacing: '0.02em',
+          lineHeight: 1.1,
+          display: 'block',
+          marginTop: '0.2em',
+          fontWeight: 700,
+        }}>
+          {extra.text}
+        </span>
+      )}
+    </div>
+  );
+}
+
+function Divider({ cy }: { cy: string }) {
+  return (
+    <div style={{
+      position: 'absolute',
+      left: '43.7%', top: cy,
+      width: '49.3%', height: 2,
+      background: 'rgba(0,87,122,0.18)',
+      transform: 'translateX(-50%)',
+      zIndex: 1,
+    }} />
   );
 }

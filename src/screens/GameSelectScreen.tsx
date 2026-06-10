@@ -4,7 +4,6 @@ import type { ScreenName } from '../data/gameStates';
 const NAV = [
   { id: 'game',    label: 'Jugar',  icon: '/assets/nav/icon-game.svg'    },
   { id: 'food',    label: 'Comer',  icon: '/assets/nav/icon-food.svg'    },
-  { id: 'hygiene', label: 'Bañar',  icon: '/assets/nav/icon-hygiene.svg' },
   { id: 'sleep',   label: 'Dormir', icon: '/assets/nav/icon-sleep.svg'   },
 ] as const;
 
@@ -14,7 +13,7 @@ interface Props { onSelect:(game:ScreenName)=>void; onBack:()=>void; score?:numb
 
 const GAMES = [
   {
-    id:    'footballGame'         as ScreenName,
+    id:    'footballInstructions'  as ScreenName,
     title: 'PENALES',
     sub:   'Chuta el balón al arco',
     visual: 'football' as const,

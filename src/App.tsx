@@ -12,12 +12,13 @@ import HubScreen              from './screens/HubScreen';
 import GameSelectScreen       from './screens/GameSelectScreen';
 import FeedSelectScreen       from './screens/FeedSelectScreen';
 import FeedInteractionScreen  from './screens/FeedInteractionScreen';
+import FootballInstructionsScreen from './screens/FootballInstructionsScreen';
 import FootballGameScreen     from './screens/FootballGameScreen';
+import FootballResultsScreen  from './screens/FootballResultsScreen';
 import CountdownScreen                  from './screens/CountdownScreen';
 import FallingBagsGameScreen           from './screens/FallingBagsGameScreen';
 import FallingBagsBenefitsScreen       from './screens/FallingBagsBenefitsScreen';
 import FallingBagsInstructionsScreen   from './screens/FallingBagsInstructionsScreen';
-import CareScreen             from './screens/CareScreen';
 import TalkScreen             from './screens/TalkScreen';
 import RewardQrScreen         from './screens/RewardQrScreen';
 
@@ -34,6 +35,7 @@ export default function App() {
   const [screen, setScreen]             = useState<ScreenName>('attract');
   const [cat,    setCat]                = useState<CatState>(initialCatState);
   const [pointsEarned, setPointsEarned] = useState<number | null>(null);
+  const [footballResult, setFootballResult] = useState<{ pts: number; pScore: number; mScore: number } | null>(null);
   const [idleWarning, setIdleWarning]   = useState(false);
   const [warnSecs,  setWarnSecs]        = useState(WARNING_SECS);
 
@@ -93,7 +95,7 @@ export default function App() {
   const updateCat = useCallback((updates: Partial<CatState>) => {
     setCat(prev => {
       const next = { ...prev, ...updates };
-      if (next.hasFed && next.hasPlayed && next.hasCared && next.hasTalked) {
+      if (next.hasFed && next.hasPlayed && next.hasTalked) {
         next.isChampion = true;
         next.level = 'Campeón';
       }
@@ -112,10 +114,10 @@ export default function App() {
     flashPoints(pts); nav('hub');
   };
 
-  const handleGoal = (points: number) => {
-    updateCat({ score: cat.score + points, playScore: points, mundialSpirit: clamp(cat.mundialSpirit + 25), affection: clamp(cat.affection + 10), energy: clamp(cat.energy - 10), hasPlayed: true, level: 'Juguetón' });
-    flashPoints(points);
-    nav('hub');
+  const handleGoal = (pts: number, pScore: number, mScore: number) => {
+    updateCat({ score: cat.score + pts, playScore: pts, mundialSpirit: clamp(cat.mundialSpirit + 25), affection: clamp(cat.affection + 10), energy: clamp(cat.energy - 10), hasPlayed: true, level: 'Juguetón' });
+    setFootballResult({ pts, pScore, mScore });
+    nav('footballResults');
   };
 
   const handleBagsDone = (points: number) => {
@@ -123,13 +125,7 @@ export default function App() {
     flashPoints(points); nav('hub');
   };
 
-  const handleCareDone = () => {
-    const pts = 25;
-    updateCat({ affection: clamp(cat.affection + 25), energy: clamp(cat.energy + 10), score: cat.score + pts, hasCared: true, level: 'Cuidado' });
-    flashPoints(pts); nav('hub');
-  };
-
-  const handleTalkDone = () => {
+const handleTalkDone = () => {
     const pts = 20;
     updateCat({ affection: clamp(cat.affection + 15), mood: clamp(cat.mood + 15), score: cat.score + pts, hasTalked: true, level: 'Curioso' });
     flashPoints(pts); nav('hub');
@@ -150,15 +146,21 @@ export default function App() {
       case 'feedSelect':      return <FeedSelectScreen onSelect={handleFeedSelect} onBack={() => nav('hub')} score={cat.score} />;
       case 'feedInteraction': return <FeedInteractionScreen selectedFood={cat.selectedFood} onDone={handleFeedDone} onBack={() => nav('hub')} score={cat.score} />;
 
+      case 'footballInstructions': return <FootballInstructionsScreen onDone={() => nav('footballGame')} score={cat.score} />;
       case 'footballGame':    return <FootballGameScreen onGoal={handleGoal} />;
+      case 'footballResults': return <FootballResultsScreen
+        pts={footballResult?.pts ?? 0}
+        pScore={footballResult?.pScore ?? 0}
+        mScore={footballResult?.mScore ?? 0}
+        onDone={() => { flashPoints(footballResult?.pts ?? 0); nav('hub'); }}
+      />;
 
       case 'fallingBagsBenefits':     return <FallingBagsBenefitsScreen     onDone={() => nav('fallingBagsInstructions')} />;
       case 'fallingBagsInstructions': return <FallingBagsInstructionsScreen onDone={() => nav('fallingBagsCountdown')} />;
       case 'fallingBagsCountdown':    return <CountdownScreen               onDone={() => nav('fallingBagsGame')} />;
       case 'fallingBagsGame':         return <FallingBagsGameScreen         onDone={handleBagsDone} />;
 
-      case 'care': return <CareScreen onDone={handleCareDone} onBack={() => nav('hub')} score={cat.score} />;
-      case 'talk': return <TalkScreen onDone={handleTalkDone} hasFed={cat.hasFed} hasPlayed={cat.hasPlayed} hasCared={cat.hasCared} score={cat.score} />;
+      case 'talk': return <TalkScreen onDone={handleTalkDone} hasFed={cat.hasFed} hasPlayed={cat.hasPlayed} score={cat.score} />;
 
       case 'rewardQr': return <RewardQrScreen cat={cat} onNext={handleRestart} />;
 

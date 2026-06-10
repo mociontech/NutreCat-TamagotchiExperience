@@ -27,21 +27,20 @@ interface Props {
 }
 
 const NAV = [
-  { id: 'game',    label: 'Jugar',  icon: '/assets/nav/icon-game.svg',    screen: 'gameSelect' as ScreenName, doneKey: 'hasPlayed' as keyof CatState },
-  { id: 'food',    label: 'Comer',  icon: '/assets/nav/icon-food.svg',    screen: 'feedSelect' as ScreenName, doneKey: 'hasFed'    as keyof CatState },
-  { id: 'hygiene', label: 'Bañar',  icon: '/assets/nav/icon-hygiene.svg', screen: 'care'       as ScreenName, doneKey: 'hasCared'  as keyof CatState },
-  { id: 'sleep',   label: 'Dormir', icon: '/assets/nav/icon-sleep.svg',   screen: 'talk'       as ScreenName, doneKey: 'hasTalked' as keyof CatState },
+  { id: 'game',  label: 'Jugar',  icon: '/assets/nav/icon-game.svg',  screen: 'gameSelect' as ScreenName, doneKey: 'hasPlayed' as keyof CatState },
+  { id: 'food',  label: 'Comer',  icon: '/assets/nav/icon-food.svg',  screen: 'feedSelect' as ScreenName, doneKey: 'hasFed'    as keyof CatState },
+  { id: 'sleep', label: 'Dormir', icon: '/assets/nav/icon-sleep.svg', screen: 'talk'       as ScreenName, doneKey: 'hasTalked' as keyof CatState },
 ] as const;
 
 export default function HubScreen({ cat, onNavigate, pointsEarned, onPointsShown }: Props) {
-  const allDone  = cat.hasFed && cat.hasPlayed && cat.hasCared && cat.hasTalked;
+  const allDone  = cat.hasFed && cat.hasPlayed && cat.hasTalked;
 
   // Música ambiental del Hub
   useEffect(() => {
     bgPlay('ukulele', 0.08);
     return () => bgStop('ukulele');
   }, []);
-  const isSleepy  = cat.hasCared && !cat.hasTalked;
+  const isSleepy  = cat.hasFed && !cat.hasTalked;
   const isHungry  = cat.hasPlayed && !cat.hasFed;
   const [phraseIdx, setPhraseIdx] = useState(0);
   const [showPoints,  setShowPoints]  = useState(false);
@@ -278,7 +277,7 @@ export default function HubScreen({ cat, onNavigate, pointsEarned, onPointsShown
                 whiteSpace: 'nowrap',
               }}
             >
-              {[cat.hasFed, cat.hasPlayed, cat.hasCared, cat.hasTalked].filter(Boolean).length} de 4 actividades completadas
+              {[cat.hasFed, cat.hasPlayed, cat.hasTalked].filter(Boolean).length} de 3 actividades completadas
             </motion.span>
           )}
 

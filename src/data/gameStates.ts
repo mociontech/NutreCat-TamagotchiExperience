@@ -1,12 +1,12 @@
-export type CatLevel = 'Dormido' | 'Despierto' | 'Curioso' | 'Alimentado' | 'Juguetón' | 'Cuidado' | 'Campeón';
+export type CatLevel = 'Dormido' | 'Despierto' | 'Curioso' | 'Alimentado' | 'Juguetón' | 'Campeón';
 export type FoodType = 'dry' | 'wet' | 'treats' | null;
 
 export type ScreenName =
   | 'attract' | 'wake' | 'pet' | 'registration' | 'hub' | 'dashboard'
   | 'gameSelect' | 'feedSelect' | 'feedInteraction'
-  | 'footballGame' | 'goalCelebration'
+  | 'footballInstructions' | 'footballGame' | 'footballResults' | 'goalCelebration'
   | 'fallingBagsBenefits' | 'fallingBagsInstructions' | 'fallingBagsCountdown' | 'fallingBagsGame'
-  | 'care' | 'talk'
+  | 'talk'
   | 'championResult' | 'rewardQr' | 'sharePostcard';
 
 export interface CatState {
@@ -22,7 +22,6 @@ export interface CatState {
   selectedFood: FoodType;
   hasFed: boolean;
   hasPlayed: boolean;
-  hasCared: boolean;
   hasTalked: boolean;
   isChampion: boolean;
 }
@@ -40,7 +39,6 @@ export const initialCatState: CatState = {
   selectedFood: null,
   hasFed: false,
   hasPlayed: false,
-  hasCared: false,
   hasTalked: false,
   isChampion: false,
 };

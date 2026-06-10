@@ -3,10 +3,9 @@ import { useState, useEffect, useRef } from 'react';
 import { sfx, bgPlay, bgStop } from '../utils/sounds';
 
 const ACTIVITY_NAV = [
-  { id: 'game',    label: 'Jugar',  icon: '/assets/nav/icon-game.svg',    doneKey: 'hasPlayed' as const },
-  { id: 'food',    label: 'Comer',  icon: '/assets/nav/icon-food.svg',    doneKey: 'hasFed'    as const },
-  { id: 'hygiene', label: 'Bañar',  icon: '/assets/nav/icon-hygiene.svg', doneKey: 'hasCared'  as const },
-  { id: 'sleep',   label: 'Dormir', icon: '/assets/nav/icon-sleep.svg',   doneKey: null },
+  { id: 'game',  label: 'Jugar',  icon: '/assets/nav/icon-game.svg',  doneKey: 'hasPlayed' as const },
+  { id: 'food',  label: 'Comer',  icon: '/assets/nav/icon-food.svg',  doneKey: 'hasFed'    as const },
+  { id: 'sleep', label: 'Dormir', icon: '/assets/nav/icon-sleep.svg', doneKey: null },
 ] as const;
 
 interface Zzz { id: number; x: number; y: number; size: number; rot: number; char: string; }
@@ -16,15 +15,15 @@ interface Props {
   score?: number;
   hasFed?: boolean;
   hasPlayed?: boolean;
-  hasCared?: boolean;
+
 }
 
-export default function TalkScreen({ onDone, score = 0, hasFed = true, hasPlayed = true, hasCared = true }: Props) {
+export default function TalkScreen({ onDone, score = 0, hasFed = true, hasPlayed = true }: Props) {
   const [phase,   setPhase]   = useState<'light' | 'dimming' | 'dark'>('light');
   const [showBtn, setShowBtn] = useState(false);
   const [zzzList, setZzzList] = useState<Zzz[]>([]);
   const zzzId   = useRef(0);
-  const doneMap = { hasPlayed, hasFed, hasCared };
+  const doneMap = { hasPlayed, hasFed };
 
   /* Musicbox suave solo mientras fase oscura */
   useEffect(() => {

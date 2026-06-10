@@ -29,7 +29,14 @@
       "Bash(curl -sL \"https://www.figma.com/api/mcp/asset/88496f5d-fc7c-4a34-ba60-463ebaab4275\" -o \"c:/Users/Pipec/Downloads/nutre-cat-totem \\(2\\)/nutre-cat/public/assets/cat/box-sprite/frame-05.png\")",
       "Bash(curl -sL \"https://www.figma.com/api/mcp/asset/95d822b5-5886-496c-aa80-b74edfaa219b\" -o \"c:/Users/Pipec/Downloads/nutre-cat-totem \\(2\\)/nutre-cat/public/assets/cat/box-sprite/frame-06.png\")",
       "PowerShell(winget install ffmpeg 2>&1)",
-      "Bash(cd \"c:\\\\Users\\\\Pipec\\\\Downloads\\\\nutre-cat-totem \\(2\\)\\\\nutre-cat\" && rm -rf \"public/assets/cat/pet-sprite\" \"public/assets/cat/wave-sprite\" \"public/assets/cat/bored-sprite\" && rm public/assets/cat/box-sprite/frame-*.png)"
+      "Bash(cd \"c:\\\\Users\\\\Pipec\\\\Downloads\\\\nutre-cat-totem \\(2\\)\\\\nutre-cat\" && rm -rf \"public/assets/cat/pet-sprite\" \"public/assets/cat/wave-sprite\" \"public/assets/cat/bored-sprite\" && rm public/assets/cat/box-sprite/frame-*.png)",
+      "mcp__figma__get_metadata",
+      "mcp__figma__download_assets",
+      "Bash(curl -s -L \"https://www.figma.com/api/mcp/asset/34a5e214-c565-468a-aaef-48d862fddad2\" -o public/assets/instructions/football-ball-check.png)",
+      "Bash(curl -s -L \"https://www.figma.com/api/mcp/asset/175e7266-ab63-496b-bd38-b38b6c715445\" -o public/assets/instructions/football-ball-cross.png)",
+      "Bash(curl -s -L \"https://www.figma.com/api/mcp/asset/dc65b735-2271-49cc-a5a2-2ab723dcfdf2\" -o public/assets/instructions/football-paw.png)",
+      "Bash(curl -s -L \"https://www.figma.com/api/mcp/asset/9053f857-a1a8-4955-af3f-92155222ee5d\" -o public/assets/instructions/football-check-badge.png)",
+      "Bash(curl -s -L \"https://www.figma.com/api/mcp/asset/0489a462-ca2b-4626-a104-5046ec24cbb3\" -o public/assets/instructions/football-ball-tilted.png)"
     ],
     "additionalDirectories": [
       "C:\\Users\\Pipec\\Downloads\\nutre-cat-totem (2)\\nutre-cat\\public\\assets\\cat\\box-sprite"

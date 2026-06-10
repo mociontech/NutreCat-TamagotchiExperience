@@ -11,9 +11,8 @@ const PRODUCTS: { id: FoodType; img: string; left: string; width: string }[] = [
 
 const NAV = [
   { id: 'game',    label: 'Jugar',  icon: '/assets/nav/icon-game.svg'    },
-  { id: 'food',    label: 'Comer',  icon: '/assets/nav/icon-food.svg'    },
-  { id: 'hygiene', label: 'Bañar',  icon: '/assets/nav/icon-hygiene.svg' },
-  { id: 'sleep',   label: 'Dormir', icon: '/assets/nav/icon-sleep.svg'   },
+  { id: 'food',  label: 'Comer',  icon: '/assets/nav/icon-food.svg'  },
+  { id: 'sleep', label: 'Dormir', icon: '/assets/nav/icon-sleep.svg' },
 ] as const;
 
 interface Props {

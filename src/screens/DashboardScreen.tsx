@@ -11,12 +11,11 @@ interface Props {
 const actions = [
   { id: 'feedSelect' as ScreenName, label: 'Alimentar', icon: '🍗', color: '#00AEEF', done: 'hasFed' },
   { id: 'footballGame' as ScreenName, label: 'Jugar', icon: '⚽', color: '#FCD116', done: 'hasPlayed' },
-  { id: 'care' as ScreenName, label: 'Cuidar', icon: '🛁', color: '#8B5CF6', done: 'hasCared' },
   { id: 'talk' as ScreenName, label: 'Hablar', icon: '💬', color: '#FF8C00', done: 'hasTalked' },
 ];
 
 export default function DashboardScreen({ cat, onNavigate }: Props) {
-  const allDone = cat.hasFed && cat.hasPlayed && cat.hasCared && cat.hasTalked;
+  const allDone = cat.hasFed && cat.hasPlayed && cat.hasTalked;
 
   return (
     <div style={{
@@ -166,7 +165,7 @@ export default function DashboardScreen({ cat, onNavigate }: Props) {
             ))}
           </div>
           <p style={{ fontSize: '12px', color: 'rgba(255,255,255,0.5)', fontWeight: 600 }}>
-            {[cat.hasFed, cat.hasPlayed, cat.hasCared, cat.hasTalked].filter(Boolean).length}/4 acciones completadas
+            {[cat.hasFed, cat.hasPlayed, cat.hasTalked].filter(Boolean).length}/3 acciones completadas
           </p>
         </div>
       )}

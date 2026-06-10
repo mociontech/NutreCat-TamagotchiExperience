@@ -10,9 +10,8 @@ const PRODUCTS: { id: FoodType; img: string; left: string; width: string }[] = [
 
 const NAV = [
   { id: 'game',    icon: '/assets/nav/icon-game.svg'    },
-  { id: 'food',    icon: '/assets/nav/icon-food.svg'    },
-  { id: 'hygiene', icon: '/assets/nav/icon-hygiene.svg' },
-  { id: 'sleep',   icon: '/assets/nav/icon-sleep.svg'   },
+  { id: 'food',  icon: '/assets/nav/icon-food.svg'  },
+  { id: 'sleep', icon: '/assets/nav/icon-sleep.svg' },
 ] as const;
 
 interface Props { onSelect: (food: FoodType) => void; onBack: () => void; score?: number; }
