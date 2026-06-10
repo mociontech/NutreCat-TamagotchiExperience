@@ -27,35 +27,35 @@ interface Props { onGoal: (pts: number, pScore: number, mScore: number) => void;
 const PRODUCTS = [
   {
     id: 0, src: '/assets/products/product-1.png', nx: 0.18,
-    name: 'NutreCat con Leche Deslactosada',
+    name: 'NutreCat\ncon Leche Deslactosada',
     subtitle: 'Para gatitos con sensibilidad a la lactosa.',
     benefits: [
       'Favorece una mejor digestión.',
       'Con vitamina D, calcio y fósforo que apoyan el desarrollo de huesos y dientes fuertes.',
     ],
-    badge: 'Sin colorantes y sin sabores artificiales.',
+    badge: 'Sin colorantes y sin\nsabores artificiales.',
     cardBg: '#f4a875', textColor: '#d23d22', borderColor: '#d23d22',
   },
   {
-    id: 1, src: '/assets/products/product-2.png', nx: 0.50,
-    name: 'NutreCat con Salmón',
-    subtitle: 'Digestión saludable y bienestar integral.',
+    id: 1, src: '/assets/products/product-3.png', nx: 0.50,
+    name: 'NutreCat\ncon Salmón',
+    subtitle: 'Para gatitos con sensibilidad a la lactosa.',
     benefits: [
       'Ayuda a mantener una digestión equilibrada.',
-      'Contiene ácidos grasos y omega 3, lo que contribuye a la salud cardiovascular.',
+      'Contiene ácidos grasos y omega 3 lo que contribuye a la salud cardiovascular.',
     ],
-    badge: 'Sin colorantes y sin sabores artificiales.',
+    badge: 'Sin colorantes y sin\nsabores artificiales.',
     cardBg: '#dbd672', textColor: '#606225', borderColor: '#606225',
   },
   {
-    id: 2, src: '/assets/products/product-3.png', nx: 0.82,
-    name: 'NutreCat con Tilapia',
-    subtitle: 'Para gatos con sistema digestivo sensible.',
+    id: 2, src: '/assets/products/product-2.png', nx: 0.82,
+    name: 'NutreCat\ncon Tilapia',
+    subtitle: 'Para gatitos con sensibilidad a la lactosa.',
     benefits: [
       'Apoya la salud digestiva y la regeneración intestinal.',
       'Fortalece los músculos con el aporte de fósforo y potasio.',
     ],
-    badge: 'Sin colorantes y sin sabores artificiales.',
+    badge: 'Sin colorantes y sin\nsabores artificiales.',
     cardBg: '#debbe7', textColor: '#a049bb', borderColor: '#a049bb',
   },
 ] as const;
@@ -97,6 +97,7 @@ export default function FootballGameScreen({ onGoal }: Props) {
   const [countdownVal,   setCountdownVal]  = useState(5);
   const [rivalGkNX,      setRivalGkNX]     = useState(0.5);
   const [gkDragActive,   setGkDragActive]  = useState(false);
+  const [showConfetti,   setShowConfetti]  = useState(false);
   const isDragging = useRef(false);
   const [ballPx,         setBallPx]        = useState({ x: 0, y: 0 });
   const [ballHalfW,      setBallHalfW]     = useState(0);
@@ -161,6 +162,8 @@ export default function FootballGameScreen({ onGoal }: Props) {
       setTotalPts(p => p + PTS_GOAL);
       if (selectedProduct) setHitProductIds(prev => [...prev, selectedProduct.id]);
       setPhase('benefits');
+      setShowConfetti(true);
+      setTimeout(() => setShowConfetti(false), 2600);
     }, SHOOT_MS + 100);
     return () => clearTimeout(t);
   }, [phase, round]); // eslint-disable-line
@@ -358,6 +361,8 @@ export default function FootballGameScreen({ onGoal }: Props) {
   return (
     <div ref={gameAreaRef} style={{ width: '100%', height: '100%', position: 'relative', overflow: 'hidden', background: '#1a8f40' }}>
 
+      {showConfetti && <Confetti />}
+
       {/* ── Background ──────────────────────────────────────────────── */}
       <img src="/assets/backgrounds/bg-football-field.png" alt=""
         style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top', pointerEvents: 'none', zIndex: 0 }} />
@@ -461,8 +466,8 @@ export default function FootballGameScreen({ onGoal }: Props) {
             transition={{ duration: phase === 'firing' ? 0.28 : 0.05, ease: 'easeOut' }}
             style={{
               position: 'absolute',
-              bottom: 'calc(-8% + 200px)',
-              width: 'min(20vw, 11.3vh)', objectFit: 'contain',
+              bottom: 'calc(-8% + 100px)',
+              width: 'min(23vw, 13vh)', objectFit: 'contain',
               filter: 'hue-rotate(95deg) saturate(1.8) brightness(1.05)',
               zIndex: 5, pointerEvents: 'none',
             }}
@@ -481,8 +486,8 @@ export default function FootballGameScreen({ onGoal }: Props) {
             onPointerCancel={handleGkPointerEnd}
             style={{
               position: 'absolute',
-              bottom: 'calc(-8% + 200px)',
-              width: 'min(20vw, 11.3vh)', objectFit: 'contain',
+              bottom: 'calc(-8% + 100px)',
+              width: 'min(23vw, 13vh)', objectFit: 'contain',
               zIndex: 5,
               pointerEvents: (phase === 'rival_intro' || phase === 'rival_fire') ? 'auto' : 'none',
               touchAction: 'none',
@@ -549,19 +554,44 @@ export default function FootballGameScreen({ onGoal }: Props) {
           )}
         </AnimatePresence>
 
-        {/* Rival result flash */}
-        <AnimatePresence>
-          {phase === 'rival_result' && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              style={{ position: 'absolute', inset: 0, background: rivalScored ? 'rgba(239,68,68,0.38)' : 'rgba(34,197,94,0.38)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 8 }}>
-              <motion.p initial={{ scale: 0, rotate: -8 }} animate={{ scale: 1, rotate: 0 }} transition={{ type: 'spring', stiffness: 320 }}
-                style={{ fontFamily: 'var(--font-display)', fontSize: 'min(11vw, 6.2vh)', color: rivalScored ? '#f87171' : '#4ade80', textTransform: 'uppercase', margin: 0, textAlign: 'center', lineHeight: 1.05 }}>
-                {rivalScored ? '¡GOL\nRIVAL!' : '¡ATAJADO!'}
-              </motion.p>
-            </motion.div>
-          )}
-        </AnimatePresence>
       </div>
+
+      {/* ── Rival result flash — full screen vignette ───────────────── */}
+      <AnimatePresence>
+        {phase === 'rival_result' && (
+          <motion.div
+            key="rival-flash"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.25 }}
+            style={{
+              position: 'absolute', inset: 0, zIndex: 20, pointerEvents: 'none',
+              background: rivalScored
+                ? 'radial-gradient(ellipse at center, transparent 25%, rgba(220,38,38,0.55) 100%)'
+                : 'radial-gradient(ellipse at center, transparent 25%, rgba(22,163,74,0.45) 100%)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}
+          >
+            <motion.p
+              initial={{ scale: 0, rotate: -8 }}
+              animate={{ scale: 1, rotate: 0 }}
+              transition={{ type: 'spring', stiffness: 320, damping: 20 }}
+              style={{
+                fontFamily: 'var(--font-display)',
+                fontSize: 'min(16vw, 9vh)',
+                color: rivalScored ? '#fca5a5' : '#86efac',
+                textTransform: 'uppercase',
+                margin: 0, textAlign: 'center', lineHeight: 1.05,
+                textShadow: rivalScored ? '0 0 40px rgba(220,38,38,0.8)' : '0 0 40px rgba(22,163,74,0.8)',
+                whiteSpace: 'pre-line',
+              }}
+            >
+              {rivalScored ? '¡GOL\nRIVAL!' : '¡ATAJADO!'}
+            </motion.p>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* ── Player cat ──────────────────────────────────────────────── */}
       <div style={{ position: 'absolute', left: '49.1%', top: '61.3%', width: '44.7%', zIndex: 6, pointerEvents: 'none' }}>
@@ -646,11 +676,22 @@ export default function FootballGameScreen({ onGoal }: Props) {
             transition={{ duration: 0.3 }}
             style={{
               position: 'absolute', inset: 0, zIndex: 22,
-              background: 'rgba(0,87,122,0.78)',
+              background: 'linear-gradient(to bottom, transparent 13%, rgba(0,87,122,0.78) 24%)',
               display: 'flex', alignItems: 'flex-start', justifyContent: 'center',
-              paddingTop: '21.1%',
+              paddingTop: 'calc(21.1% + 100px)',
+              overflow: 'hidden',
             }}
           >
+            {/* Ball decoration — bottom-left of screen */}
+            <img
+              src="/assets/games/football-ball.svg" alt=""
+              style={{
+                position: 'absolute', left: '-8%', bottom: '-8%',
+                width: '30%', objectFit: 'contain',
+                pointerEvents: 'none', zIndex: 30,
+              }}
+            />
+
             <motion.div
               initial={{ scale: 0.88, y: 28 }}
               animate={{ scale: 1, y: 0 }}
@@ -668,6 +709,7 @@ export default function FootballGameScreen({ onGoal }: Props) {
                 gap: 'min(1.8vw, 1vh)',
               }}
             >
+
               {/* Dashed inner border */}
               <div style={{
                 position: 'absolute', inset: 'min(1.5vw, 0.85vh)',
@@ -686,7 +728,7 @@ export default function FootballGameScreen({ onGoal }: Props) {
                 style={{
                   position: 'absolute',
                   right: '-3%', top: '-9%',
-                  width: '46%', objectFit: 'contain',
+                  width: '37%', objectFit: 'contain',
                   zIndex: 3, pointerEvents: 'none',
                   filter: 'drop-shadow(0 10px 28px rgba(0,0,0,0.28))',
                   transformOrigin: 'bottom center',
@@ -706,7 +748,7 @@ export default function FootballGameScreen({ onGoal }: Props) {
                   border: `3px solid ${selectedProduct.borderColor}`,
                   borderRadius: 'min(2.5vw, 1.4vh)',
                   padding: 'min(1.5vw, 0.85vh) min(2.5vw, 1.4vh)',
-                  maxWidth: '37%',
+                  maxWidth: '52%',
                   transformOrigin: 'center center',
                 }}
               >
@@ -718,12 +760,13 @@ export default function FootballGameScreen({ onGoal }: Props) {
                   textAlign: 'center',
                   lineHeight: 1.1, margin: 0,
                   letterSpacing: '0.04em',
+                  whiteSpace: 'pre-line',
                 }}>
                   {selectedProduct.badge}
                 </p>
               </motion.div>
 
-              {/* ¡GOOOL! */}
+              {/* ¡GOOOL! — 174px/1080 = 16.1vw */}
               <motion.p
                 initial={{ scale: 0, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
@@ -731,11 +774,11 @@ export default function FootballGameScreen({ onGoal }: Props) {
                 style={{
                   position: 'relative', zIndex: 1,
                   fontFamily: 'var(--font-display)',
-                  fontSize: 'min(18vw, 10.1vh)',
+                  fontSize: 'min(16.1vw, 9.06vh)',
                   color: 'white',
-                  textAlign: 'center',
+                  textAlign: 'left',
                   textTransform: 'uppercase',
-                  letterSpacing: '0.03em',
+                  letterSpacing: '0.05em',
                   lineHeight: 0.9, margin: 0,
                   textShadow: '0 4px 30px rgba(0,0,0,0.18)',
                 }}
@@ -743,7 +786,7 @@ export default function FootballGameScreen({ onGoal }: Props) {
                 ¡GOOOL!
               </motion.p>
 
-              {/* Product name */}
+              {/* Product name — 104px/1080 = 9.63vw, two lines */}
               <motion.p
                 initial={{ opacity: 0, x: -16 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -757,12 +800,13 @@ export default function FootballGameScreen({ onGoal }: Props) {
                   letterSpacing: '0.04em',
                   lineHeight: 0.91, margin: 0,
                   width: '57%',
+                  whiteSpace: 'pre-line',
                 }}
               >
                 {selectedProduct.name}
               </motion.p>
 
-              {/* Subtitle */}
+              {/* Subtitle — 56px/1080 = 5.19vw */}
               <motion.p
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -780,42 +824,54 @@ export default function FootballGameScreen({ onGoal }: Props) {
                 {selectedProduct.subtitle}
               </motion.p>
 
-              {/* Divider */}
-              <div style={{
-                position: 'relative', zIndex: 1,
-                height: 2, width: '57%',
-                background: selectedProduct.borderColor,
-                opacity: 0.4, borderRadius: 2,
-              }} />
-
-              {/* Benefits */}
+              {/* Benefits — icon + text, divider between them (Line5 style: 68% wide) */}
               <motion.div
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.26 }}
-                style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', gap: 'min(2.5vw, 1.4vh)', width: '65%' }}
+                style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', width: '100%' }}
               >
                 {selectedProduct.benefits.map((b, i) => (
-                  <div key={i} style={{ display: 'flex', gap: 'min(2.5vw, 1.4vh)', alignItems: 'flex-start' }}>
-                    <div style={{
-                      width: 'min(3.5vw, 1.96vh)', height: 'min(3.5vw, 1.96vh)',
-                      borderRadius: '50%', background: selectedProduct.borderColor,
-                      flexShrink: 0, marginTop: 'min(0.7vw, 0.4vh)',
-                    }} />
-                    <p style={{
-                      fontFamily: 'var(--font-body)',
-                      fontSize: 'min(4.2vw, 2.34vh)',
-                      color: selectedProduct.textColor,
-                      textTransform: 'uppercase',
-                      lineHeight: 1.3, margin: 0,
-                    }}>
-                      {b}
-                    </p>
+                  <div key={i}>
+                    <div style={{ display: 'flex', gap: 'min(2.5vw, 1.4vh)', alignItems: 'flex-start', paddingBottom: 'min(2vw, 1.1vh)' }}>
+                      <div style={{
+                        width: 'min(5.5vw, 3.1vh)', height: 'min(5.5vw, 3.1vh)',
+                        borderRadius: '50%', background: selectedProduct.borderColor,
+                        flexShrink: 0, marginTop: 'min(0.4vw, 0.22vh)',
+                      }} />
+                      <p style={{
+                        fontFamily: 'var(--font-body)',
+                        fontSize: 'min(4.2vw, 2.34vh)',
+                        color: selectedProduct.textColor,
+                        textTransform: 'uppercase',
+                        lineHeight: 1.25, margin: 0,
+                        width: '80%',
+                      }}>
+                        {b}
+                      </p>
+                    </div>
+                    {i === 0 && (
+                      <div style={{
+                        height: 2, width: '68%', marginLeft: '7%',
+                        background: selectedProduct.borderColor,
+                        opacity: 0.5, borderRadius: 2,
+                        marginBottom: 'min(2vw, 1.1vh)',
+                      }} />
+                    )}
                   </div>
                 ))}
               </motion.div>
 
-              {/* +60 PUNTOS */}
+              {/* Full-width divider before +60 puntos (Line6 style: 92% wide) */}
+              <div style={{
+                position: 'relative', zIndex: 1,
+                height: 2, width: '92%',
+                background: selectedProduct.borderColor,
+                opacity: 0.6, borderRadius: 2,
+                margin: 'min(1vw, 0.55vh) 0',
+              }} />
+
+              {/* +60 PUNTOS — 112px/1080 = 10.37vw, textColor */}
               <motion.p
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -824,13 +880,12 @@ export default function FootballGameScreen({ onGoal }: Props) {
                   position: 'relative', zIndex: 1,
                   fontFamily: 'var(--font-display)',
                   fontSize: 'min(10.4vw, 5.8vh)',
-                  color: 'white',
+                  color: selectedProduct.textColor,
                   textAlign: 'center',
                   textTransform: 'uppercase',
                   letterSpacing: '0.04em',
                   lineHeight: 1,
-                  margin: 'min(1.5vw, 0.85vh) 0 0',
-                  textShadow: '0 2px 20px rgba(0,0,0,0.18)',
+                  margin: 0,
                 }}
               >
                 +{PTS_GOAL} PUNTOS
@@ -876,6 +931,37 @@ export default function FootballGameScreen({ onGoal }: Props) {
           </motion.div>
         )}
       </AnimatePresence>
+    </div>
+  );
+}
+
+// ─── Confetti ─────────────────────────────────────────────────────────────────
+
+const CONFETTI_COLORS = ['#00b6ed', '#fcd116', '#d23d22', '#a049bb', '#ffffff', '#b0e8f9'];
+const PIECES = Array.from({ length: 60 }, (_, i) => ({
+  id: i,
+  x: Math.random() * 100,
+  delay: Math.random() * 0.5,
+  dur: 1.3 + Math.random() * 1.2,
+  color: CONFETTI_COLORS[i % CONFETTI_COLORS.length],
+  w: 8 + Math.random() * 10,
+  h: 5 + Math.random() * 7,
+  rot: Math.random() * 360,
+  drift: (Math.random() - 0.5) * 70,
+}));
+
+function Confetti() {
+  return (
+    <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 30, overflow: 'hidden' }}>
+      {PIECES.map(p => (
+        <motion.div
+          key={p.id}
+          initial={{ top: '-3%', left: `${p.x}%`, rotate: p.rot, opacity: 1 }}
+          animate={{ top: '108%', left: `calc(${p.x}% + ${p.drift}px)`, rotate: p.rot + 540, opacity: [1, 1, 1, 0] }}
+          transition={{ duration: p.dur, delay: p.delay, ease: [0.15, 0, 0.85, 1] }}
+          style={{ position: 'absolute', width: p.w, height: p.h, background: p.color, borderRadius: 2 }}
+        />
+      ))}
     </div>
   );
 }

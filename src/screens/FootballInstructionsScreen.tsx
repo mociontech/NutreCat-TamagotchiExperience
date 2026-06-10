@@ -3,8 +3,9 @@ import { useState } from 'react';
 
 interface Props { onDone: () => void; score?: number; }
 
-// ─── Absolute-positioned layout matches Figma 356:274 (1080×1920 canvas) ────
-// All percentage values: x = px/1080*100, y = px/1920*100
+// Card: top 19.84% / height 66.56% of 1920px canvas = 381px / 1278px
+// Dividers at 36.4% / 56.4% / 76% within card
+// Title occupies top 0 → ~17% of card
 
 export default function FootballInstructionsScreen({ onDone, score = 0 }: Props) {
   const [refill, setRefill] = useState(false);
@@ -22,13 +23,12 @@ export default function FootballInstructionsScreen({ onDone, score = 0 }: Props)
         <img src="/assets/ui/logo-nutre-cat.svg" alt="Nutre Cat" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
       </div>
 
-      {/* ── Puntos pill (top-right) ──────────────────────────────────── */}
+      {/* ── Puntos pill ──────────────────────────────────────────────── */}
       <div style={{
         position: 'absolute',
         left: '57.4%', top: '5.1%',
         width: '33.3%', height: '4.27%',
-        background: 'white',
-        borderRadius: 99,
+        background: 'white', borderRadius: 99,
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         zIndex: 5,
       }}>
@@ -38,14 +38,13 @@ export default function FootballInstructionsScreen({ onDone, score = 0 }: Props)
           color: '#00577a',
           textTransform: 'uppercase',
           letterSpacing: '0.04em',
-          lineHeight: 1,
-          paddingTop: '0.18em',
+          lineHeight: 1, paddingTop: '0.18em',
         }}>
           PUNTOS: {score}
         </span>
       </div>
 
-      {/* ── Card (bg #b0e8f9) ─────────────────────────────────────────── */}
+      {/* ── Card ─────────────────────────────────────────────────────── */}
       <motion.div
         initial={{ opacity: 0, y: 18 }}
         animate={{ opacity: 1, y: 0 }}
@@ -59,11 +58,10 @@ export default function FootballInstructionsScreen({ onDone, score = 0 }: Props)
           zIndex: 3,
         }}
       >
-
-        {/* ¿CÓMO SE JUEGA? — top of card */}
+        {/* ¿CÓMO SE JUEGA? */}
         <p style={{
           position: 'absolute',
-          top: '9.3%', left: 0, right: 0,
+          top: '5%', left: 0, right: 0,
           fontFamily: 'var(--font-display)',
           fontSize: 'min(8.24vw, 4.64vh)',
           color: '#00577a',
@@ -76,70 +74,58 @@ export default function FootballInstructionsScreen({ onDone, score = 0 }: Props)
           ¿CÓMO SE JUEGA?
         </p>
 
-        {/* ── Step 1 ────────────────────────────────────────── */}
-        {/* Circle @ canvas (144, 669) → within card: (144, 669-381)=(144,288) → %: (13.3%, 22.5%) */}
-        <StepCircle n={1} cx="13.3%" cy="22.5%" />
-        {/* Text @ canvas left:631px top:624px → within card: (631,624-381)=(631,243) → %(58.4%, 19%) */}
-        <div style={{ position: 'absolute', left: '58.4%', top: '19%', width: '28.2%', zIndex: 1 }}>
-          <StepText lines={[
-            { text: 'LANZA EL BALÓN A LOS', color: '#00577a' },
-            { text: 'PRODUCTOS', color: '#00b6ed' },
-          ]} />
-        </div>
-        {/* Illustration 1 */}
-        <img src="/assets/games/FG-Instruction1.png" alt="" style={{ position: 'absolute', left: '17%', top: '15%', width: '38%', height: '19%', objectFit: 'contain', zIndex: 1, pointerEvents: 'none' }} />
+        {/* ── Zonas de paso — cada una es un flex row centrado verticalmente ── */}
+        {/* Zone 1: after title (~17%) → divider 1 (36.4%) */}
+        <StepZone
+          n={1} top="14%" bottom="63.6%"
+          img="/assets/games/FG-Instruction1.png"
+          lines={[
+            { text: 'LANZA EL',    color: '#00577a' },
+            { text: 'BALÓN A LOS', color: '#00577a' },
+            { text: 'PRODUCTOS',   color: '#00b6ed' },
+          ]}
+        />
 
-        {/* ── Divider 1 @ canvas top:846px → within card: 465px → 36.4% ── */}
         <Divider cy="36.4%" />
 
-        {/* ── Step 2 ────────────────────────────────────────── */}
-        {/* Circle @ canvas (144, 921) → within card: (144, 540) → %(13.3%, 42.3%) */}
-        <StepCircle n={2} cx="13.3%" cy="42.3%" />
-        {/* Text */}
-        <div style={{ position: 'absolute', left: '58.4%', top: '40.4%', width: '28.2%', zIndex: 1 }}>
-          <StepText lines={[
+        {/* Zone 2: divider 1 (36.4%) → divider 2 (56.4%) */}
+        <StepZone
+          n={2} top="36.4%" bottom="43.6%"
+          img="/assets/games/FG-Instruction2.png"
+          lines={[
             { text: 'SOLO TIENES', color: '#00577a' },
-            { text: '3 INTENTOS', color: '#00b6ed' },
-          ]} />
-        </div>
-        {/* Illustration 2 */}
-        <img src="/assets/games/FG-Instruction2.png" alt="" style={{ position: 'absolute', left: '17%', top: '36.5%', width: '38%', height: '16%', objectFit: 'contain', zIndex: 1, pointerEvents: 'none' }} />
+            { text: '3 INTENTOS',  color: '#00b6ed' },
+          ]}
+        />
 
-        {/* ── Divider 2 @ canvas top:1102px → within card: 721px → 56.4% ── */}
         <Divider cy="56.4%" />
 
-        {/* ── Step 3 ────────────────────────────────────────── */}
-        {/* Circle @ canvas (144, 1167) → within card: (144, 786) → %(13.3%, 61.5%) */}
-        <StepCircle n={3} cx="13.3%" cy="61.5%" />
-        {/* Text */}
-        <div style={{ position: 'absolute', left: '58.4%', top: '59.4%', width: '28.2%', zIndex: 1 }}>
-          <StepText lines={[
-            { text: 'DESLIZA CON EL DEDO Y', color: '#00577a' },
-            { text: 'ATAJA', color: '#00b6ed' },
-          ]} />
-        </div>
-        {/* Illustration 3 */}
-        <img src="/assets/games/FG-Instruction3.png" alt="" style={{ position: 'absolute', left: '17%', top: '55%', width: '38%', height: '19%', objectFit: 'contain', zIndex: 1, pointerEvents: 'none' }} />
+        {/* Zone 3: divider 2 (56.4%) → divider 3 (76%) */}
+        <StepZone
+          n={3} top="56.4%" bottom="24%"
+          img="/assets/games/FG-Instruction3.png"
+          lines={[
+            { text: 'DESLIZA CON', color: '#00577a' },
+            { text: 'EL DEDO Y',   color: '#00577a' },
+            { text: 'ATAJA',       color: '#00b6ed' },
+          ]}
+        />
 
-        {/* ── Divider 3 @ canvas top:1352px → within card: 971px → 76% ── */}
         <Divider cy="76%" />
 
-        {/* ── Step 4 ────────────────────────────────────────── */}
-        {/* Circle @ canvas (144, 1428) → within card: (144, 1047) → %(13.3%, 81.9%) */}
-        <StepCircle n={4} cx="13.3%" cy="81.9%" />
-        {/* Text */}
-        <div style={{ position: 'absolute', left: '58.4%', top: '80%', width: '28.2%', zIndex: 1 }}>
-          <StepText lines={[
-            { text: 'ATAJA LOS', color: '#00577a' },
+        {/* Zone 4: divider 3 (76%) → card bottom (~97%) */}
+        <StepZone
+          n={4} top="76%" bottom="3%"
+          img="/assets/games/FG-Instruction4.png"
+          lines={[
+            { text: 'ATAJA LOS',  color: '#00577a' },
             { text: 'TRES TIROS', color: '#00b6ed' },
-          ]} />
-        </div>
-        {/* Illustration 4 */}
-        <img src="/assets/games/FG-Instruction4.png" alt="" style={{ position: 'absolute', left: '17%', top: '76.5%', width: '38%', height: '16%', objectFit: 'contain', zIndex: 1, pointerEvents: 'none' }} />
+          ]}
+        />
 
       </motion.div>
 
-      {/* ── ENTIENDO button ── canvas: centered, top 1719px = 89.5% ─── */}
+      {/* ── ENTIENDO button ─────────────────────────────────────────── */}
       <motion.button
         onClick={handlePress}
         initial={{ opacity: 0, y: 14 }}
@@ -148,8 +134,7 @@ export default function FootballInstructionsScreen({ onDone, score = 0 }: Props)
         style={{
           position: 'absolute',
           left: '9.07%', right: '9.07%',
-          top: '89.5%',
-          height: '4.27%',
+          top: '89.5%', height: '4.27%',
           background: 'white', border: 'none',
           borderRadius: 99,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -160,8 +145,7 @@ export default function FootballInstructionsScreen({ onDone, score = 0 }: Props)
           letterSpacing: '0.04em',
           lineHeight: 1, paddingTop: '0.18em',
           cursor: 'pointer',
-          zIndex: 5,
-          overflow: 'hidden',
+          zIndex: 5, overflow: 'hidden',
         }}
       >
         <AnimatePresence>
@@ -182,63 +166,79 @@ export default function FootballInstructionsScreen({ onDone, score = 0 }: Props)
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
-function StepCircle({ n, cx, cy }: { n: number; cx: string; cy: string }) {
-  // Circle is 87px at 1080px width = 8.06vw, but within the card (left 9.07%)
-  // cx is % within the card, cy is % within the card height
+function StepZone({ n, top, bottom, img, lines }: {
+  n: number;
+  top: string;
+  bottom: string;
+  img: string;
+  lines: { text: string; color: string }[];
+}) {
   return (
     <div style={{
       position: 'absolute',
-      left: cx,
-      top: cy,
-      width: 'min(8.06vw, 4.53vh)',
-      height: 'min(8.06vw, 4.53vh)',
-      transform: 'translate(-50%, -50%)',
-      background: '#00b6ed',
-      borderRadius: '50%',
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
-      zIndex: 2,
-      boxShadow: '0 4px 14px rgba(0,182,237,0.45)',
+      left: 0, right: 0, top, bottom,
+      display: 'flex', flexDirection: 'row', alignItems: 'center',
+      padding: '0 4% 0 5%',
+      gap: 'min(2.5vw, 1.4vh)',
+      zIndex: 1,
     }}>
-      <span style={{
-        fontFamily: 'var(--font-display)',
-        fontSize: 'min(5vw, 2.8vh)',
-        color: 'white',
-        lineHeight: 1,
-        paddingTop: '0.18em',
+      {/* Número */}
+      <div style={{
+        flexShrink: 0,
+        width: 'min(9.27vw, 5.21vh)',
+        height: 'min(9.27vw, 5.21vh)',
+        background: '#00b6ed',
+        borderRadius: '50%',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        boxShadow: '0 4px 14px rgba(0,182,237,0.45)',
       }}>
-        {n}
-      </span>
-    </div>
-  );
-}
-
-function StepText({ lines }: { lines: { text: string; color: string }[] }) {
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
-      {lines.map((l, i) => (
-        <span key={i} style={{
+        <span style={{
           fontFamily: 'var(--font-display)',
-          fontSize: 'min(5.56vw, 3.13vh)',
-          color: l.color,
-          textTransform: 'uppercase',
-          letterSpacing: '0.028em',
-          lineHeight: 0.94,
-          display: 'block',
+          fontSize: 'min(5.75vw, 3.22vh)',
+          color: 'white',
+          lineHeight: 1, paddingTop: '0.18em',
         }}>
-          {l.text}
+          {n}
         </span>
-      ))}
+      </div>
+
+      {/* Imagen */}
+      <img src={img} alt="" style={{
+        flexShrink: 0,
+        width: '38%',
+        maxHeight: '88%',
+        objectFit: 'contain',
+        pointerEvents: 'none',
+        marginLeft: 6,
+      }} />
+
+      {/* Texto */}
+      <div style={{ flex: 1, paddingLeft: 11 }}>
+        {lines.map((l, i) => (
+          <span key={i} style={{
+            fontFamily: 'var(--font-display)',
+            fontSize: 'min(5.56vw, 3.13vh)',
+            color: l.color,
+            textTransform: 'uppercase',
+            letterSpacing: '0.028em',
+            lineHeight: 0.94,
+            display: 'block',
+          }}>
+            {l.text}
+          </span>
+        ))}
+      </div>
     </div>
   );
 }
 
 function Divider({ cy }: { cy: string }) {
-  // Figma node 356:319 — 624px wide on 887px card = 70.35%, centered → 14.82% margin each side
+  // Figma node 356:319 — 624px wide on 887px card = 70.35%, centered
   return (
     <div style={{
       position: 'absolute',
-      left: '14.82%', width: '70.35%', top: cy,
-      height: 4,
+      left: '18.49%', width: '70.35%', top: cy,
+      height: 2,
       background: '#00b6ed',
       transform: 'translateY(-50%)',
       borderRadius: 2,

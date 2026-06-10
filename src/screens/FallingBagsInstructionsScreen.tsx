@@ -333,8 +333,8 @@ function Divider({ cy }: { cy: string }) {
   return (
     <div style={{
       position: 'absolute',
-      left: '14.82%', width: '70.35%', top: cy,
-      height: 4,
+      left: '18.49%', width: '70.35%', top: cy,
+      height: 2,
       background: '#00b6ed',
       transform: 'translateY(-50%)',
       borderRadius: 2,

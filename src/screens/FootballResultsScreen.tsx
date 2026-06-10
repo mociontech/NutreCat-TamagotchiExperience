@@ -19,6 +19,8 @@ export default function FootballResultsScreen({ pts: _pts, pScore, mScore, onDon
       position: 'relative', overflow: 'hidden',
     }}>
 
+      {win && <Confetti />}
+
       {/* Background */}
       <img src="/assets/backgrounds/bg-football-results.png" alt=""
         style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top', opacity: 0.31, pointerEvents: 'none' }} />
@@ -165,6 +167,35 @@ export default function FootballResultsScreen({ pts: _pts, pScore, mScore, onDon
       >
         CONTINUAR
       </motion.button>
+    </div>
+  );
+}
+
+const CONFETTI_COLORS = ['#00b6ed', '#fcd116', '#d23d22', '#a049bb', '#ffffff', '#b0e8f9'];
+const PIECES = Array.from({ length: 60 }, (_, i) => ({
+  id: i,
+  x: Math.random() * 100,
+  delay: Math.random() * 0.6,
+  dur: 1.5 + Math.random() * 1.4,
+  color: CONFETTI_COLORS[i % CONFETTI_COLORS.length],
+  w: 8 + Math.random() * 10,
+  h: 5 + Math.random() * 7,
+  rot: Math.random() * 360,
+  drift: (Math.random() - 0.5) * 70,
+}));
+
+function Confetti() {
+  return (
+    <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 30, overflow: 'hidden' }}>
+      {PIECES.map(p => (
+        <motion.div
+          key={p.id}
+          initial={{ top: '-3%', left: `${p.x}%`, rotate: p.rot, opacity: 1 }}
+          animate={{ top: '108%', left: `calc(${p.x}% + ${p.drift}px)`, rotate: p.rot + 540, opacity: [1, 1, 1, 0] }}
+          transition={{ duration: p.dur, delay: p.delay, ease: [0.15, 0, 0.85, 1] }}
+          style={{ position: 'absolute', width: p.w, height: p.h, background: p.color, borderRadius: 2 }}
+        />
+      ))}
     </div>
   );
 }
