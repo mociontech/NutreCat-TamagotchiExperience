@@ -7,7 +7,7 @@ interface Props {
   onDone: () => void;
 }
 
-export default function FootballResultsScreen({ pts, pScore, mScore, onDone }: Props) {
+export default function FootballResultsScreen({ pts: _pts, pScore, mScore, onDone }: Props) {
   const win  = pScore > mScore;
   const tie  = pScore === mScore;
   const resultText = tie ? 'EMPATE' : win ? 'GANASTE' : 'PERDISTE';
