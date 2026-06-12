@@ -179,7 +179,7 @@ const handleTalkDone = () => {
       case 'gameSelect':   return <GameSelectScreen onSelect={nav} onBack={() => nav('hub')} score={cat.score} />;
 
       case 'feedSelect':      return <FeedSelectScreen onSelect={handleFeedSelect} onBack={() => nav('hub')} score={cat.score} />;
-      case 'feedInteraction': return <FeedInteractionScreen selectedFood={cat.selectedFood} onDone={handleFeedDone} onBack={() => nav('hub')} score={cat.score} />;
+      case 'feedInteraction': return <FeedInteractionScreen selectedFood={cat.selectedFood ?? 'treats'} onDone={handleFeedDone} onBack={() => nav('hub')} score={cat.score} />;
 
       case 'footballInstructions': return <FootballInstructionsScreen onDone={() => nav('footballGame')} score={cat.score} />;
       case 'footballGame':    return <FootballGameScreen onGoal={handleGoal} />;
