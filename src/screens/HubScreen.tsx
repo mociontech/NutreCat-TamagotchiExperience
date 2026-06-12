@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect, useRef } from 'react';
 import type { CatState, ScreenName } from '../data/gameStates';
-import { sfx, bgPlay, bgStop } from '../utils/sounds';
+import { sfx } from '../utils/sounds';
 
 
 const SLEEPY_PHRASES = ['Tiene sueño... 😴', 'Zzz... 💤', 'Se está durmiendo...', '💤 Zzz...'];
@@ -35,11 +35,6 @@ const NAV = [
 export default function HubScreen({ cat, onNavigate, pointsEarned, onPointsShown }: Props) {
   const allDone  = cat.hasFed && cat.hasPlayed && cat.hasTalked;
 
-  // Música ambiental del Hub
-  useEffect(() => {
-    bgPlay('ukulele', 0.08);
-    return () => bgStop('ukulele');
-  }, []);
   const isSleepy  = cat.hasFed && !cat.hasTalked;
   const isHungry  = cat.hasPlayed && !cat.hasFed;
   const [phraseIdx, setPhraseIdx] = useState(0);
@@ -205,7 +200,7 @@ export default function HubScreen({ cat, onNavigate, pointsEarned, onPointsShown
               exit={{ opacity: 0, scale: 0.7, y: -10 }}
               transition={{ duration: 0.4 }}
               style={{
-                position: 'absolute', top: '8%', left: '50%',
+                position: 'absolute', top: '18.94%', left: '50%',
                 transform: 'translateX(-50%)',
                 background: 'white', borderRadius: 99,
                 padding: 'min(1.5vw, 0.85vh) min(4vw, 2.2vh)',
@@ -232,7 +227,7 @@ export default function HubScreen({ cat, onNavigate, pointsEarned, onPointsShown
               transition={{ duration: 0.5, ease: 'backOut' }}
               style={{
                 position: 'absolute',
-                top: '30%', left: '50%',
+                top: '33.13%', left: '50%',
                 transform: 'translateX(-50%)',
                 background: 'rgba(255,255,255,0.25)',
                 backdropFilter: 'blur(16px)',
@@ -240,9 +235,9 @@ export default function HubScreen({ cat, onNavigate, pointsEarned, onPointsShown
                 border: '1.5px solid rgba(255,255,255,0.5)',
                 color: 'white',
                 borderRadius: 99,
-                padding: 'min(2vw, 1.1vh) min(5vw, 2.8vh)',
+                padding: 'min(1.6vw, 0.88vh) min(4vw, 2.24vh)',
                 fontFamily: 'var(--font-display)',
-                fontSize: 'min(7vw, 3.9vh)',
+                fontSize: 'min(5.6vw, 3.12vh)',
                 textTransform: 'uppercase',
                 letterSpacing: '0.04em',
                 whiteSpace: 'nowrap',
@@ -473,12 +468,12 @@ function NavCircle({ icon, label, done, showLabel, onClick }: NavCircleProps) {
       </div>{/* fin wrapper cuadrado */}
 
       <motion.span
-        animate={{ opacity: showLabel ? (done ? 1 : 0.75) : 0 }}
+        animate={{ opacity: showLabel ? 1 : 0 }}
         transition={{ duration: 0.6 }}
         style={{
           fontFamily: 'var(--font-display)',
-          fontSize: 'min(3.4vw, 1.9vh)',
-          color: 'white',
+          fontSize: 'min(4.08vw, 2.28vh)',
+          color: '#f2f2f2',
           textTransform: 'uppercase',
           letterSpacing: '0.04em',
           pointerEvents: 'none',

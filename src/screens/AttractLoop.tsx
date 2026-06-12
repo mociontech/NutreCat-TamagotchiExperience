@@ -1,36 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { sfx, bgPlay, bgStop } from '../utils/sounds';
+import { sfx } from '../utils/sounds';
 
 interface Props { onStart: () => void; }
 
 const VIDEO_SRC = '/assets/cat/box-sprite/BoxVideo.webm';
-
-/* Logo con shimmer + respiración de brillo */
-function ShimmerLogo({ src, alt, style }: { src: string; alt: string; style?: React.CSSProperties }) {
-  return (
-    <div style={{ position: 'relative', overflow: 'hidden', ...style }}>
-      <motion.img
-        src={src}
-        alt={alt}
-        draggable={false}
-        animate={{ filter: ['brightness(1)', 'brightness(1.22)', 'brightness(1)'] }}
-        transition={{ duration: 3.8, repeat: Infinity, ease: 'easeInOut', repeatDelay: 0.6 }}
-        style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block' }}
-      />
-      <motion.div
-        animate={{ x: ['-140%', '200%'] }}
-        transition={{ duration: 1.6, repeat: Infinity, repeatDelay: 3.2, ease: 'easeInOut' }}
-        style={{
-          position: 'absolute',
-          top: '-20%', bottom: '-20%', width: '55%',
-          background: 'linear-gradient(105deg, transparent 20%, rgba(255,255,255,0.65) 50%, transparent 80%)',
-          pointerEvents: 'none',
-        }}
-      />
-    </div>
-  );
-}
 
 export default function AttractLoop({ onStart }: Props) {
   const [playing,   setPlaying]   = useState(false);
@@ -44,16 +18,11 @@ export default function AttractLoop({ onStart }: Props) {
     }
   }, []);
 
-  // Música de fondo
-  useEffect(() => {
-    bgPlay('musicbox', 0.08);
-    return () => bgStop('musicbox');
-  }, []);
 
   const handleTap = () => {
     if (tappedRef.current) return;
     tappedRef.current = true;
-    sfx('meow', 0.8);
+    sfx('meow', 0.35);
     setPlaying(true);
     videoRef.current?.play();
   };
@@ -72,9 +41,13 @@ export default function AttractLoop({ onStart }: Props) {
         cursor: 'pointer',
       }}
     >
+      {/* ── Fondo ── */}
+      <img src="/assets/backgrounds/bg-Inicio.png" alt=""
+        style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', pointerEvents: 'none', zIndex: 0 }} />
+
       {/* ── LOGO ── */}
       <div style={{ position: 'absolute', top: '5.52%', right: '27.96%', bottom: '76.75%', left: '27.97%' }}>
-        <ShimmerLogo src="/assets/ui/logo-nutre-cat.svg" alt="Nutre Cat Premium" style={{ width: '100%', height: '100%' }} />
+        <img src="/assets/ui/logo-nutre-cat.svg" alt="Nutre Cat Premium" draggable={false} style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block' }} />
       </div>
 
       {/* ── TÍTULO ── */}

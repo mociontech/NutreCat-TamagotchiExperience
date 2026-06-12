@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { useState, useEffect } from 'react';
 import type { ScreenName } from '../data/gameStates';
 
 const NAV = [
@@ -15,7 +16,7 @@ const GAMES = [
   {
     id:    'footballInstructions'  as ScreenName,
     title: 'PENALES',
-    sub:   'Chuta el balón al arco',
+    sub:   'Chuta el balón\nal arco',
     visual: 'football' as const,
   },
   {
@@ -104,6 +105,12 @@ function FloatingProducts() {
 }
 
 export default function GameSelectScreen({ onSelect, onBack, score = 0 }: Props) {
+  const [showLabels, setShowLabels] = useState(true);
+  useEffect(() => {
+    const t = setTimeout(() => setShowLabels(false), 5000);
+    return () => clearTimeout(t);
+  }, []);
+
   return (
     <div style={{ width:'100%', height:'100%', background:'#00b6ed', position:'relative', overflow:'hidden' }}>
 
@@ -122,8 +129,8 @@ export default function GameSelectScreen({ onSelect, onBack, score = 0 }: Props)
       </div>
 
       {/* Score */}
-      <div style={{ position:'absolute', top:'5%', right:'9%', zIndex:3, background:'white', borderRadius:99, padding:'min(1.5vw, 0.85vh) min(4.5vw, 2.5vh)', boxShadow:'0 2px 14px rgba(0,87,122,0.18)' }}>
-        <span style={{ fontFamily:'var(--font-display)', fontSize:'min(6.6vw, 3.7vh)', color:'#00577a', textTransform:'uppercase', whiteSpace:'nowrap' }}>
+      <div style={{ position:'absolute', top:'5%', right:'9%', zIndex:3, background:'white', borderRadius:'min(3.8vw, 2.14vh)', width:'min(33.3vw, 18.75vh)', height:'min(7.6vw, 4.27vh)', boxShadow:'0 2px 14px rgba(0,87,122,0.18)', display:'flex', alignItems:'center', justifyContent:'center' }}>
+        <span style={{ fontFamily:'var(--font-display)', fontSize:'min(6.57vw, 3.7vh)', color:'#00577a', textTransform:'uppercase', whiteSpace:'nowrap', lineHeight:1, paddingTop:'0.25em' }}>
           Puntos: {score}
         </span>
       </div>
@@ -198,6 +205,7 @@ export default function GameSelectScreen({ onSelect, onBack, score = 0 }: Props)
                 color:'#00577a',
                 textAlign:'center',
                 margin:0,
+                whiteSpace:'pre-line',
                 lineHeight:1.25,
                 fontWeight:700,
                 opacity:0.78,
@@ -237,9 +245,13 @@ export default function GameSelectScreen({ onSelect, onBack, score = 0 }: Props)
                   <img src={item.icon} alt="" style={{ width:'62%', height:'auto', objectFit:'contain', filter:isGame?'none':'brightness(0) invert(1)' }}/>
                 </motion.button>
               </div>
-              <span style={{ fontFamily:'var(--font-display)', fontSize:'min(3.4vw, 1.9vh)', color:'white', textTransform:'uppercase', letterSpacing:'0.04em', opacity:isGame?1:0.65, whiteSpace:'nowrap', pointerEvents:'none' }}>
-                {isGame?'✓ ':''}{item.label}
-              </span>
+              <motion.span
+                animate={{ opacity: showLabels ? 1 : 0 }}
+                transition={{ duration: 0.6 }}
+                style={{ fontFamily:'var(--font-display)', fontSize:'min(4.08vw, 2.28vh)', color:'#f2f2f2', textTransform:'uppercase', letterSpacing:'0.04em', whiteSpace:'nowrap', pointerEvents:'none' }}
+              >
+                {item.label}
+              </motion.span>
             </div>
           );
         })}

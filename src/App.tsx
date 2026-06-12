@@ -4,6 +4,7 @@ import './styles/global.css';
 
 import type { CatState, ScreenName, FoodType } from './data/gameStates';
 import { initialCatState, clamp } from './data/gameStates';
+import { bgPlay, muteAll, unmuteAll } from './utils/sounds';
 
 import AttractLoop            from './screens/AttractLoop';
 import PetScreen              from './screens/PetScreen';
@@ -23,6 +24,12 @@ import TalkScreen             from './screens/TalkScreen';
 import RewardQrScreen         from './screens/RewardQrScreen';
 
 const IDLE_MS         = 3 * 60 * 1000; // 3 min → aviso
+
+const INTERACTION_SCREENS: ScreenName[] = [
+  'gameSelect', 'feedSelect', 'feedInteraction',
+  'footballInstructions', 'footballResults',
+  'fallingBagsBenefits', 'fallingBagsInstructions', 'fallingBagsCountdown',
+];
 const WARNING_SECS    = 10;            // 10 s de aviso antes de resetear
 
 const pageVariants = {
@@ -38,13 +45,26 @@ export default function App() {
   const [footballResult, setFootballResult] = useState<{ pts: number; pScore: number; mScore: number } | null>(null);
   const [idleWarning, setIdleWarning]   = useState(false);
   const [warnSecs,  setWarnSecs]        = useState(WARNING_SECS);
+  const [muted,     setMutedState]      = useState(false);
 
-  const idleTimer   = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const warnTimer   = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const idleTimer    = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const warnTimer    = useRef<ReturnType<typeof setTimeout> | null>(null);
   const warnInterval = useRef<ReturnType<typeof setInterval> | null>(null);
+  const mutedRef          = useRef(false);
+  const idleAutoMutedRef  = useRef(false);
+
+  const toggleMute = () => {
+    const next = !mutedRef.current;
+    mutedRef.current = next;
+    setMutedState(next);
+    if (next) muteAll(); else unmuteAll();
+  };
 
   const doReset = useCallback(() => {
     setIdleWarning(false);
+    // Restaurar audio si fue auto-muteado por idle
+    if (idleAutoMutedRef.current && !mutedRef.current) unmuteAll();
+    idleAutoMutedRef.current = false;
     setCat(initialCatState);
     setPointsEarned(null);
     setScreen('attract');
@@ -54,6 +74,9 @@ export default function App() {
     setIdleWarning(false);
     if (warnTimer.current)    clearTimeout(warnTimer.current);
     if (warnInterval.current) clearInterval(warnInterval.current);
+    // Restaurar audio si fue auto-muteado por idle
+    if (idleAutoMutedRef.current && !mutedRef.current) unmuteAll();
+    idleAutoMutedRef.current = false;
   }, []);
 
   const resetIdle = useCallback(() => {
@@ -61,9 +84,10 @@ export default function App() {
     if (idleTimer.current) clearTimeout(idleTimer.current);
 
     idleTimer.current = setTimeout(() => {
-      // Mostrar aviso con countdown
+      // Mostrar aviso con countdown y silenciar audio
       setWarnSecs(WARNING_SECS);
       setIdleWarning(true);
+      if (!mutedRef.current) { idleAutoMutedRef.current = true; muteAll(); }
 
       let remaining = WARNING_SECS;
       warnInterval.current = setInterval(() => {
@@ -89,6 +113,17 @@ export default function App() {
       if (warnInterval.current) clearInterval(warnInterval.current);
     };
   }, [resetIdle]);
+
+  useEffect(() => {
+    if (['attract', 'registration', 'pet'].includes(screen)) {
+      bgPlay('ukulele', 0.04);
+    } else if (['hub', 'dashboard'].includes(screen)) {
+      bgPlay('ukulele', 0.01);
+    } else if (INTERACTION_SCREENS.includes(screen)) {
+      bgPlay('ukulele', 0.015);
+    }
+    // fallingBagsGame gestiona su propio volumen vía bgPlay en el componente
+  }, [screen]);
 
   const nav = useCallback((s: ScreenName) => setScreen(s), []);
 
@@ -171,6 +206,31 @@ const handleTalkDone = () => {
   return (
     <div className="totem-container">
       <div className="totem-frame">
+        {/* Botón mute — casi invisible, esquina superior izquierda */}
+        <motion.button
+          onClick={toggleMute}
+          whileTap={{ opacity: 0.8, scale: 0.88 }}
+          style={{
+            position: 'absolute',
+            top: 'min(2vw, 1.1vh)',
+            left: 'min(2vw, 1.1vh)',
+            width: 'min(5.5vw, 3.1vh)',
+            height: 'min(5.5vw, 3.1vh)',
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            opacity: 0.18,
+            zIndex: 1000,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            padding: 0,
+            borderRadius: '50%',
+          }}
+        >
+          <span style={{ fontSize: 'min(4.5vw, 2.5vh)', lineHeight: 1, userSelect: 'none' }}>
+            {muted ? '🔇' : '🔊'}
+          </span>
+        </motion.button>
+
         <AnimatePresence mode="wait">
           <motion.div
             key={screen}

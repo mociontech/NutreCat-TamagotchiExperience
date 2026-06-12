@@ -33,7 +33,10 @@ const PRODUCTS = [
       'Favorece una mejor digestión.',
       'Con vitamina D, calcio y fósforo que apoyan el desarrollo de huesos y dientes fuertes.',
     ],
+    benefitIcons: ['/assets/icons/benefit-digestive.svg', '/assets/icons/benefit-bone.svg'],
     badge: 'Sin colorantes y sin\nsabores artificiales.',
+    nameTop: '24.31%', subtitleTop: '45.73%',
+    benefit1Top: '59.11%', dividerTop: '64.46%', benefit2Top: '68.99%',
     cardBg: '#f4a875', textColor: '#d23d22', borderColor: '#d23d22',
   },
   {
@@ -44,7 +47,10 @@ const PRODUCTS = [
       'Ayuda a mantener una digestión equilibrada.',
       'Contiene ácidos grasos y omega 3 lo que contribuye a la salud cardiovascular.',
     ],
+    benefitIcons: ['/assets/icons/benefit-digestive.svg', '/assets/icons/benefit-bone.svg'],
     badge: 'Sin colorantes y sin\nsabores artificiales.',
+    nameTop: '27.14%', subtitleTop: '42.16%',
+    benefit1Top: '53.91%', dividerTop: '64.2%', benefit2Top: '66.02%',
     cardBg: '#dbd672', textColor: '#606225', borderColor: '#606225',
   },
   {
@@ -55,7 +61,10 @@ const PRODUCTS = [
       'Apoya la salud digestiva y la regeneración intestinal.',
       'Fortalece los músculos con el aporte de fósforo y potasio.',
     ],
+    benefitIcons: ['/assets/icons/benefit-digestive.svg', '/assets/icons/benefit-bone.svg'],
     badge: 'Sin colorantes y sin\nsabores artificiales.',
+    nameTop: '27.14%', subtitleTop: '42.16%',
+    benefit1Top: '53.91%', dividerTop: '64.2%', benefit2Top: '66.02%',
     cardBg: '#debbe7', textColor: '#a049bb', borderColor: '#a049bb',
   },
 ] as const;
@@ -71,8 +80,7 @@ function PenaltyDots({ outcomes, reverse }: { outcomes: Outcome[]; reverse?: boo
       {row.map((o, i) => (
         <div key={i} style={{
           width: 'min(4.5vw, 2.5vh)', height: 'min(4.5vw, 2.5vh)', borderRadius: '50%',
-          background: o === null ? 'rgba(0,87,122,0.18)' : o ? '#22c55e' : '#ef4444',
-          border: `2px solid ${o === null ? 'rgba(0,87,122,0.28)' : o ? '#4ade80' : '#f87171'}`,
+          background: o === null ? '#D9D9D9' : o ? '#22c55e' : '#ef4444',
           boxShadow: o === true ? '0 0 6px #22c55e80' : o === false ? '0 0 6px #ef444480' : 'none',
           transition: 'background 0.3s',
           flexShrink: 0,
@@ -168,11 +176,11 @@ export default function FootballGameScreen({ onGoal }: Props) {
     return () => clearTimeout(t);
   }, [phase, round]); // eslint-disable-line
 
-  // ── Phase: benefits → rival_intro ─────────────────────────────────
+  // ── Phase: benefits → rival_intro (desactivado mientras se ajusta diseño) ──
   useEffect(() => {
     if (phase !== 'benefits') return;
-    const t = setTimeout(() => setPhase('rival_intro'), BENEFITS_MS);
-    return () => clearTimeout(t);
+    // const t = setTimeout(() => setPhase('rival_intro'), BENEFITS_MS);
+    // return () => clearTimeout(t);
   }, [phase]);
 
   // ── Phase: rival_intro → rival_fire ───────────────────────────────
@@ -376,10 +384,8 @@ export default function FootballGameScreen({ onGoal }: Props) {
       <div style={{ position: 'absolute', top: '19.3%', left: 0, right: 0, height: 'min(9.5vw, 5.35vh)', zIndex: 10, overflow: 'hidden', display: 'flex', alignItems: 'center' }}>
         <div style={{ position: 'absolute', left: '-8%', right: '-8%', top: 0, bottom: 0, background: 'white', borderRadius: 99, boxShadow: '0 4px 18px rgba(0,87,122,0.18)' }} />
         <div style={{ position: 'relative', zIndex: 1, width: '100%', paddingLeft: 'min(5vw, 2.8vh)', paddingRight: 'min(5vw, 2.8vh)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 'min(2vw, 1.1vh)' }}>
-            <span style={{ fontFamily: 'var(--font-display)', fontSize: 'min(5.5vw, 3.1vh)', color: '#00577a', textTransform: 'uppercase', lineHeight: 1, paddingTop: '0.18em' }}>TÚ</span>
-            <PenaltyDots outcomes={pOuts} />
-          </div>
+          <span style={{ fontFamily: 'var(--font-display)', fontSize: 'min(5.5vw, 3.1vh)', color: '#00577a', textTransform: 'uppercase', lineHeight: 1, paddingTop: '0.18em' }}>TÚ</span>
+          <PenaltyDots outcomes={pOuts} />
           <div style={{ display: 'flex', alignItems: 'center', gap: 'min(2.5vw, 1.4vh)' }}>
             <motion.span key={`p${pScore}`} animate={{ scale: [1.35, 1] }} transition={{ duration: 0.22 }}
               style={{ fontFamily: 'var(--font-display)', fontSize: 'min(6.5vw, 3.65vh)', color: '#00577a', lineHeight: 1, paddingTop: '0.18em' }}>
@@ -391,10 +397,8 @@ export default function FootballGameScreen({ onGoal }: Props) {
               {mScore}
             </motion.span>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 'min(2vw, 1.1vh)' }}>
-            <PenaltyDots outcomes={mOuts} reverse />
-            <span style={{ fontFamily: 'var(--font-display)', fontSize: 'min(5.5vw, 3.1vh)', color: '#00577a', textTransform: 'uppercase', lineHeight: 1, paddingTop: '0.18em' }}>RIVAL</span>
-          </div>
+          <PenaltyDots outcomes={mOuts} reverse />
+          <span style={{ fontFamily: 'var(--font-display)', fontSize: 'min(5.5vw, 3.1vh)', color: '#00577a', textTransform: 'uppercase', lineHeight: 1, paddingTop: '0.18em' }}>RIVAL</span>
         </div>
       </div>
 
@@ -458,18 +462,17 @@ export default function FootballGameScreen({ onGoal }: Props) {
           )}
         </AnimatePresence>
 
-        {/* GK rival (during player kick) — hue-rotated green, dives on shot */}
+        {/* GK rival (during player kick) */}
         {inPlayerPhases && (
           <motion.img
-            src="/assets/cat/cat-goalkeeper.png" alt=""
+            src="/assets/cat/ArqueroRival.png" alt=""
             animate={{ left: `calc(${rivalGkNX * 84 + 2}% - min(10vw, 5.6vh))` }}
             transition={{ duration: phase === 'firing' ? 0.28 : 0.05, ease: 'easeOut' }}
             style={{
               position: 'absolute',
-              bottom: 'calc(-8% + 100px)',
+              bottom: 'calc(-8% + 170px)',
               width: 'min(23vw, 13vh)', objectFit: 'contain',
-              filter: 'hue-rotate(95deg) saturate(1.8) brightness(1.05)',
-              zIndex: 5, pointerEvents: 'none',
+              zIndex: 9, pointerEvents: 'none',
             }}
           />
         )}
@@ -486,9 +489,9 @@ export default function FootballGameScreen({ onGoal }: Props) {
             onPointerCancel={handleGkPointerEnd}
             style={{
               position: 'absolute',
-              bottom: 'calc(-8% + 100px)',
+              bottom: 'calc(-8% + 170px)',
               width: 'min(23vw, 13vh)', objectFit: 'contain',
-              zIndex: 5,
+              zIndex: 9,
               pointerEvents: (phase === 'rival_intro' || phase === 'rival_fire') ? 'auto' : 'none',
               touchAction: 'none',
               cursor: gkDragActive ? 'grabbing' : 'grab',
@@ -505,7 +508,6 @@ export default function FootballGameScreen({ onGoal }: Props) {
               <p style={{
                 fontFamily: 'var(--font-display)', fontSize: 'min(7vw, 3.94vh)',
                 color: 'white', textTransform: 'uppercase', textAlign: 'center', margin: 0,
-                textShadow: '0 2px 12px rgba(0,0,0,0.9), 0 0 30px rgba(0,0,0,0.7)',
               }}>
                 ¡Ahora el rival!
               </p>
@@ -518,8 +520,7 @@ export default function FootballGameScreen({ onGoal }: Props) {
                   transition={{ duration: 0.2 }}
                   style={{
                     fontFamily: 'var(--font-display)', fontSize: 'min(22vw, 12.4vh)',
-                    color: '#fcd116', lineHeight: 1,
-                    textShadow: '0 4px 24px rgba(0,0,0,0.85), 0 0 60px rgba(252,209,22,0.5)',
+                    color: 'white', lineHeight: 1,
                   }}
                 >
                   {countdownVal}
@@ -593,21 +594,37 @@ export default function FootballGameScreen({ onGoal }: Props) {
         )}
       </AnimatePresence>
 
-      {/* ── Player cat ──────────────────────────────────────────────── */}
-      <div style={{ position: 'absolute', left: '49.1%', top: '61.3%', width: '44.7%', zIndex: 6, pointerEvents: 'none' }}>
-        <motion.img
-          src="/assets/cat/cat-player.png" alt=""
-          animate={phase === 'firing' ? { rotate: [0, 20], y: [0, -10] } : { y: [0, -6, 0] }}
-          transition={phase === 'firing' ? { duration: 0.28 } : { duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-          style={{ width: '100%', objectFit: 'contain', filter: 'drop-shadow(0 8px 24px rgba(0,0,0,0.3))' }}
-        />
-      </div>
+      {/* ── Player cat (shown during player phases) ─────────────────── */}
+      {inPlayerPhases && (
+        <div style={{ position: 'absolute', left: '5%', top: '57.65%', width: '39.34%', zIndex: 8, pointerEvents: 'none' }}>
+          <motion.img
+            src="/assets/cat/GatoEspaldas.png" alt=""
+            initial={{ x: 0, y: 0, rotate: 0 }}
+            animate={phase === 'firing' ? { x: [0, 15, 30, 30, 0], y: [0, -50, -100, -100, 0], rotate: [0, 0, -22, -22, 0] } : { x: 0, y: [0, -6, 0], rotate: 0 }}
+            transition={phase === 'firing' ? { duration: 0.8, ease: 'easeInOut', times: [0, 0.22, 0.44, 0.64, 1] } : { duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+            style={{ width: '100%', objectFit: 'contain', filter: 'drop-shadow(0 8px 24px rgba(0,0,0,0.3))' }}
+          />
+        </div>
+      )}
+
+      {/* ── Rival cat (shown during rival phases) ───────────────────── */}
+      {inRivalPhases && (
+        <div style={{ position: 'absolute', left: '5%', top: '57.65%', width: '39.34%', zIndex: 8, pointerEvents: 'none' }}>
+          <motion.img
+            src="/assets/cat/RivalEspalda.png" alt=""
+            initial={{ x: 0, y: 0, rotate: 0 }}
+            animate={phase === 'rival_fire' ? { x: [0, 15, 30, 30, 0], y: [0, -50, -100, -100, 0], rotate: [0, 0, -22, -22, 0] } : { x: 0, y: [0, -6, 0], rotate: 0 }}
+            transition={phase === 'rival_fire' ? { duration: 0.8, ease: 'easeInOut', times: [0, 0.22, 0.44, 0.64, 1] } : { duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+            style={{ width: '100%', objectFit: 'contain', filter: 'drop-shadow(0 8px 24px rgba(0,0,0,0.3))' }}
+          />
+        </div>
+      )}
 
       {/* ── Static ball (hidden during flight) ──────────────────────── */}
       <div
         ref={ballDivRef}
         style={{
-          position: 'absolute', left: '25.6%', top: '63.4%', width: '20%',
+          position: 'absolute', left: '41.71%', top: '68.49%', width: '16%',
           zIndex: 7, pointerEvents: 'none',
           opacity: ballHidden ? 0 : 1,
           transition: 'opacity 0.08s',
@@ -630,7 +647,7 @@ export default function FootballGameScreen({ onGoal }: Props) {
               position: 'absolute',
               left: `${ballPx.x - ballHalfW}px`,
               top: `${ballPx.y - ballHalfW}px`,
-              width: 'min(20vw, 11.3vh)',
+              width: 'min(16vw, 9.04vh)',
               zIndex: 18, pointerEvents: 'none',
             }}
             initial={{ x: 0, y: 0, scale: 1, rotate: 0 }}
@@ -652,7 +669,7 @@ export default function FootballGameScreen({ onGoal }: Props) {
               position: 'absolute',
               left: `${ballPx.x - ballHalfW}px`,
               top: `${ballPx.y - ballHalfW}px`,
-              width: 'min(20vw, 11.3vh)',
+              width: 'min(16vw, 9.04vh)',
               zIndex: 18, pointerEvents: 'none',
             }}
             initial={{ x: 0, y: 0, scale: 1, rotate: 0 }}
@@ -678,41 +695,44 @@ export default function FootballGameScreen({ onGoal }: Props) {
               position: 'absolute', inset: 0, zIndex: 22,
               background: 'linear-gradient(to bottom, transparent 13%, rgba(0,87,122,0.78) 24%)',
               display: 'flex', alignItems: 'flex-start', justifyContent: 'center',
-              paddingTop: 'calc(21.1% + 100px)',
+              paddingTop: 'calc(21.1% + 200px)',
               overflow: 'hidden',
             }}
           >
-            {/* Ball decoration — bottom-left of screen */}
-            <img
-              src="/assets/games/football-ball.svg" alt=""
-              style={{
-                position: 'absolute', left: '-8%', bottom: '-8%',
-                width: '30%', objectFit: 'contain',
-                pointerEvents: 'none', zIndex: 30,
-              }}
-            />
-
-            <motion.div
+            <div style={{ position: 'relative', width: '86.9%' }}>
+              {/* TODO: quitar — botón temporal para ajuste de diseño */}
+              <button
+                onClick={() => setPhase('rival_intro')}
+                style={{
+                  position: 'absolute', top: -18, right: -18, zIndex: 30,
+                  width: 40, height: 40, borderRadius: '50%',
+                  background: 'white', border: '2px solid #00577a',
+                  color: '#00577a', fontSize: 18, fontWeight: 700,
+                  cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
+                }}
+              >✕</button>
+<motion.div
               initial={{ scale: 0.88, y: 28 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.93, y: -12, opacity: 0 }}
               transition={{ type: 'spring', stiffness: 300, damping: 24 }}
               style={{
                 position: 'relative',
-                width: '86.9%',
+                width: '100%',
+                height: '70.05vh',
                 background: selectedProduct.cardBg,
                 borderRadius: 'min(6.2vw, 3.5vh)',
                 overflow: 'visible',
                 boxShadow: '0 24px 80px rgba(0,0,0,0.42)',
-                padding: 'min(4.5vw, 2.5vh) min(5.5vw, 3.1vh) min(4.5vw, 2.5vh)',
-                display: 'flex', flexDirection: 'column',
-                gap: 'min(1.8vw, 1vh)',
               }}
             >
 
-              {/* Dashed inner border */}
+              {/* Dashed inner border — inset simétrico 8% h / 2.68% v */}
               <div style={{
-                position: 'absolute', inset: 'min(1.5vw, 0.85vh)',
+                position: 'absolute',
+                left: '4.16%', top: '2.68%',
+                width: '91.68%', height: '94.64%',
                 border: `2px dashed ${selectedProduct.borderColor}`,
                 borderRadius: 'min(4.5vw, 2.5vh)',
                 pointerEvents: 'none', zIndex: 0,
@@ -727,8 +747,8 @@ export default function FootballGameScreen({ onGoal }: Props) {
                 transition={{ type: 'spring', stiffness: 200, damping: 18, delay: 0.18 }}
                 style={{
                   position: 'absolute',
-                  right: '-3%', top: '-9%',
-                  width: '37%', objectFit: 'contain',
+                  right: '7.66%', top: '-2.91%',
+                  width: '37.85%', height: '36.41%', objectFit: 'contain',
                   zIndex: 3, pointerEvents: 'none',
                   filter: 'drop-shadow(0 10px 28px rgba(0,0,0,0.28))',
                   transformOrigin: 'bottom center',
@@ -744,153 +764,206 @@ export default function FootballGameScreen({ onGoal }: Props) {
                   position: 'absolute',
                   left: '-1%', top: '-6%',
                   zIndex: 3,
-                  background: selectedProduct.cardBg,
-                  border: `3px solid ${selectedProduct.borderColor}`,
-                  borderRadius: 'min(2.5vw, 1.4vh)',
-                  padding: 'min(1.5vw, 0.85vh) min(2.5vw, 1.4vh)',
                   maxWidth: '52%',
                   transformOrigin: 'center center',
                 }}
               >
-                <p style={{
-                  fontFamily: 'var(--font-display)',
-                  fontSize: 'min(3.2vw, 1.8vh)',
-                  color: selectedProduct.textColor,
-                  textTransform: 'uppercase',
-                  textAlign: 'center',
-                  lineHeight: 1.1, margin: 0,
-                  letterSpacing: '0.04em',
-                  whiteSpace: 'pre-line',
-                }}>
-                  {selectedProduct.badge}
-                </p>
+                <motion.div
+                  animate={{
+                    scale: [1, 1.06, 1],
+                    boxShadow: [
+                      `0 0 0px ${selectedProduct.borderColor}00`,
+                      `0 0 14px ${selectedProduct.borderColor}99`,
+                      `0 0 0px ${selectedProduct.borderColor}00`,
+                    ],
+                  }}
+                  transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut', delay: 0.7 }}
+                  style={{
+                    position: 'relative', overflow: 'hidden',
+                    background: selectedProduct.cardBg,
+                    border: `3px solid ${selectedProduct.borderColor}`,
+                    borderRadius: 'min(2.5vw, 1.4vh)',
+                    padding: 'min(1.5vw, 0.85vh) min(2.5vw, 1.4vh)',
+                  }}
+                >
+                  <p style={{
+                    position: 'relative', zIndex: 1,
+                    fontFamily: 'var(--font-display)',
+                    fontSize: 'min(3.2vw, 1.8vh)',
+                    color: selectedProduct.textColor,
+                    textTransform: 'uppercase',
+                    textAlign: 'center',
+                    lineHeight: 1.1, margin: 0,
+                    letterSpacing: '0.04em',
+                    whiteSpace: 'pre-line',
+                  }}>
+                    {selectedProduct.badge}
+                  </p>
+                  {/* Shimmer sweep */}
+                  <motion.div
+                    animate={{ x: ['-140%', '200%'] }}
+                    transition={{ duration: 1.4, repeat: Infinity, repeatDelay: 2.8, ease: 'easeInOut', delay: 1 }}
+                    style={{
+                      position: 'absolute',
+                      top: '-20%', bottom: '-20%', width: '55%',
+                      background: 'linear-gradient(105deg, transparent 20%, rgba(255,255,255,0.6) 50%, transparent 80%)',
+                      pointerEvents: 'none', zIndex: 2,
+                    }}
+                  />
+                </motion.div>
               </motion.div>
 
-              {/* ¡GOOOL! — 174px/1080 = 16.1vw */}
+              {/* ¡GOOOL! — centrado, top 7.58% de la card */}
               <motion.p
                 initial={{ scale: 0, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ type: 'spring', stiffness: 380, damping: 20, delay: 0.1 }}
                 style={{
-                  position: 'relative', zIndex: 1,
+                  position: 'absolute', left: '8.32%', top: '9.07%',
+                  width: '83.36%', zIndex: 1,
                   fontFamily: 'var(--font-display)',
                   fontSize: 'min(16.1vw, 9.06vh)',
-                  color: 'white',
-                  textAlign: 'left',
+                  color: 'white', textAlign: 'left',
                   textTransform: 'uppercase',
                   letterSpacing: '0.05em',
                   lineHeight: 0.9, margin: 0,
-                  textShadow: '0 4px 30px rgba(0,0,0,0.18)',
                 }}
               >
                 ¡GOOOL!
               </motion.p>
 
-              {/* Product name — 104px/1080 = 9.63vw, two lines */}
+              {/* Nombre producto — left 8.32%, top 24.31% */}
               <motion.p
                 initial={{ opacity: 0, x: -16 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.15 }}
                 style={{
-                  position: 'relative', zIndex: 1,
+                  position: 'absolute',
+                  left: '8.32%', top: selectedProduct.nameTop,
+                  width: '62.9%', zIndex: 1,
                   fontFamily: 'var(--font-display)',
-                  fontSize: 'min(9.6vw, 5.4vh)',
+                  fontSize: 'min(9.6vw, 5.42vh)',
                   color: selectedProduct.textColor,
                   textTransform: 'uppercase',
                   letterSpacing: '0.04em',
                   lineHeight: 0.91, margin: 0,
-                  width: '57%',
                   whiteSpace: 'pre-line',
                 }}
               >
                 {selectedProduct.name}
               </motion.p>
 
-              {/* Subtitle — 56px/1080 = 5.19vw */}
+              {/* Subtítulo — left 8.64%, top 45.73% */}
               <motion.p
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.2 }}
                 style={{
-                  position: 'relative', zIndex: 1,
+                  position: 'absolute',
+                  left: '8.64%', top: selectedProduct.subtitleTop,
+                  width: '71.54%', zIndex: 1,
                   fontFamily: 'var(--font-body)',
-                  fontSize: 'min(5.2vw, 2.9vh)',
+                  fontSize: 'min(5.19vw, 2.92vh)',
                   color: selectedProduct.textColor,
                   textTransform: 'uppercase',
                   lineHeight: 1.25, margin: 0,
-                  width: '65%',
                 }}
               >
                 {selectedProduct.subtitle}
               </motion.p>
 
-              {/* Benefits — icon + text, divider between them (Line5 style: 68% wide) */}
+              {/* Beneficio 1: fila flex */}
               <motion.div
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }}
                 transition={{ delay: 0.26 }}
-                style={{ position: 'relative', zIndex: 1, display: 'flex', flexDirection: 'column', width: '100%' }}
+                style={{
+                  position: 'absolute',
+                  left: '8.32%', top: selectedProduct.benefit1Top,
+                  width: '83.36%', zIndex: 1,
+                  display: 'flex', alignItems: 'flex-start', gap: '3%',
+                }}
               >
-                {selectedProduct.benefits.map((b, i) => (
-                  <div key={i}>
-                    <div style={{ display: 'flex', gap: 'min(2.5vw, 1.4vh)', alignItems: 'flex-start', paddingBottom: 'min(2vw, 1.1vh)' }}>
-                      <div style={{
-                        width: 'min(5.5vw, 3.1vh)', height: 'min(5.5vw, 3.1vh)',
-                        borderRadius: '50%', background: selectedProduct.borderColor,
-                        flexShrink: 0, marginTop: 'min(0.4vw, 0.22vh)',
-                      }} />
-                      <p style={{
-                        fontFamily: 'var(--font-body)',
-                        fontSize: 'min(4.2vw, 2.34vh)',
-                        color: selectedProduct.textColor,
-                        textTransform: 'uppercase',
-                        lineHeight: 1.25, margin: 0,
-                        width: '80%',
-                      }}>
-                        {b}
-                      </p>
-                    </div>
-                    {i === 0 && (
-                      <div style={{
-                        height: 2, width: '68%', marginLeft: '7%',
-                        background: selectedProduct.borderColor,
-                        opacity: 0.5, borderRadius: 2,
-                        marginBottom: 'min(2vw, 1.1vh)',
-                      }} />
-                    )}
-                  </div>
-                ))}
+                <img
+                  src={selectedProduct.benefitIcons[0]} alt=""
+                  style={{ width: 'min(5.5vw, 3.1vh)', height: 'min(5.5vw, 3.1vh)', objectFit: 'contain', flexShrink: 0 }}
+                />
+                <p style={{
+                  fontFamily: 'var(--font-body)',
+                  fontSize: 'min(4.17vw, 2.34vh)',
+                  color: selectedProduct.textColor,
+                  textTransform: 'uppercase',
+                  lineHeight: 1.25, margin: 0,
+                }}>
+                  {selectedProduct.benefits[0]}
+                </p>
               </motion.div>
 
-              {/* Full-width divider before +60 puntos (Line6 style: 92% wide) */}
+              {/* Divisor entre beneficios — left 8.32%, top 71.15% */}
               <div style={{
-                position: 'relative', zIndex: 1,
-                height: 2, width: '92%',
-                background: selectedProduct.borderColor,
-                opacity: 0.6, borderRadius: 2,
-                margin: 'min(1vw, 0.55vh) 0',
+                position: 'absolute',
+                left: '8.32%', top: selectedProduct.dividerTop,
+                width: '83.36%', height: 0,
+                borderTop: `2px dashed ${selectedProduct.borderColor}`,
+                opacity: 0.5, zIndex: 1,
               }} />
 
-              {/* +60 PUNTOS — 112px/1080 = 10.37vw, textColor */}
+              {/* Beneficio 2: fila flex */}
+              <motion.div
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                transition={{ delay: 0.3 }}
+                style={{
+                  position: 'absolute',
+                  left: '8.32%', top: selectedProduct.benefit2Top,
+                  width: '83.36%', zIndex: 1,
+                  display: 'flex', alignItems: 'flex-start', gap: '3%',
+                }}
+              >
+                <img
+                  src={selectedProduct.benefitIcons[1]} alt=""
+                  style={{ width: 'min(5.5vw, 3.1vh)', height: 'min(5.5vw, 3.1vh)', objectFit: 'contain', flexShrink: 0 }}
+                />
+                <p style={{
+                  fontFamily: 'var(--font-body)',
+                  fontSize: 'min(4.17vw, 2.34vh)',
+                  color: selectedProduct.textColor,
+                  textTransform: 'uppercase',
+                  lineHeight: 1.25, margin: 0,
+                }}>
+                  {selectedProduct.benefits[1]}
+                </p>
+              </motion.div>
+
+              {/* Divisor full — alineado con borde punteado */}
+              <div style={{
+                position: 'absolute',
+                left: '4.16%', top: '83.64%',
+                width: '91.68%', height: 0,
+                borderTop: `2px dashed ${selectedProduct.borderColor}`,
+                opacity: 0.6, zIndex: 1,
+              }} />
+
+              {/* +60 PUNTOS — centrado, top 86.54% */}
               <motion.p
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.33, type: 'spring', stiffness: 260 }}
                 style={{
-                  position: 'relative', zIndex: 1,
+                  position: 'absolute', left: 0, top: '86.54%',
+                  width: '100%', zIndex: 1,
                   fontFamily: 'var(--font-display)',
-                  fontSize: 'min(10.4vw, 5.8vh)',
+                  fontSize: 'min(10.4vw, 5.83vh)',
                   color: selectedProduct.textColor,
                   textAlign: 'center',
                   textTransform: 'uppercase',
                   letterSpacing: '0.04em',
-                  lineHeight: 1,
-                  margin: 0,
+                  lineHeight: 1, margin: 0,
                 }}
               >
                 +{PTS_GOAL} PUNTOS
               </motion.p>
+
             </motion.div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

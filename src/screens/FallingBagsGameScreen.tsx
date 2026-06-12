@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { sfx, bgPlay, bgStop, bgSetRate } from '../utils/sounds';
+import { sfx, bgPlay, bgSetRate } from '../utils/sounds';
 
 const PRODUCTS = [
   '/assets/products/product-1.png',
@@ -92,7 +92,6 @@ export default function FallingBagsGameScreen({ onDone }: Props) {
   /* Música */
   useEffect(() => {
     bgPlay('ukulele', 0.16, 1.0);
-    return () => bgStop('ukulele');
   }, []);
 
   /* Spawn + timer */
@@ -226,14 +225,13 @@ export default function FallingBagsGameScreen({ onDone }: Props) {
       transition={{ duration: 0.38, ease: 'easeInOut' }}
       style={{
         width: '100%', height: '100%',
-        backgroundImage: 'url(/assets/backgrounds/FondoJuego2.png)',
+        background: '#00b6ed',
+        backgroundImage: 'url(/assets/backgrounds/bg-Inicio.png)',
         backgroundSize: 'cover', backgroundPosition: 'center',
         position: 'relative', overflow: 'hidden',
         display: 'flex', flexDirection: 'column',
       }}
     >
-      {/* Filtro azul */}
-      <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,182,237,0.45)', pointerEvents: 'none', zIndex: 0 }} />
 
       {/* Indicadores de combo y doble puntos — superpuestos, fuera del flujo */}
       <div style={{
@@ -412,9 +410,10 @@ export default function FallingBagsGameScreen({ onDone }: Props) {
       {/* ── Timer ── */}
       {phase === 'playing' && (
         <div style={{
-          position: 'absolute', bottom: 15, left: '50%', transform: 'translateX(-50%)',
+          position: 'absolute', left: '29.81%', top: '21.93%',
+          width: '40.37%',
           zIndex: 20, background: '#00577a', borderRadius: 99,
-          padding: 'min(2vw, 1.1vh) min(5vw, 2.8vh)',
+          padding: 'min(2vw, 1.1vh) min(4vw, 2.2vh)',
           display: 'flex', alignItems: 'center', gap: 'min(2.5vw, 1.4vh)',
           boxShadow: '0 4px 20px rgba(0,87,122,0.4)',
         }}>

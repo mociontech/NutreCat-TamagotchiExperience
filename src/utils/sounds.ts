@@ -14,6 +14,7 @@ const SRC = {
   bling:       '/sounds/u_o8xh7gwsrj-correct_answer_toy_bi-bling-476370.mp3',
   musicbox:    '/sounds/freesound_community-music-box-34179.mp3',
   ukulele:     '/sounds/waveloom-happy-ukulele-478610.mp3',
+  ukulelef:    '/sounds/waveloom-happy-ukulele-478610f.mp3',
   lightswitch: '/sounds/freesound_community-light-switch-106505.mp3',
   snap:        '/sounds/pensieri_profondi_scuba-snap-274158.mp3',
 } as const;
@@ -21,14 +22,18 @@ const SRC = {
 export type SoundName = keyof typeof SRC;
 
 const cache: Partial<Record<SoundName, HTMLAudioElement>> = {};
+// Volúmenes intencionados para restaurar al desmutear
+const _intentVol: Partial<Record<SoundName, number>> = {};
+let _muted = false;
 
 function get(name: SoundName): HTMLAudioElement {
   if (!cache[name]) cache[name] = new Audio(SRC[name]);
   return cache[name]!;
 }
 
-/** Reproduce un sonido una vez */
+/** Reproduce un sonido una vez (silenciado si mute activo) */
 export function sfx(name: SoundName, volume = 1.0): void {
+  if (_muted) return;
   try {
     const a = get(name);
     a.loop = false;
@@ -43,7 +48,8 @@ export function bgPlay(name: SoundName, volume = 0.35, playbackRate = 1.0): void
   try {
     const a = get(name);
     a.loop = true;
-    a.volume = Math.max(0, Math.min(1, volume));
+    _intentVol[name] = Math.max(0, Math.min(1, volume));
+    a.volume = _muted ? 0 : _intentVol[name]!;
     a.playbackRate = Math.max(0.5, Math.min(4, playbackRate));
     if (a.paused) { a.currentTime = 0; a.play().catch(() => {}); }
   } catch { /* ignore */ }
@@ -64,6 +70,48 @@ export function bgStop(name: SoundName): void {
     if (a) { a.pause(); a.currentTime = 0; }
   } catch { /* ignore */ }
 }
+
+/** Desvanece un loop gradualmente hasta targetVolume (0 = detener) */
+export function bgFade(name: SoundName, duration = 1200, targetVolume = 0): void {
+  try {
+    const a = cache[name];
+    if (!a || a.paused) return;
+    const startVol = a.volume;
+    const steps = 24;
+    const tick = duration / steps;
+    let step = 0;
+    const timer = setInterval(() => {
+      if (_muted) { clearInterval(timer); return; }
+      step++;
+      const t = step / steps;
+      a.volume = Math.max(targetVolume, startVol + (targetVolume - startVol) * t);
+      if (step >= steps) {
+        clearInterval(timer);
+        if (targetVolume <= 0) { a.pause(); a.currentTime = 0; a.volume = startVol; }
+      }
+    }, tick);
+  } catch { /* ignore */ }
+}
+
+/** Silencia todo el audio inmediatamente */
+export function muteAll(): void {
+  _muted = true;
+  (Object.keys(cache) as SoundName[]).forEach(name => {
+    const a = cache[name];
+    if (a) a.volume = 0;
+  });
+}
+
+/** Restaura todos los volúmenes anteriores */
+export function unmuteAll(): void {
+  _muted = false;
+  (Object.keys(cache) as SoundName[]).forEach(name => {
+    const a = cache[name];
+    if (a && _intentVol[name] !== undefined) a.volume = _intentVol[name]!;
+  });
+}
+
+export function isMuted(): boolean { return _muted; }
 
 /** Corta un sfx antes de que termine */
 export function sfxStop(name: SoundName): void {

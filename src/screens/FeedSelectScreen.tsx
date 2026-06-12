@@ -3,9 +3,9 @@ import { useState, useRef } from 'react';
 import type { FoodType } from '../data/gameStates';
 
 const PRODUCTS: { id: FoodType; img: string; left: string; width: string }[] = [
-  { id: 'dry',    img: '/assets/products/product-3.png', left: '13.61%', width: '21.48%' },
-  { id: 'wet',    img: '/assets/products/product-2.png', left: '37.41%', width: '22.13%' },
-  { id: 'treats', img: '/assets/products/product-1.png', left: '63.52%', width: '21.48%' },
+  { id: 'treats', img: '/assets/products/product-1.png', left: '13.61%', width: '21.48%' },
+  { id: 'dry',    img: '/assets/products/product-3.png', left: '37.41%', width: '22.13%' },
+  { id: 'wet',    img: '/assets/products/product-2.png', left: '63.52%', width: '21.48%' },
 ];
 
 const NAV = [
@@ -84,7 +84,7 @@ export default function FeedSelectScreen({ onSelect, onBack, score = 0 }: Props)
       }}
     >
       {/* Fondo cuarto 44% */}
-      <div style={{ position: 'absolute', inset: 0, backgroundImage: 'url(/assets/backgrounds/bg-pet.png)', backgroundSize: 'cover', backgroundPosition: 'center bottom', opacity: 0.44, pointerEvents: 'none' }} />
+      <div style={{ position: 'absolute', inset: 0, backgroundImage: 'url(/assets/backgrounds/bg-pet2.png)', backgroundSize: 'cover', backgroundPosition: 'center bottom', opacity: 0.44, pointerEvents: 'none' }} />
 
       {/* Logo */}
       <div style={{ position: 'absolute', top: '4.79%', left: '9.07%', right: '62.31%', bottom: '83.7%', zIndex: 2 }}>

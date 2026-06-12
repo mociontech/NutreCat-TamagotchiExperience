@@ -2,35 +2,13 @@ import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import type { CatState } from '../data/gameStates';
 
-const TOTAL_SECS   = 20;
-const RADIUS       = 36;
-const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
-
-/* Logo con shimmer */
-function ShimmerLogo() {
-  return (
-    <div style={{ position: 'relative', width: '52%', flexShrink: 0 }}>
-      <motion.img
-        src="/assets/ui/logo-nutre-cat.svg"
-        alt="Nutre Cat"
-        animate={{ filter: ['brightness(1)', 'brightness(1.22)', 'brightness(1)'] }}
-        transition={{ duration: 3.8, repeat: Infinity, ease: 'easeInOut', repeatDelay: 0.8 }}
-        style={{ width: '100%', height: 'auto', display: 'block' }}
-      />
-      <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none' }}>
-        <motion.div
-          animate={{ x: ['-140%', '200%'] }}
-          transition={{ duration: 1.5, repeat: Infinity, repeatDelay: 3.5, ease: 'easeInOut' }}
-          style={{ position: 'absolute', top: '-20%', bottom: '-20%', width: '55%', background: 'linear-gradient(105deg, transparent 20%, rgba(255,255,255,0.65) 50%, transparent 80%)' }}
-        />
-      </div>
-    </div>
-  );
-}
+const TOTAL_SECS = 20;
+const R = 26;
+const CIRCUM = 2 * Math.PI * R;
 
 interface Props { cat?: CatState; onNext: () => void; }
 
-export default function RewardQrScreen({ cat, onNext }: Props) {
+export default function RewardQrScreen({ onNext }: Props) {
   const [secs, setSecs] = useState(TOTAL_SECS);
 
   useEffect(() => {
@@ -43,203 +21,200 @@ export default function RewardQrScreen({ cat, onNext }: Props) {
     return () => clearInterval(interval);
   }, [onNext]);
 
-  const strokeDash = CIRCUMFERENCE * (secs / TOTAL_SECS) * 0.82;
+  const dash = CIRCUM * (secs / TOTAL_SECS);
 
   return (
-    <div style={{
-      width: '100%', height: '100%',
-      background: '#00b6ed',
-      display: 'flex', flexDirection: 'column',
-      alignItems: 'center',
-      position: 'relative', overflow: 'hidden',
-      padding: '0 9%',
-      paddingTop: '8%',
-      paddingBottom: '2%',
-      boxSizing: 'border-box',
-    }}>
+    <div
+      onClick={onNext}
+      style={{ width: '100%', height: '100%', background: '#00b6ed', position: 'relative', overflow: 'hidden', cursor: 'pointer' }}
+    >
+      {/* Fondo */}
+      <img src="/assets/backgrounds/bg-Inicio.png" alt=""
+        style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', pointerEvents: 'none', zIndex: 0 }} />
 
-      {/* Logo */}
-      <ShimmerLogo />
+      {/* Logo — inset top 8.23% left 27.97% right 27.96% bottom 74.04% */}
+      <div style={{ position: 'absolute', top: '8.23%', left: '27.97%', right: '27.96%', bottom: '74.04%', zIndex: 1 }}>
+        <img src="/assets/ui/logo-nutre-cat.svg" alt="NutreCat Premium"
+          style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block' }} />
+      </div>
 
-      <div style={{ flex: '0.35' }} />
-
-      {/* "¡Gracias por participar!" */}
-      <motion.div style={{ flexShrink: 0, width: '100%', overflow: 'hidden' }}>
-        <motion.p
-          initial={{ x: '-110%', opacity: 0 }}
-          animate={{ x: 0, opacity: [1, 0.82, 1] }}
-          transition={{
-            x:       { delay: 0.15, type: 'spring', stiffness: 170, damping: 22 },
-            opacity: { delay: 1.4, duration: 3.8, repeat: Infinity, ease: 'easeInOut' },
-          }}
-          style={{
-            fontFamily: 'var(--font-display)',
-            fontSize: 'min(8.5vw, 4.6vh)',
-            color: '#00577a',
-            lineHeight: 1.05, margin: 0,
-            textTransform: 'uppercase',
-            textAlign: 'center',
-            wordBreak: 'break-word',
-            textShadow: '0 2px 8px rgba(255,255,255,0.5)',
-          }}
-        >
-          ¡Gracias por participar!
-        </motion.p>
-      </motion.div>
-
-      {/* "Obtuviste X puntos" */}
-      <motion.div style={{ flexShrink: 0, width: '100%', overflow: 'hidden', marginTop: 'min(1.5vw, 0.8vh)' }}>
-        <motion.p
-          initial={{ x: '110%', opacity: 0 }}
-          animate={{ x: 0, opacity: [1, 0.75, 1] }}
-          transition={{
-            x:       { delay: 0.32, type: 'spring', stiffness: 170, damping: 22 },
-            opacity: { delay: 1.6, duration: 4.2, repeat: Infinity, ease: 'easeInOut' },
-          }}
-          style={{
-            fontFamily: 'var(--font-body)',
-            fontSize: 'min(5.2vw, 2.9vh)',
-            color: '#00577a',
-            margin: 0,
-            textTransform: 'uppercase',
-            textAlign: 'center',
-            letterSpacing: '0.04em',
-            textShadow: '0 2px 6px rgba(255,255,255,0.45)',
-          }}
-        >
-          Obtuviste {cat?.score ?? 0} puntos
-        </motion.p>
-      </motion.div>
-
-      <div style={{ flex: '0.4' }} />
-
-      {/* Card QR */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.82 }}
-        animate={{
-          opacity: 1, scale: 1,
-          boxShadow: [
-            '0 12px 40px rgba(0,87,122,0.22)',
-            '0 16px 55px rgba(0,87,122,0.42)',
-            '0 12px 40px rgba(0,87,122,0.22)',
-          ],
-        }}
-        transition={{
-          opacity:   { delay: 0.42, duration: 0.35 },
-          scale:     { delay: 0.42, type: 'spring', stiffness: 220 },
-          boxShadow: { delay: 1.2, duration: 2.4, repeat: Infinity, ease: 'easeInOut' },
-        }}
+      {/* ¡Gracias por participar! — canvas 163px, center (50%, 37.45%), w 81.67% */}
+      <motion.p
+        initial={{ opacity: 0, y: -18 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.12, type: 'spring', stiffness: 160, damping: 22 }}
         style={{
-          flexShrink: 0,
-          width: 'min(48vw, 27vh)',
-          aspectRatio: '1',
-          background: 'white',
-          borderRadius: 'min(4.5vw, 2.5vh)',
-          overflow: 'hidden',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          position: 'absolute',
+          left: '50%', top: '37.45%',
+          transform: 'translate(-50%, -50%)',
+          width: '81.67%',
+          fontFamily: 'var(--font-display)',
+          fontSize: 'min(15.09vw, 8.49vh)',
+          color: '#00577a',
+          textAlign: 'center',
+          lineHeight: 0.866,
+          margin: 0, zIndex: 1,
         }}
       >
-        <img
-          src="/assets/backgrounds/QR.png"
-          alt="QR"
-          style={{ width: '88%', height: '88%', objectFit: 'contain', display: 'block' }}
-        />
+        ¡Gracias por participar!
+      </motion.p>
+
+      {/* 10% — canvas 258px, center (31.11%, 54.94%), w 32.96% */}
+      <motion.p
+        initial={{ opacity: 0, x: -24 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: 0.22, type: 'spring', stiffness: 160, damping: 22 }}
+        style={{
+          position: 'absolute',
+          left: '14.63%', top: '54.94%',
+          transform: 'translateY(-50%)',
+          width: '32.96%',
+          fontFamily: 'var(--font-display)',
+          fontSize: 'min(23.94vw, 13.47vh)',
+          color: '#00577a',
+          textAlign: 'center',
+          lineHeight: 1,
+          margin: 0, zIndex: 1,
+        }}
+      >
+        10%
+      </motion.p>
+
+      {/* GANASTE DE DESCUENTO — canvas 82px, center (65.23%, 53.46%), w 37.5% */}
+      <motion.p
+        initial={{ opacity: 0, x: 24 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: 0.28, type: 'spring', stiffness: 160, damping: 22 }}
+        style={{
+          position: 'absolute',
+          left: '46.48%', top: '53.46%',
+          transform: 'translateY(-50%)',
+          width: '37.5%',
+          fontFamily: 'var(--font-body)',
+          fontSize: 'min(7.59vw, 4.27vh)',
+          color: '#00577a',
+          textAlign: 'center',
+          fontWeight: 700,
+          textTransform: 'uppercase',
+          letterSpacing: '0.02em',
+          lineHeight: 1.1,
+          margin: 0, zIndex: 1,
+        }}
+      >
+        GANASTE DE DESCUENTO
+      </motion.p>
+
+      {/* Tarjeta blanca QR — top-left (52.13%, 62.46%), size 30.83%×18.16% */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.86 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: 0.32, type: 'spring', stiffness: 200, damping: 22 }}
+        style={{
+          position: 'absolute',
+          left: '52.13%', top: '62.46%',
+          width: '30.83%', height: '18.16%',
+          background: 'white',
+          borderRadius: 'min(5.74vw, 3.23vh)',
+          overflow: 'hidden',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          zIndex: 2,
+        }}
+      >
+        <img src="/assets/backgrounds/QR.png" alt="QR"
+          style={{ width: '88%', height: '88%', objectFit: 'contain', display: 'block' }} />
       </motion.div>
 
-      <div style={{ flex: '0.3' }} />
+      {/* REDÍMELO CON ESTE CÓDIGO PROMOCIONAL NUTRECATPLAY
+          left 16.48%, top 64.43%, width 31.02%, text-align right */}
+      <motion.p
+        initial={{ opacity: 0, x: -24 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ delay: 0.36, type: 'spring', stiffness: 160, damping: 22 }}
+        style={{
+          position: 'absolute',
+          left: '16.48%', top: '64.43%',
+          width: '31.02%',
+          fontFamily: 'var(--font-body)',
+          fontSize: 'min(5.56vw, 3.13vh)',
+          color: 'white',
+          textAlign: 'right',
+          fontWeight: 700,
+          textTransform: 'uppercase',
+          letterSpacing: '0.02em',
+          lineHeight: 1.3,
+          margin: 0, zIndex: 1,
+        }}
+      >
+        REDÍMELO CON ESTE CÓDIGO PROMOCIONAL{' '}
+        <br />NUTRECATPLAY
+      </motion.p>
 
-      {/* "Escaneando..." */}
-      <motion.div style={{ flexShrink: 0, width: '100%', overflow: 'hidden' }}>
-        <motion.p
-          initial={{ x: '-110%', opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          transition={{ delay: 0.58, type: 'spring', stiffness: 160, damping: 22 }}
-          style={{
-            fontFamily: 'var(--font-body)',
-            fontSize: 'min(4.2vw, 2.3vh)',
-            color: '#00577a',
-            margin: 0, lineHeight: 1.35,
-            textTransform: 'uppercase',
-            textAlign: 'center',
-            letterSpacing: '0.03em',
-            textShadow: '0 1px 5px rgba(255,255,255,0.4)',
-          }}
-        >
-          Escaneando el siguiente código QR{' '}
-          <strong>10% descuento</strong>
-        </motion.p>
-      </motion.div>
+      {/* LUGAR: PLAZACAMPO.COM — center (50%, 87.42%), w 74.26% */}
+      <motion.p
+        initial={{ opacity: 0, y: 14 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.42, type: 'spring', stiffness: 160, damping: 22 }}
+        style={{
+          position: 'absolute',
+          left: '50%', top: '87.42%',
+          transform: 'translate(-50%, -50%)',
+          width: '74.26%',
+          fontFamily: 'var(--font-body)',
+          fontSize: 'min(5.56vw, 3.13vh)',
+          color: 'white',
+          textAlign: 'center',
+          fontWeight: 700,
+          textTransform: 'uppercase',
+          letterSpacing: '0.04em',
+          margin: 0, zIndex: 1,
+        }}
+      >
+        LUGAR: PLAZACAMPO.COM
+      </motion.p>
 
-      {/* "Válido en..." */}
-      <motion.div style={{ flexShrink: 0, width: '100%', overflow: 'hidden', marginTop: 'min(1vw, 0.55vh)' }}>
-        <motion.p
-          initial={{ x: '110%', opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          transition={{ delay: 0.72, type: 'spring', stiffness: 160, damping: 22 }}
-          style={{
-            fontFamily: 'var(--font-body)',
-            fontSize: 'min(4.2vw, 2.3vh)',
-            color: '#00577a',
-            margin: 0,
-            textTransform: 'uppercase',
-            textAlign: 'center',
-            letterSpacing: '0.03em',
-            textShadow: '0 1px 5px rgba(255,255,255,0.4)',
-          }}
-        >
-          Válido en productos Nutre Cat
-        </motion.p>
-      </motion.div>
-
-      <div style={{ flex: 1 }} />
-
-      {/* Countdown circular */}
+      {/* Countdown — esquina inferior, toca para volver */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 0.9 }}
+        transition={{ delay: 0.7 }}
         style={{
-          flexShrink: 0,
+          position: 'absolute',
+          bottom: '1.5%', left: '50%',
+          transform: 'translateX(-50%)',
           display: 'flex', flexDirection: 'column',
-          alignItems: 'center', gap: 'min(0.8vw, 0.45vh)',
-          paddingBottom: 'min(2vw, 1.1vh)',
+          alignItems: 'center', gap: 'min(0.5vw, 0.28vh)',
+          zIndex: 3,
         }}
       >
-        <div
-          onClick={onNext}
-          style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 'min(0.8vw, 0.45vh)', cursor: 'pointer' }}
-        >
-          <div style={{ position: 'relative', width: 72, height: 72 }}>
-            <svg width={72} height={72} style={{ transform: 'rotate(-90deg)' }}>
-              <circle cx={36} cy={36} r={RADIUS - 4} fill="none" stroke="rgba(0,87,122,0.18)" strokeWidth={5} />
-              <circle
-                cx={36} cy={36} r={RADIUS - 4}
-                fill="none" stroke="#00577a" strokeWidth={5} strokeLinecap="round"
-                strokeDasharray={`${strokeDash} ${CIRCUMFERENCE * 0.82}`}
-                style={{ transition: 'stroke-dasharray 1s linear' }}
-              />
-            </svg>
-            <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <span style={{ fontFamily: 'var(--font-display)', fontSize: 'min(5vw, 2.8vh)', color: '#00577a', lineHeight: 1 }}>
-                {secs}
-              </span>
-            </div>
+        <div style={{ position: 'relative', width: 52, height: 52 }}>
+          <svg width={52} height={52} style={{ transform: 'rotate(-90deg)' }}>
+            <circle cx={26} cy={26} r={R - 3} fill="none" stroke="rgba(0,87,122,0.18)" strokeWidth={4} />
+            <circle
+              cx={26} cy={26} r={R - 3}
+              fill="none" stroke="#00577a" strokeWidth={4} strokeLinecap="round"
+              strokeDasharray={`${dash} ${CIRCUM}`}
+              style={{ transition: 'stroke-dasharray 1s linear' }}
+            />
+          </svg>
+          <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <span style={{ fontFamily: 'var(--font-display)', fontSize: 'min(4vw, 2.25vh)', color: '#00577a', lineHeight: 1 }}>
+              {secs}
+            </span>
           </div>
-
-          <motion.span
-            animate={{ opacity: [0.55, 1, 0.55] }}
-            transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}
-            style={{
-              fontFamily: 'var(--font-display)',
-              fontSize: 'min(3vw, 1.65vh)',
-              color: '#00577a',
-              textTransform: 'uppercase',
-              letterSpacing: '0.04em',
-            }}
-          >
-            Toca para volver al inicio
-          </motion.span>
         </div>
+        <motion.span
+          animate={{ opacity: [0.5, 1, 0.5] }}
+          transition={{ duration: 2.2, repeat: Infinity }}
+          style={{
+            fontFamily: 'var(--font-display)',
+            fontSize: 'min(2.5vw, 1.4vh)',
+            color: '#00577a',
+            textTransform: 'uppercase',
+            letterSpacing: '0.04em',
+          }}
+        >
+          Toca para volver al inicio
+        </motion.span>
       </motion.div>
     </div>
   );

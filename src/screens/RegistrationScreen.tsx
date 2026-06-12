@@ -54,7 +54,7 @@ export default function RegistrationScreen({ onNext }: Props) {
           transition={{ delay: 0.15, type: 'spring', stiffness: 300, damping: 22 }}
           style={{
             background: '#00577a',
-            borderRadius: 20,
+            borderRadius: 54,
             padding: '6% 7%',
             display: 'flex',
             flexDirection: 'column',

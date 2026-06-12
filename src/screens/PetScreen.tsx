@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useRef, useEffect, useCallback } from 'react';
 import ScreenLayout from '../components/ScreenLayout';
-import { bgPlay, bgStop } from '../utils/sounds';
+import { bgPlay, bgStop, bgFade } from '../utils/sounds';
 
 const CAT_IDLE        = '/assets/cat/cat-hub.png';
 const CAT_EYES_CLOSED = '/assets/cat/cat-pet-closed.png';
@@ -68,9 +68,12 @@ export default function PetScreen({ onNext, name = 'Simón' }: Props) {
     clearInterval(blinkTimer.current!);
   };
 
-  useEffect(() => () => {
-    clearInterval(petTimer.current!);
-    clearInterval(blinkTimer.current!);
+  useEffect(() => {
+    bgFade('ukulele', 1400, 0.01);
+    return () => {
+      clearInterval(petTimer.current!);
+      clearInterval(blinkTimer.current!);
+    };
   }, []);
 
   useEffect(() => {
@@ -147,30 +150,79 @@ export default function PetScreen({ onNext, name = 'Simón' }: Props) {
           }}
         />
 
-        {/* Pills "Acaricia a" + estado — solo cuando no está done */}
-        {!done && <motion.div
-          animate={!petting && !done ? { opacity: [0.7, 1, 0.7] } : { opacity: 1 }}
-          transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
-          style={{ position: 'absolute', top: 'calc(28% + 80px)', left: 'calc(52% + 150px)', right: '2%', zIndex: 3, display: 'flex', flexDirection: 'column', gap: 'min(2vw, 1.1vh)' }}
-        >
-          <div style={{ background: 'white', borderRadius: 99, padding: 'min(1.8vw, 1vh) min(4vw, 2.2vh)', boxShadow: '0 2px 12px rgba(0,87,122,0.18)', alignSelf: 'flex-start' }}>
-            <span style={{ fontFamily: 'var(--font-display)', fontSize: 'min(5.5vw, 3.1vh)', color: '#00577a', textTransform: 'uppercase', letterSpacing: '0.04em', whiteSpace: 'nowrap' }}>
-              Acaricia a
-            </span>
-          </div>
-          <motion.div
-            animate={petting ? { scale: [1, 1.06, 1] } : {}}
-            transition={{ duration: 0.5, repeat: Infinity }}
-            style={{ background: 'white', borderRadius: 99, padding: 'min(1.5vw, 0.85vh) min(4vw, 2.2vh)', boxShadow: '0 2px 12px rgba(0,87,122,0.18)', alignSelf: 'flex-start' }}
+        {/* Estrella decorativa — Figma 477:168, esquina sup-izq de la card */}
+        {!done && (
+          <svg
+            viewBox="0 0 100 100"
+            style={{
+              position: 'absolute',
+              left: 'calc(50.9% - 3.5% + 410px)',
+              top: 'calc(29.7% - 4% - 4px + 100px)',
+              width: 'min(10.4vw, 5.85vh)',
+              height: 'min(10.4vw, 5.85vh)',
+              zIndex: 4,
+              transform: 'rotate(-28deg)',
+              pointerEvents: 'none',
+              overflow: 'visible',
+            }}
           >
-            <span style={{ fontFamily: 'var(--font-display)', fontSize: 'min(5vw, 2.8vh)', color: '#00577a', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>
-              {done ? '¡Listo! 💙' : petting ? 'Prrr… 😸' : `${name} 🐱`}
+            <polygon
+              points="50,4 61,35 94,36 67,56 77,87 50,68 23,87 33,56 6,36 39,35"
+              fill="#b0e8f9"
+              stroke="#00577a"
+              strokeWidth="5"
+            />
+          </svg>
+        )}
+
+        {/* Card "ACARICIA A / nombre" — Figma 477:165, rotación -8.24deg */}
+        {!done && (
+          <motion.div
+            animate={{ opacity: [0.75, 1, 0.75] }}
+            transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
+            style={{
+              position: 'absolute',
+              left: '50.9%', top: 'calc(29.7% + 100px)',
+              width: '41.86%',
+              zIndex: 3,
+              transform: 'rotate(-8.24deg)',
+              background: '#b0e8f9',
+              border: '6px solid #00577a',
+              borderRadius: 'min(4.05vw, 2.28vh)',
+              paddingTop: 30, paddingBottom: 20, paddingLeft: 'min(4vw, 2.2vh)', paddingRight: 'min(4vw, 2.2vh)',
+              display: 'flex', flexDirection: 'column', alignItems: 'center',
+              gap: 'min(0.4vw, 0.22vh)',
+              boxShadow: '0 4px 18px rgba(0,87,122,0.22)',
+            }}
+          >
+            <span style={{
+              fontFamily: 'var(--font-display)',
+              fontSize: 'min(6.62vw, 3.73vh)',
+              color: '#00577a',
+              textTransform: 'uppercase',
+              letterSpacing: '0.05em',
+              lineHeight: 0.866,
+              textAlign: 'center',
+              display: 'block',
+            }}>
+              ACARICIA A
+            </span>
+            <span style={{
+              fontFamily: 'var(--font-body)',
+              fontSize: 'min(6.62vw, 3.73vh)',
+              color: '#00577a',
+              textTransform: 'uppercase',
+              lineHeight: 0.952,
+              textAlign: 'center',
+              display: 'block',
+            }}>
+              {name}
             </span>
           </motion.div>
-        </motion.div>}
+        )}
 
         {/* Gato central — grande */}
-        <div style={{ position: 'absolute', top: 'calc(28% + 100px)', bottom: '18%', left: 0, right: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ position: 'absolute', top: 'calc(28% + 310px)', bottom: '18%', left: 0, right: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           {/* Video de consentir — visible solo mientras se acaricia */}
           <video
             ref={videoRef}
@@ -180,7 +232,7 @@ export default function PetScreen({ onNext, name = 'Simón' }: Props) {
             playsInline
             style={{
               position: 'absolute',
-              width: '62%', height: 'auto',
+              width: '49.6%', height: 'auto',
               objectFit: 'contain',
               userSelect: 'none', pointerEvents: 'none',
               opacity: petting && !done ? 1 : 0,
@@ -207,7 +259,7 @@ export default function PetScreen({ onNext, name = 'Simón' }: Props) {
                        : { duration: 3, repeat: Infinity, ease: 'easeInOut', opacity: { duration: 0.15 } }
                 }
                 style={{
-                  width: '62%', height: 'auto',
+                  width: '49.6%', height: 'auto',
                   userSelect: 'none', pointerEvents: 'none',
                   filter: done ? 'drop-shadow(0 20px 50px rgba(0,87,122,0.3))'
                                : 'drop-shadow(0 16px 32px rgba(0,87,122,0.15))',
@@ -220,11 +272,11 @@ export default function PetScreen({ onNext, name = 'Simón' }: Props) {
           <AnimatePresence>
             {done && (
               <motion.div
-                initial={{ opacity: 0, scale: 0, y: 10 }}
-                animate={{ opacity: 1, scale: 1, y: 0 }}
+                initial={{ opacity: 0, scale: 0, y: 10, x: '-50%' }}
+                animate={{ opacity: 1, scale: 1, y: 0, x: '-50%' }}
                 exit={{ opacity: 0 }}
                 transition={{ type: 'spring', stiffness: 280, delay: 0.35 }}
-                style={{ position: 'absolute', top: '6%', left: 'calc(5% + 480px)', zIndex: 10, maxWidth: '65%' }}
+                style={{ position: 'absolute', top: 'calc(6% - 150px)', left: 'calc(50% + 80px)', zIndex: 10, maxWidth: '65%' }}
               >
                 <motion.div
                   animate={{ scale: [1, 1.05, 1] }}
@@ -237,7 +289,7 @@ export default function PetScreen({ onNext, name = 'Simón' }: Props) {
                     textAlign: 'center', position: 'relative',
                   }}
                 >
-                  <p style={{ fontFamily: 'var(--font-display)', fontSize: 'min(5vw, 2.8vh)', color: '#00577a', margin: 0 }}>
+                  <p style={{ fontFamily: 'var(--font-display)', fontSize: 'min(5vw, 2.8vh)', color: '#00577a', margin: 0, whiteSpace: 'nowrap' }}>
                     ¡Estoy listo para jugar!
                   </p>
                   <div style={{ position: 'absolute', bottom: -11, left: '50%', transform: 'translateX(-50%)', width: 0, height: 0, borderLeft: '10px solid transparent', borderRight: '10px solid transparent', borderTop: '12px solid rgba(255,255,255,0.45)' }} />
@@ -264,9 +316,10 @@ export default function PetScreen({ onNext, name = 'Simón' }: Props) {
                 animate={{ boxShadow: ['0 0 20px rgba(0,87,122,0.2)', '0 0 44px rgba(0,87,122,0.55)', '0 0 20px rgba(0,87,122,0.2)'] }}
                 transition={{ duration: 1.5, repeat: Infinity }}
                 style={{
-                  width: '100%', padding: 'min(4vw, 2.2vh)',
-                  background: '#00577a', color: 'white', border: 'none', borderRadius: 99,
-                  fontFamily: 'var(--font-display)', fontSize: 'min(8.5vw, 4.8vh)',
+                  width: '100%', height: 82, padding: '15px min(4vw, 2.2vh) 0',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  background: 'white', color: '#00577a', border: 'none', borderRadius: 99,
+                  fontFamily: 'var(--font-display)', fontSize: 77.742, lineHeight: 1,
                   cursor: 'pointer', textTransform: 'uppercase', letterSpacing: '0.03em',
                   textAlign: 'center', position: 'relative', overflow: 'hidden',
                 }}
