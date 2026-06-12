@@ -4,7 +4,6 @@ import { useState, useEffect, useRef, useCallback, useLayoutEffect } from 'react
 // ─── Config ────────────────────────────────────────────────────────────────────
 const N_PENS     = 3;
 const SHOOT_MS   = 750;
-const BENEFITS_MS = 4500;
 const RESULT_MS  = 1600;
 const INTRO_MS   = 5000;
 const PTS_GOAL   = 60;

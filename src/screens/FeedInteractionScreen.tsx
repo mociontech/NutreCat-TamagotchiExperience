@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
-import type { FoodType } from '../data/gameStates';
+type FoodType = 'dry' | 'wet' | 'treats';
 import { sfx, sfxStop } from '../utils/sounds';
 
 type BubblePhase = 'in' | 'out';

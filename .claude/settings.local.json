@@ -36,7 +36,11 @@
       "Bash(curl -s -L \"https://www.figma.com/api/mcp/asset/175e7266-ab63-496b-bd38-b38b6c715445\" -o public/assets/instructions/football-ball-cross.png)",
       "Bash(curl -s -L \"https://www.figma.com/api/mcp/asset/dc65b735-2271-49cc-a5a2-2ab723dcfdf2\" -o public/assets/instructions/football-paw.png)",
       "Bash(curl -s -L \"https://www.figma.com/api/mcp/asset/9053f857-a1a8-4955-af3f-92155222ee5d\" -o public/assets/instructions/football-check-badge.png)",
-      "Bash(curl -s -L \"https://www.figma.com/api/mcp/asset/0489a462-ca2b-4626-a104-5046ec24cbb3\" -o public/assets/instructions/football-ball-tilted.png)"
+      "Bash(curl -s -L \"https://www.figma.com/api/mcp/asset/0489a462-ca2b-4626-a104-5046ec24cbb3\" -o public/assets/instructions/football-ball-tilted.png)",
+      "Bash(find \"c:/Users/Pipec/Downloads/nutre-cat-totem \\(2\\)/nutre-cat\" -name \"*.mov\" 2>/dev/null; find \"c:/Users/Pipec/Downloads\" -maxdepth 2 -name \"*.mov\" 2>/dev/null)",
+      "Read(//c/Users/Pipec/Downloads/**)",
+      "Bash(where ffmpeg *)",
+      "Bash(where ffprobe *)"
     ],
     "additionalDirectories": [
       "C:\\Users\\Pipec\\Downloads\\nutre-cat-totem (2)\\nutre-cat\\public\\assets\\cat\\box-sprite"

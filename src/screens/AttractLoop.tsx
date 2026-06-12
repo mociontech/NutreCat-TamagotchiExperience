@@ -4,7 +4,7 @@ import { sfx } from '../utils/sounds';
 
 interface Props { onStart: () => void; }
 
-const VIDEO_SRC = '/assets/cat/box-sprite/BoxVideo.webm';
+const VIDEO_SRC = '/assets/cat/Animation/caja.webm';
 
 export default function AttractLoop({ onStart }: Props) {
   const [playing,   setPlaying]   = useState(false);
@@ -100,16 +100,19 @@ export default function AttractLoop({ onStart }: Props) {
           left: '50%',
           bottom: 0,
           transform: 'translateX(-50%)',
-          width: '139%',
+          width: '83.4%',
           height: 'auto',
           pointerEvents: 'none',
           userSelect: 'none',
           objectFit: 'contain',
           objectPosition: 'bottom',
+          WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%), linear-gradient(to bottom, transparent 0%, black 10%, black 88%, transparent 100%)',
+          maskImage: 'linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%), linear-gradient(to bottom, transparent 0%, black 10%, black 88%, transparent 100%)',
+          WebkitMaskComposite: 'source-in',
+          maskComposite: 'intersect',
         }}
       >
-        <source src={VIDEO_SRC} type="video/mp4" />
-        <source src={VIDEO_SRC} type="video/quicktime" />
+        <source src={VIDEO_SRC} type="video/webm" />
       </video>
 
       {/* ── MANO — desaparece al tocar ── */}
