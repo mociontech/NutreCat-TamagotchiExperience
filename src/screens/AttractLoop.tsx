@@ -100,16 +100,12 @@ export default function AttractLoop({ onStart }: Props) {
           left: '50%',
           bottom: 0,
           transform: 'translateX(-50%)',
-          width: '83.4%',
+          width: '139%',
           height: 'auto',
           pointerEvents: 'none',
           userSelect: 'none',
           objectFit: 'contain',
           objectPosition: 'bottom',
-          WebkitMaskImage: 'linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%), linear-gradient(to bottom, transparent 0%, black 10%, black 88%, transparent 100%)',
-          maskImage: 'linear-gradient(to right, transparent 0%, black 12%, black 88%, transparent 100%), linear-gradient(to bottom, transparent 0%, black 10%, black 88%, transparent 100%)',
-          WebkitMaskComposite: 'source-in',
-          maskComposite: 'intersect',
         }}
       >
         <source src={VIDEO_SRC} type="video/webm" />

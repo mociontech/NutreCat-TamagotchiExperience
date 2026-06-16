@@ -39,25 +39,23 @@ export default function RewardQrScreen({ onNext }: Props) {
       </div>
 
       {/* ¡Gracias por participar! — canvas 163px, center (50%, 37.45%), w 81.67% */}
-      <motion.p
-        initial={{ opacity: 0, y: -18 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.12, type: 'spring', stiffness: 160, damping: 22 }}
-        style={{
-          position: 'absolute',
-          left: '50%', top: '37.45%',
-          transform: 'translate(-50%, -50%)',
-          width: '81.67%',
-          fontFamily: 'var(--font-display)',
-          fontSize: 'min(15.09vw, 8.49vh)',
-          color: '#00577a',
-          textAlign: 'center',
-          lineHeight: 0.866,
-          margin: 0, zIndex: 1,
-        }}
-      >
-        ¡Gracias por participar!
-      </motion.p>
+      <div style={{ position: 'absolute', left: '50%', top: '37.45%', transform: 'translate(-50%, -50%)', width: '81.67%', zIndex: 1 }}>
+        <motion.p
+          initial={{ opacity: 0, y: -18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.12, type: 'spring', stiffness: 160, damping: 22 }}
+          style={{
+            fontFamily: 'var(--font-display)',
+            fontSize: 'min(15.09vw, 8.49vh)',
+            color: '#00577a',
+            textAlign: 'center',
+            lineHeight: 0.866,
+            margin: 0,
+          }}
+        >
+          ¡Gracias por participar!
+        </motion.p>
+      </div>
 
       {/* 10% — canvas 258px, center (31.11%, 54.94%), w 32.96% */}
       <motion.p
@@ -66,7 +64,7 @@ export default function RewardQrScreen({ onNext }: Props) {
         transition={{ delay: 0.22, type: 'spring', stiffness: 160, damping: 22 }}
         style={{
           position: 'absolute',
-          left: '14.63%', top: '54.94%',
+          left: '14.63%', top: '53.38%',
           transform: 'translateY(-50%)',
           width: '32.96%',
           fontFamily: 'var(--font-display)',
@@ -87,7 +85,7 @@ export default function RewardQrScreen({ onNext }: Props) {
         transition={{ delay: 0.28, type: 'spring', stiffness: 160, damping: 22 }}
         style={{
           position: 'absolute',
-          left: '46.48%', top: '53.46%',
+          left: '46.48%', top: '51.90%',
           transform: 'translateY(-50%)',
           width: '37.5%',
           fontFamily: 'var(--font-body)',
@@ -150,27 +148,25 @@ export default function RewardQrScreen({ onNext }: Props) {
       </motion.p>
 
       {/* LUGAR: PLAZACAMPO.COM — center (50%, 87.42%), w 74.26% */}
-      <motion.p
-        initial={{ opacity: 0, y: 14 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.42, type: 'spring', stiffness: 160, damping: 22 }}
-        style={{
-          position: 'absolute',
-          left: '50%', top: '87.42%',
-          transform: 'translate(-50%, -50%)',
-          width: '74.26%',
-          fontFamily: 'var(--font-body)',
-          fontSize: 'min(5.56vw, 3.13vh)',
-          color: 'white',
-          textAlign: 'center',
-          fontWeight: 700,
-          textTransform: 'uppercase',
-          letterSpacing: '0.04em',
-          margin: 0, zIndex: 1,
-        }}
-      >
-        LUGAR: PLAZACAMPO.COM
-      </motion.p>
+      <div style={{ position: 'absolute', left: '50%', top: '87.42%', transform: 'translate(-50%, -50%)', width: '74.26%', zIndex: 1 }}>
+        <motion.p
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.42, type: 'spring', stiffness: 160, damping: 22 }}
+          style={{
+            fontFamily: 'var(--font-body)',
+            fontSize: 'min(5.56vw, 3.13vh)',
+            color: 'white',
+            textAlign: 'center',
+            fontWeight: 700,
+            textTransform: 'uppercase',
+            letterSpacing: '0.04em',
+            margin: 0,
+          }}
+        >
+          LUGAR: PLAZACAMPO.COM
+        </motion.p>
+      </div>
 
       {/* Countdown — esquina inferior, toca para volver */}
       <motion.div

@@ -19,11 +19,17 @@ interface Props {
 }
 
 export default function TalkScreen({ onDone, score = 0, hasFed = true, hasPlayed = true }: Props) {
-  const [phase,   setPhase]   = useState<'light' | 'dimming' | 'dark'>('light');
-  const [showBtn, setShowBtn] = useState(false);
-  const [zzzList, setZzzList] = useState<Zzz[]>([]);
+  const [phase,      setPhase]      = useState<'light' | 'dimming' | 'dark'>('light');
+  const [showBtn,    setShowBtn]    = useState(false);
+  const [zzzList,    setZzzList]    = useState<Zzz[]>([]);
+  const [showLabels, setShowLabels] = useState(true);
   const zzzId   = useRef(0);
   const doneMap = { hasPlayed, hasFed };
+
+  useEffect(() => {
+    const t = setTimeout(() => setShowLabels(false), 5000);
+    return () => clearTimeout(t);
+  }, []);
 
   /* Musicbox suave solo mientras fase oscura */
   useEffect(() => {
@@ -131,8 +137,8 @@ export default function TalkScreen({ onDone, score = 0, hasFed = true, hasPlayed
       </div>
 
       {/* ── Score pill ── */}
-      <div style={{ position: 'absolute', top: '5%', right: '9%', zIndex: 10, background: 'white', borderRadius: 99, padding: 'min(1.5vw, 0.85vh) min(4.5vw, 2.5vh)', boxShadow: '0 2px 14px rgba(0,0,0,0.25)' }}>
-        <span style={{ fontFamily: 'var(--font-display)', fontSize: 'min(6.6vw, 3.7vh)', color: '#00577a', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>
+      <div style={{ position: 'absolute', top: '5%', right: '9%', zIndex: 10, background: 'white', borderRadius: 'min(3.8vw, 2.14vh)', width: 'min(33.3vw, 18.75vh)', height: 'min(7.6vw, 4.27vh)', boxShadow: '0 2px 14px rgba(0,87,122,0.18)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <span style={{ fontFamily: 'var(--font-display)', fontSize: 'min(6.57vw, 3.7vh)', color: '#00577a', textTransform: 'uppercase', textAlign: 'center', whiteSpace: 'nowrap', lineHeight: 1, paddingTop: '0.25em' }}>
           Puntos: {score}
         </span>
       </div>
@@ -161,16 +167,15 @@ export default function TalkScreen({ onDone, score = 0, hasFed = true, hasPlayed
               top: '19.38%', left: '24.17%',
               width: '20%',
               zIndex: 9, pointerEvents: 'none',
-              overflow: 'hidden',
             }}
           >
-            <div style={{ overflow: 'hidden', width: '100%', aspectRatio: '360 / 239' }}>
+            <div style={{ width: '100%', aspectRatio: '360 / 239' }}>
               <img
                 src="/assets/ui/hand-pointer.svg"
                 alt=""
                 style={{
                   width: '100%', height: '100%', display: 'block',
-                  transform: 'scaleX(-1) rotate(20deg)',
+                  transform: 'scaleX(-1) rotate(-25deg)',
                   filter: 'brightness(0) invert(1)',
                 }}
               />
@@ -183,19 +188,20 @@ export default function TalkScreen({ onDone, score = 0, hasFed = true, hasPlayed
             transition={{ duration: 1.3, repeat: Infinity }}
             style={{
               position: 'absolute',
-              top: '14%', left: '9%',
+              top: '19.21%', left: '64.56%',
               background: 'rgba(255,255,255,0.9)',
               borderRadius: 99,
               padding: 'min(1.5vw, 0.85vh) min(3.5vw, 2vh)',
               fontFamily: 'var(--font-display)',
-              fontSize: 'min(4vw, 2.3vh)',
+              fontSize: 'min(6vw, 3.4vh)',
               color: '#00577a',
               boxShadow: '0 2px 10px rgba(0,0,0,0.2)',
               zIndex: 9,
               whiteSpace: 'nowrap',
+              textAlign: 'center',
             }}
           >
-            💡 ¡Apaga la luz!
+            ¡Apaga la luz!
           </motion.div>
         </>
       )}
@@ -230,34 +236,34 @@ export default function TalkScreen({ onDone, score = 0, hasFed = true, hasPlayed
       {/* ── Botón ¡Listo! ── */}
       <AnimatePresence>
         {showBtn && (
-          <motion.button
-            initial={{ opacity: 0, y: 20, scale: 0.9 }}
-            animate={{
-              opacity: 1, y: 0, scale: 1,
-              boxShadow: [
-                '0 0 20px rgba(255,255,255,0.2)',
-                '0 0 50px rgba(255,255,255,0.5)',
-                '0 0 20px rgba(255,255,255,0.2)',
-              ],
-            }}
-            transition={{ duration: 0.35, boxShadow: { duration: 2, repeat: Infinity } }}
-            onClick={onDone}
-            style={{
-              position: 'absolute', bottom: '24%', left: '50%',
-              transform: 'translateX(-50%)',
-              background: 'rgba(255,255,255,0.15)',
-              backdropFilter: 'blur(10px)',
-              color: 'white', border: '2px solid rgba(255,255,255,0.5)',
-              borderRadius: 99,
-              padding: 'min(2.8vw, 1.6vh) min(10vw, 5.6vh)',
-              fontFamily: 'var(--font-display)',
-              fontSize: 'min(6.5vw, 3.6vh)',
-              textTransform: 'uppercase',
-              cursor: 'pointer', whiteSpace: 'nowrap', zIndex: 10,
-            }}
-          >
-            ¡Listo! 💤
-          </motion.button>
+          <div style={{ position: 'absolute', bottom: '24%', left: 0, right: 0, display: 'flex', justifyContent: 'center', zIndex: 10 }}>
+            <motion.button
+              initial={{ opacity: 0, y: 20, scale: 0.9 }}
+              animate={{
+                opacity: 1, y: 0, scale: 1,
+                boxShadow: [
+                  '0 0 20px rgba(255,255,255,0.2)',
+                  '0 0 50px rgba(255,255,255,0.5)',
+                  '0 0 20px rgba(255,255,255,0.2)',
+                ],
+              }}
+              transition={{ duration: 0.35, boxShadow: { duration: 2, repeat: Infinity } }}
+              onClick={onDone}
+              style={{
+                background: 'rgba(255,255,255,0.15)',
+                backdropFilter: 'blur(10px)',
+                color: 'white', border: '2px solid rgba(255,255,255,0.5)',
+                borderRadius: 99,
+                padding: 'min(2.8vw, 1.6vh) min(10vw, 5.6vh)',
+                fontFamily: 'var(--font-display)',
+                fontSize: 'min(8vw, 4.5vh)',
+                textTransform: 'uppercase',
+                cursor: 'pointer', whiteSpace: 'nowrap',
+              }}
+            >
+              ¡Listo!
+            </motion.button>
+          </div>
         )}
       </AnimatePresence>
 
@@ -278,9 +284,13 @@ export default function TalkScreen({ onDone, score = 0, hasFed = true, hasPlayed
               }}>
                 <img src={item.icon} alt="" style={{ width: '62%', height: 'auto', objectFit: 'contain', filter: done ? 'none' : 'brightness(0) invert(1)' }} />
               </div>
-              <span style={{ fontFamily: 'var(--font-display)', fontSize: 'min(3.4vw, 1.9vh)', color: 'white', textTransform: 'uppercase', letterSpacing: '0.04em', opacity: isCurrent || done ? 1 : 0.55, whiteSpace: 'nowrap', pointerEvents: 'none' }}>
-                {done ? '✓ ' : ''}{item.label}
-              </span>
+              <motion.span
+                animate={{ opacity: showLabels ? (isCurrent || done ? 1 : 0.55) : 0 }}
+                transition={{ duration: 0.6 }}
+                style={{ fontFamily: 'var(--font-display)', fontSize: 'min(3.4vw, 1.9vh)', color: 'white', textTransform: 'uppercase', letterSpacing: '0.04em', whiteSpace: 'nowrap', pointerEvents: 'none' }}
+              >
+                {item.label}
+              </motion.span>
             </div>
           );
         })}

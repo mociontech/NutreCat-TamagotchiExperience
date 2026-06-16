@@ -33,18 +33,22 @@ export default function FallingBagsInstructionsScreen({ onDone, score = 0 }: Pro
       <div style={{
         position: 'absolute',
         left: '57.4%', top: '5.1%',
-        width: '33.3%', height: '4.27%',
-        background: 'white', borderRadius: 99,
+        width: 'min(33.3vw, 18.75vh)',
+        height: 'min(7.6vw, 4.27vh)',
+        background: 'white',
+        borderRadius: 'min(3.8vw, 2.14vh)',
+        boxShadow: '0 2px 14px rgba(0,87,122,0.18)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         zIndex: 5,
       }}>
         <span style={{
           fontFamily: 'var(--font-display)',
-          fontSize: 'min(5vw, 2.8vh)',
+          fontSize: 'min(6.57vw, 3.7vh)',
           color: '#00577a',
           textTransform: 'uppercase',
-          letterSpacing: '0.04em',
-          lineHeight: 1, paddingTop: '0.18em',
+          textAlign: 'center',
+          whiteSpace: 'nowrap',
+          lineHeight: 1, paddingTop: '0.25em',
         }}>
           PUNTOS: {score}
         </span>
@@ -68,7 +72,7 @@ export default function FallingBagsInstructionsScreen({ onDone, score = 0 }: Pro
         {/* ¿CÓMO SE JUEGA? */}
         <p style={{
           position: 'absolute',
-          top: '9.3%', left: 0, right: 0,
+          top: '6.17%', left: 0, right: 0,
           fontFamily: 'var(--font-display)',
           fontSize: 'min(8.24vw, 4.64vh)',
           color: '#00577a',
@@ -83,8 +87,7 @@ export default function FallingBagsInstructionsScreen({ onDone, score = 0 }: Pro
 
         {/* ── Step 1 ─────────────────────────────────────────────────── */}
         {/* Circle @ canvas (144, 669) → within card (144, 288) → 13.3%, 22.5% */}
-        <StepCircle n={1} cx="13.3%" cy="22.5%" />
-        {/* Text @ canvas left:631 top:624 → within card (533, 243) → 60.1%, 19% */}
+        <StepCircle n={1} cx="9.91%" cy="24.46%" />
         <div style={{ position: 'absolute', left: '58.4%', top: '19%', width: '33%', zIndex: 1 }}>
           <BagsStepText
             main={{ text: 'TOCAS LAS BOLSAS', color: '#00577a' }}
@@ -95,24 +98,24 @@ export default function FallingBagsInstructionsScreen({ onDone, score = 0 }: Pro
         {/* Illustration — 3 product bags scattered / rotated */}
         {/* Relative container covers the illustration zone within the card */}
         <div style={{ position: 'absolute', left: '17%', top: '13%', width: '38%', height: '19%', zIndex: 1 }}>
-          {/* product-3 — left, small, +7.02° */}
-          <img src="/assets/products/product-3.png" alt="" style={{
+          {/* leche — left, small, +7.02° */}
+          <img src="/assets/products/product-1.png" alt="" style={{
             position: 'absolute', left: '10%', top: '15%',
-            height: '54%', width: 'auto', objectFit: 'contain',
+            height: '41.31%', width: 'auto', objectFit: 'contain',
             transform: 'rotate(7.02deg)', transformOrigin: 'center center',
             filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.22))', pointerEvents: 'none',
           }} />
-          {/* product-2 — center, larger, +38.14° */}
-          <img src="/assets/products/product-2.png" alt="" style={{
-            position: 'absolute', left: '25%', top: '22%',
+          {/* salmon — center, larger, +38.14° */}
+          <img src="/assets/products/product-3.png" alt="" style={{
+            position: 'absolute', left: '36.88%', top: '40.56%',
             height: '70%', width: 'auto', objectFit: 'contain',
             transform: 'rotate(38.14deg)', transformOrigin: 'center center',
             filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.22))', pointerEvents: 'none',
           }} />
-          {/* product-1 — right, small, -38.09° */}
-          <img src="/assets/products/product-1.png" alt="" style={{
-            position: 'absolute', right: '8%', top: '18%',
-            height: '48%', width: 'auto', objectFit: 'contain',
+          {/* tilapia — right, small, -38.09° */}
+          <img src="/assets/products/product-2.png" alt="" style={{
+            position: 'absolute', right: '5%', top: '18%',
+            height: '31.2%', width: 'auto', objectFit: 'contain',
             transform: 'rotate(-38.09deg)', transformOrigin: 'center center',
             filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.22))', pointerEvents: 'none',
           }} />
@@ -123,19 +126,20 @@ export default function FallingBagsInstructionsScreen({ onDone, score = 0 }: Pro
 
         {/* ── Step 2 ─────────────────────────────────────────────────── */}
         {/* Circle @ canvas (144, 921) → within card (144, 540) → 13.3%, 42.3% */}
-        <StepCircle n={2} cx="13.3%" cy="42.3%" />
+        <StepCircle n={2} cx="9.91%" cy="46.4%" />
         <div style={{ position: 'absolute', left: '58.4%', top: '40.4%', width: '33%', zIndex: 1 }}>
           <BagsStepText
             main={{ text: 'EVITA LA ESPINA', color: '#00577a' }}
-            sub={{ text: '-10 PUNTOS', color: '#d23d22' }}
+            sub={{ text: '-10 PUNTOS', color: '#a049bb' }}
           />
         </div>
         {/* imgMuerto1 @ canvas left:307 top:909 w:262 h:141 → within card: 23.6%, 41.2%, 29.5% wide */}
         <img src={A.deadCreature} alt="" style={{
           position: 'absolute',
-          left: '23.6%', top: '39.5%',
+          left: '23.6%', top: '46.4%',
           width: '29.5%', height: 'auto',
           objectFit: 'contain',
+          transform: 'translateY(-50%)',
           zIndex: 1, pointerEvents: 'none',
           filter: 'drop-shadow(0 2px 8px rgba(0,0,0,0.18))',
         }} />
@@ -145,7 +149,7 @@ export default function FallingBagsInstructionsScreen({ onDone, score = 0 }: Pro
 
         {/* ── Step 3 ─────────────────────────────────────────────────── */}
         {/* Circle @ canvas (144, 1167) → within card (144, 786) → 13.3%, 61.5% */}
-        <StepCircle n={3} cx="13.3%" cy="61.5%" />
+        <StepCircle n={3} cx="9.91%" cy="66.2%" />
         <div style={{ position: 'absolute', left: '58.4%', top: '59.4%', width: '33%', zIndex: 1 }}>
           <BagsStepText
             main={{ text: 'ATRAPA EL RATÓN', color: '#00577a' }}
@@ -155,9 +159,10 @@ export default function FallingBagsInstructionsScreen({ onDone, score = 0 }: Pro
         {/* imgRaton1 @ canvas left:307 top:1125 w:262 h:182 → within card: 23.6%, 58.1%, 29.5% wide */}
         <img src={A.mouse} alt="" style={{
           position: 'absolute',
-          left: '23.6%', top: '57%',
+          left: '23.6%', top: '66.2%',
           width: '29.5%', height: 'auto',
           objectFit: 'contain',
+          transform: 'translateY(-50%)',
           zIndex: 1, pointerEvents: 'none',
           filter: 'drop-shadow(0 0 12px rgba(255,215,0,0.55))',
         }} />
@@ -167,7 +172,7 @@ export default function FallingBagsInstructionsScreen({ onDone, score = 0 }: Pro
 
         {/* ── Step 4 ─────────────────────────────────────────────────── */}
         {/* Circle @ canvas (144, 1443) → within card (144, 1062) → 13.3%, 83.1% */}
-        <StepCircle n={4} cx="13.3%" cy="83.1%" />
+        <StepCircle n={4} cx="9.91%" cy="88%" />
         <div style={{ position: 'absolute', left: '58.4%', top: '80%', width: '33%', zIndex: 1 }}>
           <BagsStepText
             main={{ text: 'HAZ COMBO', color: '#00577a' }}
@@ -177,23 +182,26 @@ export default function FallingBagsInstructionsScreen({ onDone, score = 0 }: Pro
         </div>
         {/* 3 products side by side — canvas left ~291–521px, top ~1402px */}
         {/* Within card: left ~21.8% top ~79.9%, each bag ~8% wide */}
-        <div style={{ position: 'absolute', left: '18%', top: '78.5%', width: '37%', height: '11%', zIndex: 1 }}>
-          <img src="/assets/products/product-3.png" alt="" style={{
-            position: 'absolute', left: '2%', top: 0,
+        <div style={{ position: 'absolute', left: '20.26%', top: '80.07%', width: '37%', height: '12.1%', zIndex: 1 }}>
+          <img src="/assets/products/product-1.png" alt="" style={{
+            position: 'absolute', left: '11%', top: '6.47%',
             height: '100%', width: 'auto', objectFit: 'contain',
             transform: 'rotate(-14.36deg)', transformOrigin: 'bottom center',
             filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.2))', pointerEvents: 'none',
+            zIndex: 1,
+          }} />
+          <img src="/assets/products/product-3.png" alt="" style={{
+            position: 'absolute', left: '25.10%', top: 0,
+            height: '115%', width: 'auto', objectFit: 'contain',
+            filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.2))', pointerEvents: 'none',
+            zIndex: 2,
           }} />
           <img src="/assets/products/product-2.png" alt="" style={{
-            position: 'absolute', left: '30%', top: 0,
-            height: '100%', width: 'auto', objectFit: 'contain',
-            filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.2))', pointerEvents: 'none',
-          }} />
-          <img src="/assets/products/product-1.png" alt="" style={{
-            position: 'absolute', left: '58%', top: 0,
+            position: 'absolute', left: '49%', top: '6.47%',
             height: '100%', width: 'auto', objectFit: 'contain',
             transform: 'rotate(8.21deg)', transformOrigin: 'bottom center',
             filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.2))', pointerEvents: 'none',
+            zIndex: 1,
           }} />
         </div>
 
@@ -218,7 +226,7 @@ export default function FallingBagsInstructionsScreen({ onDone, score = 0 }: Pro
           color: '#00577a',
           textTransform: 'uppercase',
           letterSpacing: '0.04em',
-          lineHeight: 1, paddingTop: '0.18em',
+          lineHeight: 1, paddingTop: '0.269em',
           cursor: 'pointer',
           zIndex: 5,
           overflow: 'hidden',
@@ -255,7 +263,7 @@ function StepCircle({ n, cx, cy }: { n: number; cx: string; cy: string }) {
     }}>
       <span style={{
         fontFamily: 'var(--font-display)',
-        fontSize: 'min(5vw, 2.8vh)',
+        fontSize: 'min(6.33vw, 3.54vh)',
         color: 'white', lineHeight: 1, paddingTop: '0.18em',
       }}>
         {n}
