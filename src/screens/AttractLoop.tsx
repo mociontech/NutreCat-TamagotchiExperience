@@ -8,14 +8,34 @@ const VIDEO_SRC = '/assets/cat/Animation/caja.webm';
 
 export default function AttractLoop({ onStart }: Props) {
   const [playing,   setPlaying]   = useState(false);
+  const [loadPct,   setLoadPct]   = useState(0);
+  const [ready,     setReady]     = useState(false);
   const videoRef  = useRef<HTMLVideoElement>(null);
   const tappedRef = useRef(false);
 
-  // Precarga del video
+  // Precarga y autoplay del video
   useEffect(() => {
-    if (videoRef.current) {
-      videoRef.current.load();
-    }
+    const v = videoRef.current;
+    if (!v) return;
+
+    const onProgress = () => {
+      if (v.duration && v.buffered.length > 0) {
+        const pct = Math.min((v.buffered.end(v.buffered.length - 1) / v.duration) * 100, 100);
+        setLoadPct(pct);
+      }
+    };
+    const onReady = () => {
+      setLoadPct(100);
+      setReady(true);
+    };
+
+    v.addEventListener('progress', onProgress);
+    v.addEventListener('canplaythrough', onReady);
+    v.load();
+    return () => {
+      v.removeEventListener('progress', onProgress);
+      v.removeEventListener('canplaythrough', onReady);
+    };
   }, []);
 
 
@@ -98,9 +118,9 @@ export default function AttractLoop({ onStart }: Props) {
         style={{
           position: 'absolute',
           left: '50%',
-          bottom: 0,
+          bottom: '7.81%',
           transform: 'translateX(-50%)',
-          width: '139%',
+          width: '69.5%',
           height: 'auto',
           pointerEvents: 'none',
           userSelect: 'none',
@@ -110,6 +130,42 @@ export default function AttractLoop({ onStart }: Props) {
       >
         <source src={VIDEO_SRC} type="video/webm" />
       </video>
+
+      {/* ── Barra de carga del video ── */}
+      <AnimatePresence>
+        {!ready && (
+          <motion.div
+            key="loader"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0, transition: { duration: 0.5 } }}
+            style={{
+              position: 'absolute',
+              bottom: '5%',
+              left: '15%', right: '15%',
+              zIndex: 10,
+              display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 'min(1.5vw, 0.85vh)',
+            }}
+          >
+            <span style={{
+              fontFamily: 'var(--font-display)',
+              fontSize: 'min(3.5vw, 2vh)',
+              color: '#00577a',
+              textTransform: 'uppercase',
+              letterSpacing: '0.05em',
+            }}>
+              Cargando... {Math.round(loadPct)}%
+            </span>
+            <div style={{ width: '100%', height: 'min(1.2vw, 0.68vh)', background: 'rgba(0,87,122,0.2)', borderRadius: 99, overflow: 'hidden' }}>
+              <motion.div
+                animate={{ width: `${loadPct}%` }}
+                transition={{ duration: 0.3, ease: 'easeOut' }}
+                style={{ height: '100%', background: '#00577a', borderRadius: 99 }}
+              />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* ── MANO — desaparece al tocar ── */}
       <AnimatePresence>
