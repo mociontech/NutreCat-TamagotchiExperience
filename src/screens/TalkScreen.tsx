@@ -2,6 +2,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect, useRef } from 'react';
 import { sfx, bgPlay, bgStop } from '../utils/sounds';
 
+
 const ACTIVITY_NAV = [
   { id: 'game',  label: 'Jugar',  icon: '/assets/nav/icon-game.svg',  doneKey: 'hasPlayed' as const },
   { id: 'food',  label: 'Comer',  icon: '/assets/nav/icon-food.svg',  doneKey: 'hasFed'    as const },
@@ -23,7 +24,10 @@ export default function TalkScreen({ onDone, score = 0, hasFed = true, hasPlayed
   const [showBtn,    setShowBtn]    = useState(false);
   const [zzzList,    setZzzList]    = useState<Zzz[]>([]);
   const [showLabels, setShowLabels] = useState(true);
-  const zzzId   = useRef(0);
+  const zzzId          = useRef(0);
+  const casiDormidoRef = useRef<HTMLVideoElement>(null);
+  const dormidoRef     = useRef<HTMLVideoElement>(null);
+  const dormidoLoops   = useRef(0);
   const doneMap = { hasPlayed, hasFed };
 
   useEffect(() => {
@@ -59,6 +63,20 @@ export default function TalkScreen({ onDone, score = 0, hasFed = true, hasPlayed
     return () => clearInterval(interval);
   }, [phase]);
 
+  /* Control de videos del gato según fase */
+  useEffect(() => {
+    casiDormidoRef.current?.play().catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    if (phase === 'dark') {
+      casiDormidoRef.current?.pause();
+      dormidoLoops.current = 0;
+      const v = dormidoRef.current;
+      if (v) { v.currentTime = 0; v.play().catch(() => {}); }
+    }
+  }, [phase]);
+
   const tapLamp = () => {
     if (phase !== 'light') return;
     sfx('lightswitch', 0.8);
@@ -72,62 +90,12 @@ export default function TalkScreen({ onDone, score = 0, hasFed = true, hasPlayed
   return (
     <div style={{
       width: '100%', height: '100%',
-      background: '#1a0d2e',
+      background: '#b0a99b',
       position: 'relative', overflow: 'hidden',
     }}>
 
-      {/* ── Fondo habitación — luz encendida ── */}
-      <motion.img
-        src="/assets/cat/cat-bed-light.png"
-        alt=""
-        animate={{ opacity: phase === 'light' ? 1 : 0 }}
-        transition={{ duration: 0.7 }}
-        style={{
-          position: 'absolute', inset: 0,
-          width: '100%', height: '100%',
-          objectFit: 'cover', objectPosition: 'center',
-          pointerEvents: 'none',
-        }}
-      />
 
-      {/* ── Fondo habitación — luz apagada ── */}
-      <motion.img
-        src="/assets/cat/cat-bed-dark.png"
-        alt=""
-        initial={{ opacity: 0 }}
-        animate={{ opacity: phase === 'dark' ? 1 : 0 }}
-        transition={{ duration: 0.8 }}
-        style={{
-          position: 'absolute', inset: 0,
-          width: '100%', height: '100%',
-          objectFit: 'cover', objectPosition: 'center',
-          pointerEvents: 'none',
-        }}
-      />
 
-      {/* Tapa UI capturada en el screenshot (logo, puntos, flecha, nav) */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: phase === 'dark' ? 1 : 0 }}
-        transition={{ duration: 0.8 }}
-        style={{
-          position: 'absolute', inset: 0, zIndex: 2, pointerEvents: 'none',
-          background: 'linear-gradient(to bottom, #1a0d2e 20%, transparent 32%, transparent 60%, #1a0d2e 76%)',
-        }}
-      />
-
-      {/* ── Overlay oscuro al apagar ── */}
-      <AnimatePresence>
-        {phase === 'dimming' && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 0.85 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.55 }}
-            style={{ position: 'absolute', inset: 0, background: '#0d0820', zIndex: 8, pointerEvents: 'none' }}
-          />
-        )}
-      </AnimatePresence>
 
       {/* ── Logo ── */}
       <div style={{ position: 'absolute', top: '4.79%', left: '9.07%', right: '62.31%', bottom: '83.7%', zIndex: 10 }}>
@@ -143,6 +111,104 @@ export default function TalkScreen({ onDone, score = 0, hasFed = true, hasPlayed
         </span>
       </div>
 
+
+      {/* ── Tercio inferior más oscuro ── */}
+      <div style={{
+        position: 'absolute', inset: 0, zIndex: 0, pointerEvents: 'none',
+        background: 'linear-gradient(to bottom, transparent 67%, #6b6258 100%)',
+      }} />
+
+      {/* ── Overlay oscuro al apagar ── */}
+      <AnimatePresence>
+        {phase === 'dimming' && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 0.85 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.55 }}
+            style={{ position: 'absolute', inset: 0, background: '#0d0820', zIndex: 8, pointerEvents: 'none' }}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* ── Gradiente oscuro fase dark ── */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: phase === 'dark' ? 1 : 0 }}
+        transition={{ duration: 0.8 }}
+        style={{
+          position: 'absolute', inset: 0, zIndex: 2, pointerEvents: 'none',
+          background: 'linear-gradient(to bottom, #1a0d2e 0%, transparent 30%, transparent 55%, #1a0d2e 100%)',
+        }}
+      />
+
+      {/* ── Velo de oscuridad tenue al dormir ── */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: phase === 'dark' ? 1 : 0 }}
+        transition={{ duration: 1.2 }}
+        style={{
+          position: 'absolute', inset: 0, zIndex: 3, pointerEvents: 'none',
+          background: 'rgba(10, 5, 30, 0.38)',
+        }}
+      />
+
+      {/* ── Videos del gato ── */}
+      <video
+        ref={casiDormidoRef}
+        src="/assets/cat/Animation/CasiDormido.webm"
+        loop
+        muted
+        playsInline
+        style={{
+          position: 'absolute',
+          bottom: 'calc(18% - 100px)',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          width: '163.4%',
+          height: 'auto',
+          objectFit: 'contain',
+          pointerEvents: 'none',
+          userSelect: 'none',
+          opacity: phase !== 'dark' ? 1 : 0,
+          transition: 'opacity 0.6s ease',
+          zIndex: 1,
+          filter: 'drop-shadow(0 16px 40px rgba(0,0,0,0.3))',
+        }}
+      />
+      <video
+        ref={dormidoRef}
+        src="/assets/cat/Animation/Dormido.webm"
+        muted
+        playsInline
+        onEnded={() => {
+          dormidoLoops.current += 1;
+          const v = dormidoRef.current;
+          if (!v) return;
+          if (dormidoLoops.current < 2) {
+            v.currentTime = 0;
+            v.play().catch(() => {});
+          } else {
+            v.currentTime = 0;
+            v.pause();
+          }
+        }}
+        style={{
+          position: 'absolute',
+          bottom: 'calc(18% - 100px)',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          width: '163.4%',
+          height: 'auto',
+          objectFit: 'contain',
+          pointerEvents: 'none',
+          userSelect: 'none',
+          opacity: phase === 'dark' ? 1 : 0,
+          transition: 'opacity 0.6s ease',
+          zIndex: 1,
+          filter: 'drop-shadow(0 16px 40px rgba(0,0,0,0.4))',
+        }}
+      />
 
       {/* ── FASE LIGHT: zona de tap de la lámpara ── */}
       {phase === 'light' && (

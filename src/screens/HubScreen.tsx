@@ -47,9 +47,10 @@ export default function HubScreen({ cat, onNavigate, pointsEarned, onPointsShown
   const [pointsKey,   setPointsKey]   = useState(0);
   const [confetti,    setConfetti]    = useState<ConfettiPiece[]>([]);
   const [showLabels,  setShowLabels]  = useState(true);
-  const [animState,   setAnimState]   = useState<{ name: 'Saludar' | 'Aburrido' | 'ConHambreLobby'; key: number }>({ name: 'Saludar', key: 0 });
+  const [animState,   setAnimState]   = useState<{ name: 'Saludar' | 'Aburrido' | 'ConHambreLobby' | 'Esperando' | 'Cansado' | 'CasiDormido'; key: number }>({ name: 'Saludar', key: 0 });
   const saludarCount       = useRef(0);
   const aburridoHungryCount = useRef(0);
+  const catVideoRef        = useRef<HTMLVideoElement>(null);
   const prevAllDone        = useRef(false);
 
   useEffect(() => {
@@ -57,16 +58,31 @@ export default function HubScreen({ cat, onNavigate, pointsEarned, onPointsShown
     return () => clearTimeout(t);
   }, []);
 
-  /* Resetea el ciclo de animación al cambiar estado hambre */
+  /* Cambia el src del video sin remount para evitar parpadeo */
+  useEffect(() => {
+    const v = catVideoRef.current;
+    if (!v) return;
+    v.src = `/assets/cat/Animation/${animState.name}.webm`;
+    v.load();
+    v.play().catch(() => {});
+  }, [animState.name, animState.key]);
+
+  /* Resetea el ciclo de animación según el estado de actividades */
   useEffect(() => {
     if (isHungry) {
       aburridoHungryCount.current = 0;
       setAnimState(prev => ({ name: 'Aburrido', key: prev.key + 1 }));
-    } else {
+    }
+  }, [isHungry]);
+
+  useEffect(() => {
+    if (isSleepy) {
+      setAnimState(prev => ({ name: 'Cansado', key: prev.key + 1 }));
+    } else if (!isHungry) {
       saludarCount.current = 0;
       setAnimState(prev => ({ name: 'Saludar', key: prev.key + 1 }));
     }
-  }, [isHungry]);
+  }, [isSleepy]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (!isSleepy) return;
@@ -311,11 +327,10 @@ export default function HubScreen({ cat, onNavigate, pointsEarned, onPointsShown
         </div>
 
         <video
-          key={animState.key}
+          ref={catVideoRef}
           autoPlay
           muted
           playsInline
-          src={`/assets/cat/Animation/${animState.name}.webm`}
           onEnded={() => {
             setAnimState(prev => {
               if (isHungry) {
@@ -331,23 +346,31 @@ export default function HubScreen({ cat, onNavigate, pointsEarned, onPointsShown
               }
               if (prev.name === 'Saludar') {
                 saludarCount.current += 1;
-                if (saludarCount.current >= 3) {
+                if (saludarCount.current >= 2) {
                   saludarCount.current = 0;
-                  return { name: 'Aburrido', key: prev.key + 1 };
+                  return { name: 'Esperando', key: prev.key + 1 };
                 }
                 return { name: 'Saludar', key: prev.key + 1 };
+              }
+              if (prev.name === 'Esperando') {
+                return { name: 'Aburrido', key: prev.key + 1 };
+              }
+              if (prev.name === 'Cansado') {
+                return { name: 'CasiDormido', key: prev.key + 1 };
+              }
+              if (prev.name === 'CasiDormido') {
+                return { name: 'Cansado', key: prev.key + 1 };
               }
               return { name: 'Saludar', key: prev.key + 1 };
             });
           }}
           style={{
-            width: animState.name === 'Saludar' ? '82%' : '139%',
+            width: animState.name === 'Saludar' ? '71.42%' : '71.42%',
             height: 'auto',
             flexShrink: 0,
             userSelect: 'none', pointerEvents: 'none',
             filter: 'drop-shadow(0 20px 40px rgba(0,87,122,0.2))',
-            marginTop: 220,
-            marginLeft: 105,
+            marginTop: 180,
           }}
         />
 

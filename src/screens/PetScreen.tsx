@@ -3,9 +3,6 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import ScreenLayout from '../components/ScreenLayout';
 import { bgPlay, bgStop, bgFade } from '../utils/sounds';
 
-const CAT_IDLE        = '/assets/cat/cat-hub.png';
-const CAT_EYES_CLOSED = '/assets/cat/cat-pet-closed.png';
-const CAT_DONE        = '/assets/cat/cat-pet-done.png';
 
 interface Particle { id: number; x: number; y: number; text: string; }
 
@@ -17,7 +14,6 @@ const FILL_RATE = 1.2;
 export default function PetScreen({ onNext, name = 'Simón' }: Props) {
   const [affection,  setAffection]  = useState(0);
   const [petting,    setPetting]    = useState(false);
-  const [eyesClosed, setEyesClosed] = useState(false);
   const [done,       setDone]       = useState(false);
   const [particles,  setParticles]  = useState<Particle[]>([]);
   const [ripple,     setRipple]     = useState(false);
@@ -26,7 +22,9 @@ export default function PetScreen({ onNext, name = 'Simón' }: Props) {
   const petTimer   = useRef<ReturnType<typeof setInterval> | null>(null);
   const blinkTimer = useRef<ReturnType<typeof setInterval> | null>(null);
   const particleId = useRef(0);
-  const videoRef   = useRef<HTMLVideoElement>(null);
+  const videoRef        = useRef<HTMLVideoElement>(null);
+  const celebrandoRef   = useRef<HTMLVideoElement>(null);
+  const esperandoRef    = useRef<HTMLVideoElement>(null);
 
   const addParticle = useCallback((x: number, y: number) => {
     const id   = particleId.current++;
@@ -47,11 +45,9 @@ export default function PetScreen({ onNext, name = 'Simón' }: Props) {
         clearInterval(petTimer.current!);
         clearInterval(blinkTimer.current!);
         setPetting(false);
-        setEyesClosed(false);
         setDone(true);
       }
     }, 80);
-    blinkTimer.current = setInterval(() => setEyesClosed(c => !c), 700);
   };
 
   const movePetting = (e: React.TouchEvent | React.MouseEvent) => {
@@ -63,7 +59,6 @@ export default function PetScreen({ onNext, name = 'Simón' }: Props) {
   const stopPetting = () => {
     if (done) return;
     setPetting(false);
-    setEyesClosed(false);
     clearInterval(petTimer.current!);
     clearInterval(blinkTimer.current!);
   };
@@ -87,12 +82,26 @@ export default function PetScreen({ onNext, name = 'Simón' }: Props) {
   }, [petting, done]);
 
   useEffect(() => {
+    if (!esperandoRef.current) return;
+    if (!petting && !done) {
+      esperandoRef.current.play();
+    } else {
+      esperandoRef.current.pause();
+    }
+  }, [petting, done]);
+
+  useEffect(() => {
     if (petting && !done) bgPlay('purr', 0.65);
     else bgStop('purr');
     return () => bgStop('purr');
   }, [petting, done]);
 
-  const catSrc = done ? CAT_DONE : eyesClosed ? CAT_EYES_CLOSED : CAT_IDLE;
+  useEffect(() => {
+    if (done && celebrandoRef.current) {
+      celebrandoRef.current.play();
+    }
+  }, [done]);
+
 
   return (
     <ScreenLayout
@@ -222,7 +231,26 @@ export default function PetScreen({ onNext, name = 'Simón' }: Props) {
         )}
 
         {/* Gato central — grande */}
-        <div style={{ position: 'absolute', top: 'calc(28% + 310px)', bottom: '18%', left: 0, right: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ position: 'absolute', top: 'calc(28% + 240px)', bottom: '18%', left: 0, right: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          {/* Video Esperando — visible en idle y al soltar */}
+          <video
+            ref={esperandoRef}
+            src="/assets/cat/Animation/Esperando.webm"
+            loop
+            muted
+            playsInline
+            autoPlay
+            style={{
+              position: 'absolute',
+              width: '71.42%', height: 'auto',
+              objectFit: 'contain',
+              userSelect: 'none', pointerEvents: 'none',
+              opacity: !petting && !done ? 1 : 0,
+              transition: 'opacity 0.2s ease',
+              filter: 'drop-shadow(0 16px 32px rgba(0,87,122,0.2))',
+            }}
+          />
+
           {/* Video de consentir — visible solo mientras se acaricia */}
           <video
             ref={videoRef}
@@ -232,7 +260,7 @@ export default function PetScreen({ onNext, name = 'Simón' }: Props) {
             playsInline
             style={{
               position: 'absolute',
-              width: '49.6%', height: 'auto',
+              width: '71.42%', height: 'auto',
               objectFit: 'contain',
               userSelect: 'none', pointerEvents: 'none',
               opacity: petting && !done ? 1 : 0,
@@ -241,32 +269,23 @@ export default function PetScreen({ onNext, name = 'Simón' }: Props) {
             }}
           />
 
-          {/* Imagen estática — visible cuando no se acaricia o cuando termina */}
-          <AnimatePresence mode="wait">
-            {(!petting || done) && (
-              <motion.img
-                key={catSrc}
-                src={catSrc}
-                alt="Simón"
-                draggable={false}
-                initial={{ opacity: 0.7, scale: 0.95 }}
-                animate={
-                  done ? { opacity: 1, scale: 1, y: [0, -18, 0, -18, 0] }
-                       : { opacity: 1, scale: 1, y: [0, -6, 0] }
-                }
-                transition={
-                  done ? { y: { duration: 1.2, repeat: Infinity, ease: 'easeInOut' }, opacity: { duration: 0.15 } }
-                       : { duration: 3, repeat: Infinity, ease: 'easeInOut', opacity: { duration: 0.15 } }
-                }
-                style={{
-                  width: '49.6%', height: 'auto',
-                  userSelect: 'none', pointerEvents: 'none',
-                  filter: done ? 'drop-shadow(0 20px 50px rgba(0,87,122,0.3))'
-                               : 'drop-shadow(0 16px 32px rgba(0,87,122,0.15))',
-                }}
-              />
-            )}
-          </AnimatePresence>
+          {/* Video Celebrando — visible cuando termina, en loop */}
+          <video
+            ref={celebrandoRef}
+            src="/assets/cat/Animation/Celebrando.webm"
+            muted
+            playsInline
+            loop
+            style={{
+              position: 'absolute',
+              width: '71.42%', height: 'auto',
+              objectFit: 'contain',
+              userSelect: 'none', pointerEvents: 'none',
+              opacity: done ? 1 : 0,
+              transition: 'opacity 0.3s ease',
+              filter: 'drop-shadow(0 20px 50px rgba(0,87,122,0.3))',
+            }}
+          />
 
           {/* Burbuja glass al terminar */}
           <AnimatePresence>
