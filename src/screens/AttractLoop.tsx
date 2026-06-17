@@ -183,8 +183,8 @@ export default function AttractLoop({ onStart }: Props) {
           >
             <motion.div
               animate={{ x: [0, 20, 0, 20, 0], y: [0, -13, 0, -13, 0] }}
-              transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut', times: [0, 0.35, 0.5, 0.65, 1] }}
-              style={{ width: 'min(33.39vw, 18.78vh)', height: 'min(22.16vw, 12.47vh)', rotate: '-27.14deg', flexShrink: 0 }}
+              transition={{ duration: 2.4, repeat: Infinity, ease: 'easeInOut', times: [0, 0.35, 0.5, 0.65, 1] }}
+              style={{ width: 'min(26.71vw, 15.02vh)', height: 'min(17.73vw, 9.98vh)', rotate: '-27.14deg', flexShrink: 0 }}
             >
               <img src="/assets/ui/hand-pointer.svg" alt="" draggable={false} style={{ width: '100%', height: '100%', display: 'block', userSelect: 'none' }} />
             </motion.div>
