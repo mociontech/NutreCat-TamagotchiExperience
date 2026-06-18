@@ -596,11 +596,12 @@ export default function FootballGameScreen({ onGoal }: Props) {
       {/* ── Player cat (shown during player phases) ─────────────────── */}
       {inPlayerPhases && (
         <div style={{ position: 'absolute', left: '5%', top: '57.65%', width: '39.34%', zIndex: 8, pointerEvents: 'none' }}>
-          <motion.img
-            src="/assets/cat/GatoEspaldas.png" alt=""
-            initial={{ x: 0, y: 0, rotate: 0 }}
-            animate={phase === 'firing' ? { x: [0, 15, 30, 30, 0], y: [0, -50, -100, -100, 0], rotate: [0, 0, -22, -22, 0] } : { x: 0, y: [0, -6, 0], rotate: 0 }}
-            transition={phase === 'firing' ? { duration: 0.8, ease: 'easeInOut', times: [0, 0.22, 0.44, 0.64, 1] } : { duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+          <video
+            src="/assets/cat/Animation/EspaldasNaranja.webm"
+            autoPlay
+            loop
+            muted
+            playsInline
             style={{ width: '100%', objectFit: 'contain', filter: 'drop-shadow(0 8px 24px rgba(0,0,0,0.3))' }}
           />
         </div>
@@ -609,11 +610,12 @@ export default function FootballGameScreen({ onGoal }: Props) {
       {/* ── Rival cat (shown during rival phases) ───────────────────── */}
       {inRivalPhases && (
         <div style={{ position: 'absolute', left: '5%', top: '57.65%', width: '39.34%', zIndex: 8, pointerEvents: 'none' }}>
-          <motion.img
-            src="/assets/cat/RivalEspalda.png" alt=""
-            initial={{ x: 0, y: 0, rotate: 0 }}
-            animate={phase === 'rival_fire' ? { x: [0, 15, 30, 30, 0], y: [0, -50, -100, -100, 0], rotate: [0, 0, -22, -22, 0] } : { x: 0, y: [0, -6, 0], rotate: 0 }}
-            transition={phase === 'rival_fire' ? { duration: 0.8, ease: 'easeInOut', times: [0, 0.22, 0.44, 0.64, 1] } : { duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+          <video
+            src="/assets/cat/Animation/EspaldasRival.webm"
+            autoPlay
+            loop
+            muted
+            playsInline
             style={{ width: '100%', objectFit: 'contain', filter: 'drop-shadow(0 8px 24px rgba(0,0,0,0.3))' }}
           />
         </div>

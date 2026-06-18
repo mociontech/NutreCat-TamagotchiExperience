@@ -128,6 +128,22 @@ export default function GameSelectScreen({ onSelect, onBack, score = 0 }: Props)
           style={{ width:'100%', height:'100%', objectFit:'contain' }}/>
       </div>
 
+      {/* Botón volver */}
+      <motion.button
+        onClick={onBack}
+        whileTap={{ scale: 0.88 }}
+        style={{
+          position: 'absolute', top: '4%', left: '2%',
+          zIndex: 20, background: 'none', border: 'none',
+          cursor: 'pointer', padding: 16,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}
+      >
+        <svg width="36" height="36" viewBox="0 0 44 44" fill="none">
+          <path d="M28 8 L14 22 L28 36" stroke="white" strokeWidth="4.5" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      </motion.button>
+
       {/* Score */}
       <div style={{ position:'absolute', top:'5%', right:'9%', zIndex:3, background:'white', borderRadius:'min(3.8vw, 2.14vh)', width:'min(33.3vw, 18.75vh)', height:'min(7.6vw, 4.27vh)', boxShadow:'0 2px 14px rgba(0,87,122,0.18)', display:'flex', alignItems:'center', justifyContent:'center' }}>
         <span style={{ fontFamily:'var(--font-display)', fontSize:'min(6.57vw, 3.7vh)', color:'#00577a', textTransform:'uppercase', whiteSpace:'nowrap', lineHeight:1, paddingTop:'0.25em' }}>
@@ -135,15 +151,27 @@ export default function GameSelectScreen({ onSelect, onBack, score = 0 }: Props)
         </span>
       </div>
 
-      {/* Gato detrás de las tarjetas (Figma: left=19.7% top=27.3% w=66.5%) */}
-      <div style={{ position:'absolute', left:'19.7%', top:'27.3%', width:'66.5%', zIndex:0, pointerEvents:'none' }}>
-        <motion.img
-          src="/assets/cat/cat-game.png" alt=""
-          animate={{ y:[0,-8,0] }}
-          transition={{ duration:3, repeat:Infinity, ease:'easeInOut' }}
-          style={{ width:'100%', objectFit:'contain', userSelect:'none' }}
-        />
-      </div>
+      {/* Gato detrás de las tarjetas */}
+      <video
+        src="/assets/cat/Animation/Esperando.webm"
+        autoPlay
+        loop
+        muted
+        playsInline
+        style={{
+          position: 'absolute',
+          left: '50%',
+          top: '27.3%',
+          transform: 'translateX(-50%)',
+          width: '71.42%',
+          height: 'auto',
+          objectFit: 'contain',
+          zIndex: 0,
+          pointerEvents: 'none',
+          userSelect: 'none',
+          filter: 'drop-shadow(0 16px 32px rgba(0,87,122,0.2))',
+        }}
+      />
 
       {/* ── Tarjetas de juego ──
           Figma: left card left=10% | right card left=51.48%

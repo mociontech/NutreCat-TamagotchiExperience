@@ -13,10 +13,16 @@ export default function AttractLoop({ onStart }: Props) {
   const videoRef  = useRef<HTMLVideoElement>(null);
   const tappedRef = useRef(false);
 
-  // Precarga y autoplay del video
   useEffect(() => {
     const v = videoRef.current;
     if (!v) return;
+
+    // Si ya está listo (video liviano cacheado), marcar inmediatamente
+    if (v.readyState >= 4) {
+      setLoadPct(100);
+      setReady(true);
+      return;
+    }
 
     const onProgress = () => {
       if (v.duration && v.buffered.length > 0) {
@@ -24,32 +30,26 @@ export default function AttractLoop({ onStart }: Props) {
         setLoadPct(pct);
       }
     };
-    const onReady = () => {
-      setLoadPct(100);
-      setReady(true);
-    };
+    const onReady = () => { setLoadPct(100); setReady(true); };
 
     v.addEventListener('progress', onProgress);
     v.addEventListener('canplaythrough', onReady);
-    v.load();
+    // No llamar v.load() — evita abortar un play() en progreso
     return () => {
       v.removeEventListener('progress', onProgress);
       v.removeEventListener('canplaythrough', onReady);
     };
   }, []);
 
-
   const handleTap = () => {
     if (tappedRef.current) return;
     tappedRef.current = true;
     sfx('meow', 0.35);
     setPlaying(true);
-    videoRef.current?.play();
+    videoRef.current?.play().catch(() => {});
   };
 
-  const handleEnded = () => {
-    onStart();
-  };
+  const handleEnded = () => { onStart(); };
 
   return (
     <div
@@ -112,7 +112,9 @@ export default function AttractLoop({ onStart }: Props) {
       {/* ── GATO — video al tocar ── */}
       <video
         ref={videoRef}
+        src={VIDEO_SRC}
         preload="auto"
+        muted
         playsInline
         onEnded={handleEnded}
         style={{
@@ -127,9 +129,7 @@ export default function AttractLoop({ onStart }: Props) {
           objectFit: 'contain',
           objectPosition: 'bottom',
         }}
-      >
-        <source src={VIDEO_SRC} type="video/webm" />
-      </video>
+      />
 
       {/* ── Barra de carga del video ── */}
       <AnimatePresence>

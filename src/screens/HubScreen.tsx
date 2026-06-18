@@ -24,6 +24,8 @@ interface Props {
   onNavigate: (screen: ScreenName) => void;
   pointsEarned?: number | null;
   onPointsShown?: () => void;
+  comingFromSleep?: boolean;
+  onComingFromSleepConsumed?: () => void;
 }
 
 const NAV = [
@@ -32,7 +34,7 @@ const NAV = [
   { id: 'sleep', label: 'Dormir', icon: '/assets/nav/icon-sleep.svg', screen: 'talk'       as ScreenName, doneKey: 'hasTalked' as keyof CatState },
 ] as const;
 
-export default function HubScreen({ cat, onNavigate, pointsEarned, onPointsShown }: Props) {
+export default function HubScreen({ cat, onNavigate, pointsEarned, onPointsShown, comingFromSleep = false, onComingFromSleepConsumed }: Props) {
   const allDone  = cat.hasFed && cat.hasPlayed && cat.hasTalked;
 
   // Música ambiental del Hub
@@ -47,9 +49,25 @@ export default function HubScreen({ cat, onNavigate, pointsEarned, onPointsShown
   const [pointsKey,   setPointsKey]   = useState(0);
   const [confetti,    setConfetti]    = useState<ConfettiPiece[]>([]);
   const [showLabels,  setShowLabels]  = useState(true);
-  const [animState,   setAnimState]   = useState<{ name: 'Saludar' | 'Aburrido' | 'ConHambreLobby' | 'Esperando' | 'Cansado' | 'CasiDormido'; key: number }>({ name: 'Saludar', key: 0 });
-  const saludarCount       = useRef(0);
-  const aburridoHungryCount = useRef(0);
+  const [shakeGame,   setShakeGame]   = useState(false);
+  const [animState,   setAnimState]   = useState<{ name: 'Saludar' | 'Aburrido' | 'ConHambreLobby' | 'Esperando' | 'Esperando2' | 'Esperando3' | 'Cansado' | 'Celebrando'; key: number }>(() =>
+    comingFromSleep ? { name: 'Celebrando', key: 0 } : { name: 'Saludar', key: 0 }
+  );
+  const saludarCount           = useRef(0);
+  const esperandoCount         = useRef(0);
+  const aburridoHungryCount    = useRef(0);
+  const esperandoSleepyCount   = useRef(0);
+  const isSleepyRef            = useRef(false);
+  const esperandoVariant       = useRef(0);
+  const ESPERANDO_VARIANTS     = ['Esperando', 'Esperando2', 'Esperando3'] as const;
+  const nextEsperando = () => {
+    const v = ESPERANDO_VARIANTS[esperandoVariant.current % 3];
+    esperandoVariant.current++;
+    return v;
+  };
+  const skipSaludarReset       = useRef(comingFromSleep);
+  const hasTalkedRef           = useRef(cat.hasTalked);
+  const celebrandoCount        = useRef(0);
   const catVideoRef        = useRef<HTMLVideoElement>(null);
   const prevAllDone        = useRef(false);
 
@@ -76,13 +94,38 @@ export default function HubScreen({ cat, onNavigate, pointsEarned, onPointsShown
   }, [isHungry]);
 
   useEffect(() => {
+    isSleepyRef.current = isSleepy;
+  }, [isSleepy]);
+
+  useEffect(() => {
+    hasTalkedRef.current = cat.hasTalked;
+  }, [cat.hasTalked]);
+
+  useEffect(() => {
+    onComingFromSleepConsumed?.();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
     if (isSleepy) {
-      setAnimState(prev => ({ name: 'Cansado', key: prev.key + 1 }));
+      esperandoSleepyCount.current = 0;
+      setAnimState(prev => ({ name: nextEsperando(), key: prev.key + 1 }));
     } else if (!isHungry) {
+      if (skipSaludarReset.current) return;
       saludarCount.current = 0;
       setAnimState(prev => ({ name: 'Saludar', key: prev.key + 1 }));
     }
   }, [isSleepy]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  /* Sacudida periódica del botón de juego cuando el gato está aburrido */
+  useEffect(() => {
+    if (animState.name !== 'Aburrido' || cat.hasPlayed) return;
+    const interval = setInterval(() => {
+      setShakeGame(true);
+      setTimeout(() => setShakeGame(false), 600);
+    }, 7000);
+    return () => clearInterval(interval);
+  }, [animState.name, cat.hasPlayed]);
 
   useEffect(() => {
     if (!isSleepy) return;
@@ -211,6 +254,43 @@ export default function HubScreen({ cat, onNavigate, pointsEarned, onPointsShown
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         minHeight: 0,
       }}>
+        {/* Pill "¿Y si jugamos?" cuando está aburrido */}
+        <AnimatePresence>
+          {animState.name === 'Aburrido' && !cat.hasPlayed && !isHungry && (
+            <motion.div
+              initial={{ opacity: 0, y: -8, scale: 0.9 }}
+              animate={{
+                opacity: 1, y: [0, -5, 0], scale: [1, 1.04, 1],
+              }}
+              exit={{ opacity: 0, y: -6, scale: 0.9 }}
+              transition={{
+                opacity: { duration: 0.4, delay: 0.4 },
+                y: { duration: 2.6, repeat: Infinity, ease: 'easeInOut', delay: 0.8 },
+                scale: { duration: 2.6, repeat: Infinity, ease: 'easeInOut', delay: 0.8 },
+              }}
+              style={{
+                position: 'absolute', top: 'calc(8% + 220px)', left: 'calc(50% + 100px)',
+                transform: 'translateX(-50%)',
+                background: 'rgba(255,255,255,0.25)',
+                backdropFilter: 'blur(12px)',
+                WebkitBackdropFilter: 'blur(12px)',
+                border: '1.5px solid rgba(255,255,255,0.5)',
+                borderRadius: 99,
+                padding: 'min(1.5vw, 0.85vh) min(4vw, 2.2vh)',
+                fontFamily: 'var(--font-display)',
+                fontSize: 'min(4vw, 2.3vh)',
+                color: 'white',
+                whiteSpace: 'nowrap',
+                boxShadow: '0 8px 28px rgba(0,87,122,0.18), inset 0 1px 0 rgba(255,255,255,0.6)',
+                zIndex: 3,
+                pointerEvents: 'none',
+              }}
+            >
+              ¿Y si jugamos?
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/* Burbuja soñolienta */}
         <AnimatePresence mode="wait">
           {isSleepy && (
@@ -221,7 +301,7 @@ export default function HubScreen({ cat, onNavigate, pointsEarned, onPointsShown
               exit={{ opacity: 0, scale: 0.7, y: -10 }}
               transition={{ duration: 0.4 }}
               style={{
-                position: 'absolute', top: '8%', left: '50%',
+                position: 'absolute', top: 'calc(8% + 150px)', left: 'calc(50% + 50px)',
                 transform: 'translateX(-50%)',
                 background: 'white', borderRadius: 99,
                 padding: 'min(1.5vw, 0.85vh) min(4vw, 2.2vh)',
@@ -344,21 +424,46 @@ export default function HubScreen({ cat, onNavigate, pointsEarned, onPointsShown
                 }
                 return { name: 'Aburrido', key: prev.key + 1 };
               }
+              if (prev.name === 'Celebrando') {
+                celebrandoCount.current += 1;
+                if (celebrandoCount.current < 2) {
+                  return { name: 'Celebrando', key: prev.key + 1 };
+                }
+                skipSaludarReset.current = false;
+                saludarCount.current = 0;
+                return { name: 'Saludar', key: prev.key + 1 };
+              }
               if (prev.name === 'Saludar') {
+                if (hasTalkedRef.current) {
+                  return { name: 'Saludar', key: prev.key + 1 };
+                }
                 saludarCount.current += 1;
-                if (saludarCount.current >= 2) {
+                if (saludarCount.current >= 1) {
                   saludarCount.current = 0;
-                  return { name: 'Esperando', key: prev.key + 1 };
+                  esperandoCount.current = 0;
+                  return { name: nextEsperando(), key: prev.key + 1 };
                 }
                 return { name: 'Saludar', key: prev.key + 1 };
               }
-              if (prev.name === 'Esperando') {
+              const isEsperando = prev.name === 'Esperando' || prev.name === 'Esperando2' || prev.name === 'Esperando3';
+              if (isEsperando) {
+                if (isSleepyRef.current) {
+                  esperandoSleepyCount.current += 1;
+                  if (esperandoSleepyCount.current >= 2) {
+                    return { name: 'Cansado', key: prev.key + 1 };
+                  }
+                  return { name: nextEsperando(), key: prev.key + 1 };
+                }
+                esperandoCount.current += 1;
+                if (esperandoCount.current >= 2) {
+                  return { name: 'Aburrido', key: prev.key + 1 };
+                }
+                return { name: nextEsperando(), key: prev.key + 1 };
+              }
+              if (prev.name === 'Aburrido' && !isHungry) {
                 return { name: 'Aburrido', key: prev.key + 1 };
               }
               if (prev.name === 'Cansado') {
-                return { name: 'CasiDormido', key: prev.key + 1 };
-              }
-              if (prev.name === 'CasiDormido') {
                 return { name: 'Cansado', key: prev.key + 1 };
               }
               return { name: 'Saludar', key: prev.key + 1 };
@@ -422,6 +527,8 @@ export default function HubScreen({ cat, onNavigate, pointsEarned, onPointsShown
             label={item.label}
             done={cat[item.doneKey] as boolean}
             showLabel={showLabels}
+            pulse={item.id === 'game' && animState.name === 'Aburrido' && !cat.hasPlayed}
+            shake={item.id === 'game' && shakeGame}
             onClick={() => onNavigate(item.screen)}
           />
         ))}
@@ -431,16 +538,19 @@ export default function HubScreen({ cat, onNavigate, pointsEarned, onPointsShown
 }
 
 /* ── Botón circular individual ─────────────────────────────── */
-interface NavCircleProps { icon: string; label: string; done: boolean; showLabel: boolean; onClick: () => void; }
+interface NavCircleProps { icon: string; label: string; done: boolean; showLabel: boolean; pulse?: boolean; shake?: boolean; onClick: () => void; }
 
-function NavCircle({ icon, label, done, showLabel, onClick }: NavCircleProps) {
+function NavCircle({ icon, label, done, showLabel, pulse = false, shake = false, onClick }: NavCircleProps) {
   // 185×185px en el canvas Figma 1080×1920
   const SIZE = 'min(17.13vw, 9.64vh)';
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 'min(1.2vw, 0.68vh)', flexShrink: 0, flexGrow: 0 }}>
+    <motion.div
+      animate={{ x: shake ? [0, -7, 7, -7, 7, -4, 4, 0] : 0 }}
+      transition={{ duration: 0.55, ease: 'easeInOut' }}
+      style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 'min(1.2vw, 0.68vh)', flexShrink: 0, flexGrow: 0 }}>
       {/* Wrapper con dimensiones fijas para que el circle nunca se deforme */}
-      <div style={{ width: SIZE, height: SIZE, flexShrink: 0, flexGrow: 0, position: 'relative' }}>
+      <div style={{ width: SIZE, height: SIZE, flexShrink: 0, flexGrow: 0, position: 'relative', overflow: 'visible' }}>
       <motion.button
         onClick={() => { sfx('snap', 0.55); onClick(); }}
         whileTap={{ scale: 0.88 }}
@@ -450,14 +560,19 @@ function NavCircle({ icon, label, done, showLabel, onClick }: NavCircleProps) {
           boxShadow: done
             ? '0 0 0 3px rgba(255,255,255,0.8), 0 6px 22px rgba(0,87,122,0.25)'
             : '0 4px 16px rgba(0,0,0,0.2)',
+          scale: pulse ? [1, 1.06, 1] : 1,
         }}
-        transition={{ duration: 0.45, ease: 'easeOut' }}
+        transition={{
+          duration: 0.45, ease: 'easeOut',
+          ...(pulse && {
+            scale: { duration: 3.6, repeat: Infinity, ease: 'easeInOut', times: [0, 0.5, 1] },
+          })
+        }}
         style={{
           position: 'absolute', inset: 0,
           borderRadius: '50%', border: 'none',
           cursor: 'pointer',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          overflow: 'hidden',
           backgroundColor: done ? '#ffffff' : '#00577a',
         }}
       >
@@ -480,13 +595,25 @@ function NavCircle({ icon, label, done, showLabel, onClick }: NavCircleProps) {
           )}
         </AnimatePresence>
 
+        {pulse && (
+          <motion.div
+            animate={{ opacity: [0, 0.18, 0] }}
+            transition={{ duration: 3.6, repeat: Infinity, ease: 'easeInOut', times: [0, 0.5, 1] }}
+            style={{
+              position: 'absolute', inset: 0,
+              borderRadius: '50%',
+              background: 'radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(255,255,255,0.4) 60%, rgba(255,255,255,0) 100%)',
+              zIndex: 2, pointerEvents: 'none',
+            }}
+          />
+        )}
         <img
           src={icon}
           alt=""
           style={{
             width: '62%', height: 'auto',
             objectFit: 'contain',
-            position: 'relative', zIndex: 1,
+            position: 'relative', zIndex: 3,
             filter: done ? 'none' : 'brightness(0) invert(1)',
             transition: 'filter 0.3s ease',
             pointerEvents: 'none',
@@ -496,6 +623,7 @@ function NavCircle({ icon, label, done, showLabel, onClick }: NavCircleProps) {
       </div>{/* fin wrapper cuadrado */}
 
       <motion.span
+
         animate={{ opacity: showLabel ? 1 : 0 }}
         transition={{ duration: 0.6 }}
         style={{
@@ -510,6 +638,6 @@ function NavCircle({ icon, label, done, showLabel, onClick }: NavCircleProps) {
       >
         {done ? '✓ ' : ''}{label}
       </motion.span>
-    </div>
+    </motion.div>
   );
 }

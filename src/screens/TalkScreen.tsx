@@ -11,6 +11,14 @@ const ACTIVITY_NAV = [
 
 interface Zzz { id: number; x: number; y: number; size: number; rot: number; char: string; }
 
+const DREAM_PRODUCTS = [
+  '/assets/products/product-1.png',
+  '/assets/products/product-3.png',
+  '/assets/products/product-2.png',
+];
+
+interface DreamBubble { id: number; x: number; y: number; size: number; drift: number; img: string; }
+
 interface Props {
   onDone: () => void;
   score?: number;
@@ -20,11 +28,14 @@ interface Props {
 }
 
 export default function TalkScreen({ onDone, score = 0, hasFed = true, hasPlayed = true }: Props) {
-  const [phase,      setPhase]      = useState<'light' | 'dimming' | 'dark'>('light');
-  const [showBtn,    setShowBtn]    = useState(false);
-  const [zzzList,    setZzzList]    = useState<Zzz[]>([]);
-  const [showLabels, setShowLabels] = useState(true);
+  const [phase,        setPhase]        = useState<'light' | 'dimming' | 'dark'>('light');
+  const [showBtn,      setShowBtn]      = useState(false);
+  const [zzzList,      setZzzList]      = useState<Zzz[]>([]);
+  const [dreamBubbles, setDreamBubbles] = useState<DreamBubble[]>([]);
+  const [showLabels,   setShowLabels]   = useState(true);
   const zzzId          = useRef(0);
+  const dreamId        = useRef(0);
+  const dreamIdx       = useRef(0);
   const casiDormidoRef = useRef<HTMLVideoElement>(null);
   const dormidoRef     = useRef<HTMLVideoElement>(null);
   const dormidoLoops   = useRef(0);
@@ -60,6 +71,29 @@ export default function TalkScreen({ onDone, score = 0, hasFed = true, hasPlayed
     };
     const interval = setInterval(spawn, 700);
     spawn();
+    return () => clearInterval(interval);
+  }, [phase]);
+
+  /* Dream bubbles — aparecen en fase oscura */
+  useEffect(() => {
+    if (phase !== 'dark') return;
+    const spawn = () => {
+      const id = dreamId.current++;
+      const img = DREAM_PRODUCTS[dreamIdx.current % DREAM_PRODUCTS.length];
+      dreamIdx.current++;
+      setDreamBubbles(prev => [...prev.slice(-1), {
+        id,
+        x:     43 + Math.random() * 24,
+        y:     24 + Math.random() * 6,
+        size:  186 + Math.random() * 84,
+        drift: 35 + Math.random() * 45,
+        img,
+      }]);
+      const dur = 4200 + Math.random() * 800;
+      setTimeout(() => setDreamBubbles(p => p.filter(b => b.id !== id)), dur);
+    };
+    const interval = setInterval(spawn, 5200);
+    setTimeout(spawn, 400);
     return () => clearInterval(interval);
   }, [phase]);
 
@@ -162,7 +196,7 @@ export default function TalkScreen({ onDone, score = 0, hasFed = true, hasPlayed
         playsInline
         style={{
           position: 'absolute',
-          bottom: 'calc(18% - 100px)',
+          bottom: 'calc(18% - 260px)',
           left: '50%',
           transform: 'translateX(-50%)',
           width: '163.4%',
@@ -195,7 +229,7 @@ export default function TalkScreen({ onDone, score = 0, hasFed = true, hasPlayed
         }}
         style={{
           position: 'absolute',
-          bottom: 'calc(18% - 100px)',
+          bottom: 'calc(18% - 260px)',
           left: '50%',
           transform: 'translateX(-50%)',
           width: '163.4%',
@@ -296,6 +330,88 @@ export default function TalkScreen({ onDone, score = 0, hasFed = true, hasPlayed
           >
             {z.char}
           </motion.span>
+        ))}
+      </AnimatePresence>
+
+      {/* ── Burbujas de sueño con productos ── */}
+      <AnimatePresence>
+        {dreamBubbles.map(b => (
+          <motion.div
+            key={b.id}
+            initial={{ opacity: 0, scale: 0.4, y: 0, x: 0 }}
+            animate={{
+              opacity: [0, 0.92, 0.92, 0],
+              scale:   [0.4, 1, 1, 0.75],
+              y: [0, -70, -150, -220],
+              x: [0, b.drift * 0.12, b.drift * 0.55, b.drift],
+            }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 4.2, ease: 'easeInOut', times: [0, 0.25, 0.75, 1] }}
+            style={{
+              position: 'absolute',
+              left: `${b.x}%`,
+              top:  `${b.y}%`,
+              pointerEvents: 'none', zIndex: 9,
+              overflow: 'visible',
+            }}
+          >
+            {/* Cadena de circulitos — globo de pensamiento */}
+            {[
+              { size: 7,  bottom: -18, left: '30%' },
+              { size: 12, bottom: -34, left: '22%' },
+              { size: 17, bottom: -54, left: '14%' },
+            ].map((dot, i) => (
+              <div key={i} style={{
+                position: 'absolute',
+                bottom: dot.bottom, left: dot.left,
+                width: dot.size, height: dot.size,
+                borderRadius: '50%',
+                background: 'radial-gradient(circle at 35% 30%, rgba(230,215,255,0.7), rgba(160,120,220,0.35))',
+                border: '1px solid rgba(255,255,255,0.55)',
+                boxShadow: '0 0 6px rgba(180,140,255,0.4)',
+              }} />
+            ))}
+
+            {/* Burbuja principal */}
+            <div style={{
+              width: b.size, height: b.size,
+              borderRadius: '50%',
+              background: 'radial-gradient(circle at 32% 28%, rgba(245,235,255,0.55) 0%, rgba(180,140,230,0.25) 55%, rgba(120,80,200,0.15) 100%)',
+              border: '1.5px solid rgba(255,255,255,0.6)',
+              boxShadow: '0 0 22px rgba(180,140,255,0.5), inset 0 0 16px rgba(255,255,255,0.18)',
+              backdropFilter: 'blur(6px)',
+              WebkitBackdropFilter: 'blur(6px)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              position: 'relative', overflow: 'hidden',
+            }}>
+              {/* Reflejo tipo perla */}
+              <div style={{
+                position: 'absolute', top: '9%', left: '14%',
+                width: '32%', height: '18%',
+                borderRadius: '50%',
+                background: 'rgba(255,255,255,0.5)',
+                filter: 'blur(3px)',
+              }} />
+              {/* Reflejo secundario pequeño */}
+              <div style={{
+                position: 'absolute', top: '18%', left: '55%',
+                width: '14%', height: '10%',
+                borderRadius: '50%',
+                background: 'rgba(255,255,255,0.3)',
+                filter: 'blur(2px)',
+              }} />
+              <img
+                src={b.img}
+                alt=""
+                style={{
+                  width: '58%', height: '58%',
+                  objectFit: 'contain',
+                  filter: 'drop-shadow(0 2px 8px rgba(100,60,180,0.35))',
+                  position: 'relative', zIndex: 1,
+                }}
+              />
+            </div>
+          </motion.div>
         ))}
       </AnimatePresence>
 

@@ -132,12 +132,16 @@ export default function ChampionResultScreen({ cat, onClaim }: Props) {
             borderBottomColor: 'rgba(0,87,122,0.6)',
           }}
         />
-        <img
-          src="/assets/cat/cat-champion.png"
-          alt={`${cat.name} campeón`}
+        <video
+          src="/assets/cat/Animation/Celebrando.webm"
+          autoPlay
+          loop
+          muted
+          playsInline
           style={{
             width: 'min(48vw, 27vh)',
             objectFit: 'contain',
+            display: 'block',
             userSelect: 'none', pointerEvents: 'none',
             filter: 'drop-shadow(0 0 min(6vw, 3.4vh) rgba(255,255,255,0.5))',
           }}

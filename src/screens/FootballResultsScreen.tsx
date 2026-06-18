@@ -30,31 +30,24 @@ export default function FootballResultsScreen({ pts: _pts, pScore, mScore, onDon
         <img src="/assets/ui/logo-nutre-cat.svg" alt="Nutre Cat" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
       </div>
 
-      {/* Left cat */}
-      <motion.img
-        src="/assets/cat/cat-celebrate-left.png" alt=""
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: [0, -8, 0] }}
-        transition={{ opacity: { duration: 0.4, delay: 0.2 }, y: { duration: 2.6, repeat: Infinity, ease: 'easeInOut', delay: 0.3 } }}
-        style={{ position: 'absolute', left: '29.3%', top: '29.1%', width: '14.8%', objectFit: 'contain', zIndex: 4, pointerEvents: 'none', filter: 'drop-shadow(0 6px 16px rgba(0,87,122,0.25))' }}
-      />
-
-      {/* Center cat */}
-      <motion.img
-        src="/assets/cat/cat-celebrate-center.png" alt=""
-        initial={{ opacity: 0, scale: 0.85 }}
-        animate={{ opacity: 1, scale: 1, y: [0, -10, 0] }}
-        transition={{ opacity: { duration: 0.35 }, scale: { duration: 0.45, type: 'spring', stiffness: 280 }, y: { duration: 2.4, repeat: Infinity, ease: 'easeInOut' } }}
-        style={{ position: 'absolute', left: '44%', top: '24.6%', width: '19.1%', objectFit: 'contain', zIndex: 5, pointerEvents: 'none', filter: 'drop-shadow(0 6px 16px rgba(0,87,122,0.25))' }}
-      />
-
-      {/* Right cat */}
-      <motion.img
-        src="/assets/cat/cat-celebrate-right.png" alt=""
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: [0, -8, 0] }}
-        transition={{ opacity: { duration: 0.4, delay: 0.15 }, y: { duration: 2.8, repeat: Infinity, ease: 'easeInOut', delay: 0.55 } }}
-        style={{ position: 'absolute', left: '59.5%', top: '27.9%', width: '15.3%', objectFit: 'contain', zIndex: 4, pointerEvents: 'none', filter: 'drop-shadow(0 6px 16px rgba(0,87,122,0.25))' }}
+      {/* Victory cat */}
+      <video
+        src={win ? '/assets/cat/Animation/Celebrando.webm' : '/assets/cat/Animation/Perdedor.webm'}
+        autoPlay
+        loop
+        muted
+        playsInline
+        style={{
+          position: 'absolute',
+          left: '50%',
+          top: 'calc(18% + 100px)',
+          transform: 'translateX(-50%)',
+          width: '40%',
+          objectFit: 'contain',
+          zIndex: 5,
+          pointerEvents: 'none',
+          filter: 'drop-shadow(0 6px 16px rgba(0,87,122,0.25))',
+        }}
       />
 
       {/* GANASTE / PERDISTE / EMPATE
@@ -66,7 +59,7 @@ export default function FootballResultsScreen({ pts: _pts, pScore, mScore, onDon
         style={{
           position: 'absolute',
           left: 0, right: 0,
-          top: '40.47%',
+          top: 'calc(40.47% + 80px)',
           display: 'flex', justifyContent: 'center',
           zIndex: 6, pointerEvents: 'none',
         }}
@@ -74,16 +67,12 @@ export default function FootballResultsScreen({ pts: _pts, pScore, mScore, onDon
         <span style={{
           fontFamily: 'var(--font-display)',
           fontSize: 'min(22.3vw, 12.57vh)',
-          color: tie ? '#fcd116' : 'white',
+          color: 'white',
           textTransform: 'uppercase',
           textAlign: 'center',
           lineHeight: 1,
           letterSpacing: '0.03em',
-          textShadow: win
-            ? '0 0 40px rgba(255,255,255,0.55)'
-            : tie
-            ? '0 0 30px rgba(252,209,22,0.55)'
-            : '0 0 30px rgba(0,0,0,0.3)',
+          textShadow: '0 0 40px rgba(255,255,255,0.55)',
           whiteSpace: 'nowrap',
         }}>
           {resultText}
@@ -99,7 +88,7 @@ export default function FootballResultsScreen({ pts: _pts, pScore, mScore, onDon
           position: 'absolute',
           left: '22.3%',
           right: '22.3%',
-          top: 'calc(64.04% - min(17vw, 9.55vh))',
+          top: 'calc(64.04% - min(17vw, 9.55vh) + 80px)',
           height: 'min(34vw, 19.1vh)',
           background: '#00577a',
           borderRadius: 'min(5vw, 2.8vh)',
@@ -124,14 +113,14 @@ export default function FootballResultsScreen({ pts: _pts, pScore, mScore, onDon
       <motion.img src="/assets/games/football-ball.svg" alt=""
         animate={{ y: [0, -10, 0], rotate: [0, 15, 0] }}
         transition={{ duration: 3.2, repeat: Infinity, ease: 'easeInOut' }}
-        style={{ position: 'absolute', left: '16.8%', top: '55.4%', width: '10.9%', objectFit: 'contain', zIndex: 7, pointerEvents: 'none', filter: 'drop-shadow(0 4px 10px rgba(0,0,0,0.3))' }}
+        style={{ position: 'absolute', left: '16.8%', top: 'calc(55.4% + 80px)', width: '10.9%', objectFit: 'contain', zIndex: 7, pointerEvents: 'none', filter: 'drop-shadow(0 4px 10px rgba(0,0,0,0.3))' }}
       />
 
       {/* Ball 2 */}
       <motion.img src="/assets/games/football-ball.svg" alt=""
         animate={{ y: [0, -12, 0], rotate: [0, -20, 0] }}
         transition={{ duration: 2.8, repeat: Infinity, ease: 'easeInOut', delay: 0.8 }}
-        style={{ position: 'absolute', left: '69.2%', top: '68.7%', width: '10.9%', objectFit: 'contain', zIndex: 7, pointerEvents: 'none', filter: 'drop-shadow(0 4px 10px rgba(0,0,0,0.3))' }}
+        style={{ position: 'absolute', left: '69.2%', top: 'calc(68.7% + 80px)', width: '10.9%', objectFit: 'contain', zIndex: 7, pointerEvents: 'none', filter: 'drop-shadow(0 4px 10px rgba(0,0,0,0.3))' }}
       />
 
       {/* CONTINUAR button */}

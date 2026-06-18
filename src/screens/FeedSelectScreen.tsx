@@ -98,16 +98,16 @@ export default function FeedSelectScreen({ onSelect, onBack, score = 0 }: Props)
         </span>
       </div>
 
-      {/* Gato con tenedor */}
-      <div style={{ position: 'absolute', left: '18.15%', top: '20.73%', width: '69.17%', zIndex: 1, pointerEvents: 'none' }}>
-        <motion.img
-          src="/assets/cat/cat-food-select.png"
-          alt=""
-          animate={selected ? { scale: [1, 1.08, 1] } : { y: [0, -8, 0] }}
-          transition={selected ? { duration: 0.35 } : { duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-          style={{ width: '100%', objectFit: 'contain', filter: 'drop-shadow(0 16px 36px rgba(0,87,122,0.2))' }}
-        />
-      </div>
+      {/* Gato esperando comida */}
+      <video
+        src="/assets/cat/Animation/EsperandoComida.webm"
+        autoPlay loop muted playsInline
+        style={{
+          position: 'absolute', left: '8.5%', top: 'calc(20.73% + 150px)', width: '83%',
+          objectFit: 'contain', zIndex: 1, pointerEvents: 'none',
+          filter: 'drop-shadow(0 16px 36px rgba(0,87,122,0.2))',
+        }}
+      />
 
       {/* Indicador zona de drop */}
       <AnimatePresence>

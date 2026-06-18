@@ -42,6 +42,7 @@ export default function App() {
   const [screen, setScreen]             = useState<ScreenName>('attract');
   const [cat,    setCat]                = useState<CatState>(initialCatState);
   const [pointsEarned, setPointsEarned] = useState<number | null>(null);
+  const [comingFromSleep, setComingFromSleep] = useState(false);
   const [footballResult, setFootballResult] = useState<{ pts: number; pScore: number; mScore: number } | null>(null);
   const [idleWarning, setIdleWarning]   = useState(false);
   const [warnSecs,  setWarnSecs]        = useState(WARNING_SECS);
@@ -163,7 +164,9 @@ export default function App() {
 const handleTalkDone = () => {
     const pts = 20;
     updateCat({ affection: clamp(cat.affection + 15), mood: clamp(cat.mood + 15), score: cat.score + pts, hasTalked: true, level: 'Curioso' });
-    flashPoints(pts); nav('hub');
+    flashPoints(pts);
+    setComingFromSleep(true);
+    nav('hub');
   };
 
   const handleRestart = () => { setCat(initialCatState); setPointsEarned(null); nav('attract'); };
@@ -174,7 +177,7 @@ const handleTalkDone = () => {
       case 'registration': return <RegistrationScreen onNext={handleRegistration} />;
       case 'pet':          return <PetScreen name={cat.name} onNext={() => { updateCat({ affection: clamp(cat.affection + 30), level: 'Despierto' }); nav('hub'); }} />;
       case 'hub':
-      case 'dashboard':    return <HubScreen cat={cat} onNavigate={nav} pointsEarned={pointsEarned} onPointsShown={() => setPointsEarned(null)} />;
+      case 'dashboard':    return <HubScreen cat={cat} onNavigate={nav} pointsEarned={pointsEarned} onPointsShown={() => setPointsEarned(null)} comingFromSleep={comingFromSleep} onComingFromSleepConsumed={() => setComingFromSleep(false)} />;
 
       case 'gameSelect':   return <GameSelectScreen onSelect={nav} onBack={() => nav('hub')} score={cat.score} />;
 
