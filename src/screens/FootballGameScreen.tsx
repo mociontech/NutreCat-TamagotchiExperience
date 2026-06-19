@@ -105,6 +105,8 @@ export default function FootballGameScreen({ onGoal }: Props) {
   const [rivalGkNX,      setRivalGkNX]     = useState(0.5);
   const [gkDragActive,   setGkDragActive]  = useState(false);
   const [showConfetti,   setShowConfetti]  = useState(false);
+  const [rivalDiving,    setRivalDiving]   = useState(false);
+  const [rivalDiveFlip,  setRivalDiveFlip] = useState(false);
   const isDragging = useRef(false);
   const [ballPx,         setBallPx]        = useState({ x: 0, y: 0 });
   const [ballHalfW,      setBallHalfW]     = useState(0);
@@ -115,7 +117,9 @@ export default function FootballGameScreen({ onGoal }: Props) {
   const ballDivRef       = useRef<HTMLDivElement>(null);
   const gkNXRef          = useRef(0.5);
   const rivalTargetNxRef = useRef(0.5);
+  const rivalDiveRef     = useRef<HTMLVideoElement>(null);
   useEffect(() => { gkNXRef.current = gkNX; }, [gkNX]);
+
 
   // ── Countdown 5→4→3→2→1 during rival_intro ──────────────────────
   useEffect(() => {
@@ -316,8 +320,16 @@ export default function FootballGameScreen({ onGoal }: Props) {
       const safeGoalNx = gkInGoal > product.nx ? product.nx + 0.22 : product.nx - 0.22;
       newRivalGkNX = Math.max(0.05, Math.min(0.93, (safeGoalNx - 0.02) / 0.84));
     }
-    setRivalGkNX(newRivalGkNX);
-    setPhase('firing');
+    // Dirección del salto para el espejo del video
+    setRivalDiveFlip(newRivalGkNX < 0.5);
+    // Arquero empieza a tirarse inmediatamente
+    const v = rivalDiveRef.current;
+    if (v) { v.currentTime = 0; v.play().catch(() => {}); }
+    setRivalDiving(true);
+    // Movimiento en X arranca con pequeño delay → animación de 2s visible
+    setTimeout(() => setRivalGkNX(newRivalGkNX), 150);
+    // Balón sale después de que se ve el salto
+    setTimeout(() => setPhase('firing'), 650);
   }, [phase]);
 
   // Player drags GK during rival turn
@@ -463,17 +475,39 @@ export default function FootballGameScreen({ onGoal }: Props) {
 
         {/* GK rival (during player kick) */}
         {inPlayerPhases && (
-          <motion.img
-            src="/assets/cat/ArqueroRival.png" alt=""
+          <motion.div
             animate={{ left: `calc(${rivalGkNX * 84 + 2}% - min(10vw, 5.6vh))` }}
-            transition={{ duration: phase === 'firing' ? 0.28 : 0.05, ease: 'easeOut' }}
+            transition={{ duration: rivalDiving ? 2 : 0.05, ease: 'easeInOut' }}
             style={{
               position: 'absolute',
               bottom: 'calc(-8% + 170px)',
-              width: 'min(23vw, 13vh)', objectFit: 'contain',
+              width: 'min(23vw, 13vh)',
               zIndex: 9, pointerEvents: 'none',
             }}
-          />
+          >
+            {/* Idle loop */}
+            <video
+              src="/assets/cat/Animation/ArqueroRival.webm"
+              autoPlay loop muted playsInline
+              style={{
+                width: '100%', height: 'auto', objectFit: 'contain', display: 'block',
+                opacity: rivalDiving ? 0 : 1, transition: 'opacity 0.1s',
+              }}
+            />
+            {/* Salto — dura hasta que onEnded lo apaga */}
+            <video
+              ref={rivalDiveRef}
+              src="/assets/cat/Animation/ArqueroIzquierda.webm"
+              muted playsInline preload="auto"
+              onEnded={() => setRivalDiving(false)}
+              style={{
+                position: 'absolute', inset: 0,
+                width: '100%', height: 'auto', objectFit: 'contain', display: 'block',
+                opacity: rivalDiving ? 1 : 0, transition: 'opacity 0.1s',
+                transform: rivalDiveFlip ? 'scaleX(-1)' : 'none',
+              }}
+            />
+          </motion.div>
         )}
 
         {/* GK player (during rival kick) — draggable */}
