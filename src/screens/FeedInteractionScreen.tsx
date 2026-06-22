@@ -9,18 +9,18 @@ const PRODUCTS: { id: FoodType; img: string; left: string; width: string }[] = [
   { id: 'wet',    img: '/assets/products/product-2.png', left: '63.52%', width: '21.48%' },
 ];
 
-const BENEFITS: Record<FoodType, { line1: string; line2: string }[]> = {
+const BENEFITS: Record<FoodType, { line1: string; line2: string; bg: string; color: string }[]> = {
   treats: [
-    { line1: 'Favorece una',           line2: 'mejor digestión' },
-    { line1: 'Vitamina D, calcio y',   line2: 'fósforo para huesos fuertes' },
+    { line1: 'Favorece una',           line2: 'mejor digestión',            bg: '#f4a875', color: '#7a1e0e' },
+    { line1: 'Calcio y fósforo', line2: 'para huesos fuertes', bg: '#f4a875', color: '#7a1e0e' },
   ],
   dry: [
-    { line1: 'Ayuda a mantener una',   line2: 'digestión equilibrada' },
-    { line1: 'Ácidos grasos omega 3',  line2: 'para el corazón' },
+    { line1: 'Ayuda a mantener una',   line2: 'digestión equilibrada',       bg: '#dbd672', color: '#3a3b10' },
+    { line1: 'Ácidos grasos omega 3',  line2: 'para el corazón',             bg: '#dbd672', color: '#3a3b10' },
   ],
   wet: [
-    { line1: 'Apoya la salud',         line2: 'digestiva intestinal' },
-    { line1: 'Fósforo y potasio',      line2: 'para los músculos' },
+    { line1: 'Apoya la salud',         line2: 'digestiva intestinal',        bg: '#debbe7', color: '#5a1a6e' },
+    { line1: 'Fósforo y potasio',      line2: 'para los músculos',           bg: '#debbe7', color: '#5a1a6e' },
   ],
 };
 
@@ -101,8 +101,8 @@ export default function FeedInteractionScreen({ selectedFood, onDone, score = 0 
       </div>
 
       {/* Score */}
-      <div style={{ position: 'absolute', top: '5%', right: '9%', zIndex: 3, background: 'white', borderRadius: 99, padding: 'min(1.5vw, 0.85vh) min(4.5vw, 2.5vh)', boxShadow: '0 2px 14px rgba(0,87,122,0.18)' }}>
-        <span style={{ fontFamily: 'var(--font-display)', fontSize: 'min(6.6vw, 3.7vh)', color: '#00577a', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>
+      <div style={{ position: 'absolute', top: '5%', right: '9%', zIndex: 3, background: 'white', borderRadius: 'min(3.8vw, 2.14vh)', width: 'min(33.3vw, 18.75vh)', height: 'min(7.6vw, 4.27vh)', boxShadow: '0 2px 14px rgba(0,87,122,0.18)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <span style={{ fontFamily: 'var(--font-display)', fontSize: 'min(6.57vw, 3.7vh)', color: '#00577a', textTransform: 'uppercase', textAlign: 'center', whiteSpace: 'nowrap', lineHeight: 1, paddingTop: '0.25em' }}>
           Puntos: {score}
         </span>
       </div>
@@ -118,11 +118,13 @@ export default function FeedInteractionScreen({ selectedFood, onDone, score = 0 
             transition={{ delay: i * 0.18, type: 'spring', stiffness: 220, damping: 24 }}
             style={{
               position: 'absolute',
-              top: i === 0 ? 'calc(13% + 200px)' : 'calc(19% + 200px)',
+              top: i === 0 ? 'calc(13% + 130px)' : 'calc(19% + 130px)',
               left:  i === 0 ? '9%'  : undefined,
               right: i === 1 ? '9%'  : undefined,
               maxWidth: '40%',
               zIndex: 8, pointerEvents: 'none',
+              rotate: i === 0 ? '-10deg' : '15deg',
+              scale: 0.95,
             }}
           >
             <motion.div
@@ -142,24 +144,24 @@ export default function FeedInteractionScreen({ selectedFood, onDone, score = 0 
               }}
               style={{
                 position: 'relative', overflow: 'hidden',
-                background: 'rgba(255,255,255,0.22)',
-                backdropFilter: 'blur(12px)',
-                WebkitBackdropFilter: 'blur(12px)',
-                border: '1px solid rgba(255,255,255,0.55)',
+                background: b.bg,
+                border: `2px solid ${b.color}`,
                 borderRadius: 'min(2.5vw, 1.4vh)',
-                padding: 'min(1.2vw, 0.68vh) min(2vw, 1.1vh)',
+                padding: 'min(1.8vw, 1.02vh) min(3vw, 1.65vh)',
+                boxShadow: `0 4px 16px ${b.bg}99`,
                 display: 'inline-block',
               }}
             >
               <span style={{
                 fontFamily: 'var(--font-body)',
-                fontSize: 'min(1.9vw, 1.07vh)',
-                color: 'white',
+                fontSize: 'min(2.85vw, 1.6vh)',
+                color: b.color,
                 fontWeight: 700,
                 lineHeight: 1.3,
                 textTransform: 'uppercase',
                 letterSpacing: '0.03em',
                 display: 'block',
+                textAlign: 'center',
                 position: 'relative', zIndex: 1,
               }}>
                 {b.line1}<br />{b.line2}
@@ -353,7 +355,7 @@ export default function FeedInteractionScreen({ selectedFood, onDone, score = 0 
                     style={{ position: 'absolute', inset: 0, background: 'rgba(255,255,255,0.55)', borderRadius: '50%', pointerEvents: 'none', transformOrigin: 'center' }}
                   />
                 )}
-                ¡Listo!
+                Continuar
               </motion.button>
             </motion.div>
           )}

@@ -128,6 +128,12 @@ export default function TalkScreen({ onDone, score = 0, hasFed = true, hasPlayed
       position: 'relative', overflow: 'hidden',
     }}>
 
+      {/* Fondo con luz */}
+      <div style={{ position: 'absolute', inset: 0, zIndex: 0, pointerEvents: 'none',
+        backgroundImage: `url('/assets/cat/Fondo%20con%20luz%201.png')`,
+        backgroundSize: 'cover', backgroundPosition: 'center bottom' }}
+      />
+
 
 
 
@@ -165,27 +171,27 @@ export default function TalkScreen({ onDone, score = 0, hasFed = true, hasPlayed
         )}
       </AnimatePresence>
 
-      {/* ── Gradiente oscuro fase dark ── */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: phase === 'dark' ? 1 : 0 }}
-        transition={{ duration: 0.8 }}
-        style={{
-          position: 'absolute', inset: 0, zIndex: 2, pointerEvents: 'none',
-          background: 'linear-gradient(to bottom, #1a0d2e 0%, transparent 30%, transparent 55%, #1a0d2e 100%)',
-        }}
-      />
-
-      {/* ── Velo de oscuridad tenue al dormir ── */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: phase === 'dark' ? 1 : 0 }}
-        transition={{ duration: 1.2 }}
-        style={{
-          position: 'absolute', inset: 0, zIndex: 3, pointerEvents: 'none',
-          background: 'rgba(10, 5, 30, 0.38)',
-        }}
-      />
+      {/* ── Gradiente oscuro + velo — solo fase dark ── */}
+      <AnimatePresence>
+        {phase === 'dark' && (
+          <>
+            <motion.div
+              key="grad"
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              transition={{ duration: 0.8 }}
+              style={{ position: 'absolute', inset: 0, zIndex: 2, pointerEvents: 'none',
+                background: 'linear-gradient(to bottom, #1a0d2e 0%, transparent 30%, transparent 55%, #1a0d2e 100%)' }}
+            />
+            <motion.div
+              key="veil"
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              transition={{ duration: 1.2 }}
+              style={{ position: 'absolute', inset: 0, zIndex: 3, pointerEvents: 'none',
+                background: 'rgba(10, 5, 30, 0.38)' }}
+            />
+          </>
+        )}
+      </AnimatePresence>
 
       {/* ── Videos del gato ── */}
       <video
@@ -264,8 +270,8 @@ export default function TalkScreen({ onDone, score = 0, hasFed = true, hasPlayed
             transition={{ duration: 1.1, repeat: Infinity, ease: 'easeInOut' }}
             style={{
               position: 'absolute',
-              top: '19.38%', left: '24.17%',
-              width: '20%',
+              top: 'calc(19.38% + 80px)', left: '24.17%',
+              width: '14%',
               zIndex: 9, pointerEvents: 'none',
             }}
           >
@@ -275,7 +281,7 @@ export default function TalkScreen({ onDone, score = 0, hasFed = true, hasPlayed
                 alt=""
                 style={{
                   width: '100%', height: '100%', display: 'block',
-                  transform: 'scaleX(-1) rotate(-25deg)',
+                  transform: 'scaleY(-1) rotate(-210deg)',
                   filter: 'brightness(0) invert(1)',
                 }}
               />
@@ -284,18 +290,21 @@ export default function TalkScreen({ onDone, score = 0, hasFed = true, hasPlayed
 
           {/* Texto indicador pulsante */}
           <motion.div
-            animate={{ opacity: [0.7, 1, 0.7] }}
-            transition={{ duration: 1.3, repeat: Infinity }}
+            animate={{ rotate: [0, -2.5, 2.5, -2.5, 2.5, -1.5, 1.5, 0] }}
+            transition={{ duration: 0.55, repeat: Infinity, repeatDelay: 3.5, ease: 'easeInOut' }}
             style={{
               position: 'absolute',
-              top: '19.21%', left: '64.56%',
-              background: 'rgba(255,255,255,0.9)',
+              top: '19.21%', left: 'calc(64.56% - 50px)',
+              background: 'rgba(0,87,122,0.55)',
+              backdropFilter: 'blur(12px)',
+              WebkitBackdropFilter: 'blur(12px)',
+              border: '1px solid rgba(0,87,122,0.4)',
               borderRadius: 99,
-              padding: 'min(1.5vw, 0.85vh) min(3.5vw, 2vh)',
+              padding: 'min(1.5vw, 0.85vh) min(5.5vw, 3.1vh)',
               fontFamily: 'var(--font-display)',
               fontSize: 'min(6vw, 3.4vh)',
-              color: '#00577a',
-              boxShadow: '0 2px 10px rgba(0,0,0,0.2)',
+              color: 'white',
+              boxShadow: '0 4px 18px rgba(0,87,122,0.3)',
               zIndex: 9,
               whiteSpace: 'nowrap',
               textAlign: 'center',
@@ -415,42 +424,39 @@ export default function TalkScreen({ onDone, score = 0, hasFed = true, hasPlayed
         ))}
       </AnimatePresence>
 
-      {/* ── Botón ¡Listo! ── */}
+      {/* ── Botón Continuar ── */}
       <AnimatePresence>
         {showBtn && (
-          <div style={{ position: 'absolute', bottom: '24%', left: 0, right: 0, display: 'flex', justifyContent: 'center', zIndex: 10 }}>
+          <div style={{ position: 'absolute', bottom: 25, left: 0, right: 0, padding: '0 9% min(5vw, 2.8vh)', zIndex: 10 }}>
             <motion.button
-              initial={{ opacity: 0, y: 20, scale: 0.9 }}
+              initial={{ opacity: 0, y: 20 }}
               animate={{
-                opacity: 1, y: 0, scale: 1,
-                boxShadow: [
-                  '0 0 20px rgba(255,255,255,0.2)',
-                  '0 0 50px rgba(255,255,255,0.5)',
-                  '0 0 20px rgba(255,255,255,0.2)',
-                ],
+                opacity: 1, y: 0,
+                boxShadow: ['0 0 20px rgba(0,87,122,0.2)', '0 0 44px rgba(0,87,122,0.55)', '0 0 20px rgba(0,87,122,0.2)'],
               }}
-              transition={{ duration: 0.35, boxShadow: { duration: 2, repeat: Infinity } }}
+              transition={{ duration: 0.35, boxShadow: { duration: 1.5, repeat: Infinity } }}
               onClick={onDone}
               style={{
-                background: 'rgba(255,255,255,0.15)',
-                backdropFilter: 'blur(10px)',
-                color: 'white', border: '2px solid rgba(255,255,255,0.5)',
-                borderRadius: 99,
-                padding: 'min(2.8vw, 1.6vh) min(10vw, 5.6vh)',
-                fontFamily: 'var(--font-display)',
-                fontSize: 'min(8vw, 4.5vh)',
-                textTransform: 'uppercase',
-                cursor: 'pointer', whiteSpace: 'nowrap',
+                width: '100%', height: 82, padding: '15px min(4vw, 2.2vh) 0',
+                background: 'white', color: '#00577a',
+                border: 'none', borderRadius: 99,
+                fontFamily: 'var(--font-display)', fontSize: 77.742, lineHeight: 1,
+                cursor: 'pointer', textTransform: 'uppercase',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}
             >
-              ¡Listo!
+              Continuar
             </motion.button>
           </div>
         )}
       </AnimatePresence>
 
       {/* ── Tracker de actividades completadas ── */}
-      <div style={{ position: 'absolute', top: '80%', left: 0, right: 0, display: 'flex', justifyContent: 'center', alignItems: 'flex-end', gap: 'min(4.4vw, 2.5vh)', padding: '0 9%', zIndex: 10 }}>
+      <AnimatePresence>
+      {phase !== 'dark' && (
+      <motion.div
+        initial={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }}
+        style={{ position: 'absolute', top: '80%', left: 0, right: 0, display: 'flex', justifyContent: 'center', alignItems: 'flex-end', gap: 'min(4.4vw, 2.5vh)', padding: '0 9%', zIndex: 10 }}>
         {ACTIVITY_NAV.map(item => {
           const done = item.doneKey ? doneMap[item.doneKey] : false;
           const isCurrent = item.id === 'sleep';
@@ -459,12 +465,23 @@ export default function TalkScreen({ onDone, score = 0, hasFed = true, hasPlayed
               <div style={{
                 width: 'min(17.13vw, 9.64vh)', aspectRatio: '1',
                 borderRadius: '50%',
-                background: done ? 'white' : isCurrent ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.12)',
+                background: done ? 'white' : '#00577a',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                boxShadow: isCurrent ? '0 0 0 3px rgba(255,255,255,0.8), 0 6px 22px rgba(255,255,255,0.15)' : done ? '0 0 0 3px rgba(255,255,255,0.5)' : 'none',
+                boxShadow: isCurrent ? '0 0 0 3px rgba(255,255,255,0.8), 0 6px 22px rgba(0,87,122,0.25)' : done ? '0 0 0 3px rgba(255,255,255,0.5)' : '0 4px 16px rgba(0,0,0,0.2)',
                 flexShrink: 0,
               }}>
-                <img src={item.icon} alt="" style={{ width: '62%', height: 'auto', objectFit: 'contain', filter: done ? 'none' : 'brightness(0) invert(1)' }} />
+                <div style={{
+                  width: '62%', aspectRatio: '1',
+                  backgroundColor: '#00B6ED',
+                  WebkitMaskImage: `url(${item.icon})`,
+                  maskImage: `url(${item.icon})`,
+                  WebkitMaskSize: 'contain',
+                  maskSize: 'contain',
+                  WebkitMaskRepeat: 'no-repeat',
+                  maskRepeat: 'no-repeat',
+                  WebkitMaskPosition: 'center',
+                  maskPosition: 'center',
+                }} />
               </div>
               <motion.span
                 animate={{ opacity: showLabels ? (isCurrent || done ? 1 : 0.55) : 0 }}
@@ -476,7 +493,9 @@ export default function TalkScreen({ onDone, score = 0, hasFed = true, hasPlayed
             </div>
           );
         })}
-      </div>
+      </motion.div>
+      )}
+      </AnimatePresence>
     </div>
   );
 }

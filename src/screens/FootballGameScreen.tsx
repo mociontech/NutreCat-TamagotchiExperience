@@ -4,6 +4,9 @@ import { useState, useEffect, useRef, useCallback, useLayoutEffect } from 'react
 // ─── Config ────────────────────────────────────────────────────────────────────
 const N_PENS     = 3;
 const SHOOT_MS   = 750;
+const PLAYER_KICK_IMPACT_MS = 2333;
+const RIVAL_KICK_IMPACT_MS = 1333;
+const PLAYER_KICK_APPROACH_Y = -80;
 const RESULT_MS  = 1600;
 const INTRO_MS   = 5000;
 const PTS_GOAL   = 60;
@@ -106,7 +109,10 @@ export default function FootballGameScreen({ onGoal }: Props) {
   const [gkDragActive,   setGkDragActive]  = useState(false);
   const [showConfetti,   setShowConfetti]  = useState(false);
   const [rivalDiving,    setRivalDiving]   = useState(false);
-  const [rivalDiveFlip,  setRivalDiveFlip] = useState(false);
+  const [rivalDiveDir,   setRivalDiveDir]  = useState<'left' | 'right' | 'center' | null>(null);
+  const [playerKicking,  setPlayerKicking] = useState(false);
+  const [rivalKicking,   setRivalKicking]  = useState(false);
+  const [playerGkJumping, setPlayerGkJumping] = useState(false);
   const isDragging = useRef(false);
   const [ballPx,         setBallPx]        = useState({ x: 0, y: 0 });
   const [ballHalfW,      setBallHalfW]     = useState(0);
@@ -117,8 +123,55 @@ export default function FootballGameScreen({ onGoal }: Props) {
   const ballDivRef       = useRef<HTMLDivElement>(null);
   const gkNXRef          = useRef(0.5);
   const rivalTargetNxRef = useRef(0.5);
-  const rivalDiveRef     = useRef<HTMLVideoElement>(null);
+  const rivalIdleRef       = useRef<HTMLVideoElement>(null);
+  const rivalDiveLeftRef   = useRef<HTMLVideoElement>(null);
+  const rivalDiveRightRef  = useRef<HTMLVideoElement>(null);
+  const rivalDiveCenterRef = useRef<HTMLVideoElement>(null);
+  const playerKickRef      = useRef<HTMLVideoElement>(null);
+  const rivalKickRef       = useRef<HTMLVideoElement>(null);
+  const playerGkJumpRef    = useRef<HTMLVideoElement>(null);
   useEffect(() => { gkNXRef.current = gkNX; }, [gkNX]);
+
+  useEffect(() => {
+    if (!playerKicking) return;
+    const v = playerKickRef.current;
+    if (!v) return;
+    v.currentTime = 0;
+    v.play().catch(() => {});
+  }, [playerKicking]);
+
+  useEffect(() => {
+    if (phase !== 'aim') return;
+    setRivalDiving(false);
+    setRivalDiveDir(null);
+    const v = rivalIdleRef.current;
+    if (!v) return;
+    v.currentTime = 0;
+    v.play().catch(() => {});
+  }, [phase]);
+
+  useEffect(() => {
+    if (!rivalKicking) return;
+    const v = rivalKickRef.current;
+    if (!v) return;
+    v.currentTime = 0;
+    v.play().catch(() => {});
+  }, [rivalKicking]);
+
+  useEffect(() => {
+    if (!rivalKicking) return;
+    setPlayerGkJumping(true);
+    const v = playerGkJumpRef.current;
+    if (!v) return;
+    v.currentTime = 0;
+    v.play().catch(() => {});
+  }, [rivalKicking]);
+
+  useEffect(() => {
+    if (phase === 'rival_intro' || phase === 'rival_result' || phase === 'aim') {
+      setPlayerGkJumping(false);
+    }
+  }, [phase]);
 
 
   // ── Countdown 5→4→3→2→1 during rival_intro ──────────────────────
@@ -172,6 +225,7 @@ export default function FootballGameScreen({ onGoal }: Props) {
       setPOuts(prev => { const n = [...prev]; n[round] = true; return n; });
       setTotalPts(p => p + PTS_GOAL);
       if (selectedProduct) setHitProductIds(prev => [...prev, selectedProduct.id]);
+      setPlayerKicking(false);
       setPhase('benefits');
       setShowConfetti(true);
       setTimeout(() => setShowConfetti(false), 2600);
@@ -234,7 +288,10 @@ export default function FootballGameScreen({ onGoal }: Props) {
       // Fake-out: GK auto-drifts right so player must correct to center
       timers.push(setTimeout(() => setGkNX(0.84), 650));
     }
-    timers.push(setTimeout(() => setPhase('rival_fire'), INTRO_MS));
+    timers.push(setTimeout(() => {
+      setRivalKicking(true);
+      setTimeout(() => setPhase('rival_fire'), RIVAL_KICK_IMPACT_MS);
+    }, INTRO_MS));
     return () => timers.forEach(clearTimeout);
   }, [phase, round]); // eslint-disable-line
 
@@ -251,6 +308,7 @@ export default function FootballGameScreen({ onGoal }: Props) {
       const gkGA   = 0.0584 + 0.7728 * gkNXRef.current;
       const scored = targetNx <= 1 && Math.abs(gkGA - ballGA) > GK_HALF_W + 0.03;
       setMOuts(prev => { const n = [...prev]; n[round] = scored; return n; });
+      setRivalKicking(false);
       setPhase('rival_result');
     }, SHOOT_MS + 200);
     return () => clearTimeout(t);
@@ -268,6 +326,7 @@ export default function FootballGameScreen({ onGoal }: Props) {
         setSelectedProduct(null);
         setFireTarget(null);
         setRivalTarget(null);
+        setRivalKicking(false);
         setGkNX(0.5);
         setRivalGkNX(0.5);
         setPhase('aim');
@@ -280,7 +339,7 @@ export default function FootballGameScreen({ onGoal }: Props) {
   // getBoundingClientRect gives visual (post-transform) px.
   // CSS left/top needs local CSS px. Convert with sw/sh = offsetSize / clientRect.
   const handleProductTap = useCallback((product: Product) => {
-    if (phase !== 'aim') return;
+    if (phase !== 'aim' || playerKicking) return;
     const ga = gameAreaRef.current;
     const gd = goalDivRef.current;
     const bd = ballDivRef.current;
@@ -310,6 +369,7 @@ export default function FootballGameScreen({ onGoal }: Props) {
     setGoalBounds({ left: gl, top: gt, right: gl + gw, bottom: gt + gh, width: gw, height: gh });
     setFireTarget({ x: gl + product.nx * gw, y: gt + gh * 0.32 });
     setSelectedProduct(product);
+    setPlayerKicking(true);
     // Rival GK dives wrong side with randomness — guaranteed no visual overlap
     const goRight = product.nx < 0.4 ? true : product.nx > 0.6 ? false : Math.random() > 0.5;
     const base = goRight ? 0.66 : 0.06;
@@ -320,20 +380,23 @@ export default function FootballGameScreen({ onGoal }: Props) {
       const safeGoalNx = gkInGoal > product.nx ? product.nx + 0.22 : product.nx - 0.22;
       newRivalGkNX = Math.max(0.05, Math.min(0.93, (safeGoalNx - 0.02) / 0.84));
     }
-    // Dirección del salto para el espejo del video
-    setRivalDiveFlip(newRivalGkNX < 0.5);
-    // Arquero empieza a tirarse inmediatamente
-    const v = rivalDiveRef.current;
-    if (v) { v.currentTime = 0; v.play().catch(() => {}); }
-    setRivalDiving(true);
-    // Movimiento en X arranca con pequeño delay → animación de 2s visible
-    setTimeout(() => setRivalGkNX(newRivalGkNX), 150);
-    // Balón sale después de que se ve el salto
-    setTimeout(() => setPhase('firing'), 650);
-  }, [phase]);
+    // Dirección del salto
+    const dir: 'left' | 'right' | 'center' =
+      newRivalGkNX < 0.45 ? 'left' : newRivalGkNX > 0.55 ? 'right' : 'center';
+    // Balón y portero arrancan juntos en el impacto del video del jugador.
+    setTimeout(() => {
+      setRivalDiveDir(dir);
+      setRivalDiving(true);
+      setRivalGkNX(newRivalGkNX);
+      const vRef = dir === 'left' ? rivalDiveLeftRef : dir === 'right' ? rivalDiveRightRef : rivalDiveCenterRef;
+      const v = vRef.current;
+      if (v) { v.currentTime = 0; v.play().catch(() => {}); }
+      setPhase('firing');
+    }, PLAYER_KICK_IMPACT_MS);
+  }, [phase, playerKicking]);
 
   // Player drags GK during rival turn
-  const handleGkPointerDown = useCallback((e: React.PointerEvent<HTMLImageElement>) => {
+  const handleGkPointerDown = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
     if (phase !== 'rival_intro' && phase !== 'rival_fire') return;
     isDragging.current = true;
     setGkDragActive(true);
@@ -341,7 +404,7 @@ export default function FootballGameScreen({ onGoal }: Props) {
     e.stopPropagation();
   }, [phase]);
 
-  const handleGkPointerMove = useCallback((e: React.PointerEvent<HTMLImageElement>) => {
+  const handleGkPointerMove = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
     if (!isDragging.current) return;
     const ga = gameAreaRef.current;
     if (!ga) return;
@@ -424,12 +487,14 @@ export default function FootballGameScreen({ onGoal }: Props) {
       >
         {/* Product targets — visible until hit, tappable only in aim */}
         <AnimatePresence>
-          {PRODUCTS.filter(p => !hitProductIds.includes(p.id) && (phase === 'aim' || phase === 'firing' || phase === 'benefits')).map((p) => (
+          {(phase === 'aim' || phase === 'firing' || phase === 'benefits') && PRODUCTS.map((p) => {
+            const isHit = hitProductIds.includes(p.id);
+            return (
             <motion.button
               key={p.id}
-              onClick={phase === 'aim' ? () => handleProductTap(p) : undefined}
+              onClick={phase === 'aim' && !isHit ? () => handleProductTap(p) : undefined}
               initial={{ opacity: 0, scale: 0.7 }}
-              animate={{ opacity: 1, scale: 1, y: [0, -10, 0] }}
+              animate={{ opacity: isHit ? 0.35 : 1, scale: 1, y: [0, -10, 0] }}
               exit={{ opacity: 0, scale: 0.3 }}
               transition={{
                 opacity: { duration: 0.3 },
@@ -442,15 +507,16 @@ export default function FootballGameScreen({ onGoal }: Props) {
                 top: '22%',
                 width: 'min(13vw, 7.3vh)',
                 background: 'none', border: 'none', padding: 0,
-                cursor: phase === 'aim' ? 'pointer' : 'default',
-                pointerEvents: phase === 'aim' ? 'auto' : 'none',
+                cursor: phase === 'aim' && !isHit ? 'pointer' : 'default',
+                pointerEvents: phase === 'aim' && !isHit ? 'auto' : 'none',
                 zIndex: 8,
               }}
             >
               <img src={p.src} alt={p.name}
                 style={{ width: '100%', objectFit: 'contain', filter: 'drop-shadow(0 4px 14px rgba(255,255,255,0.7))' }} />
             </motion.button>
-          ))}
+            );
+          })}
         </AnimatePresence>
 
         {/* Hit flash on selected product position */}
@@ -480,40 +546,50 @@ export default function FootballGameScreen({ onGoal }: Props) {
             transition={{ duration: rivalDiving ? 2 : 0.05, ease: 'easeInOut' }}
             style={{
               position: 'absolute',
-              bottom: 'calc(-8% + 170px)',
-              width: 'min(23vw, 13vh)',
+              bottom: 'calc(-8% - 10px)',
+              width: 'min(35.88vw, 20.28vh)',
               zIndex: 9, pointerEvents: 'none',
             }}
           >
             {/* Idle loop */}
             <video
-              src="/assets/cat/Animation/ArqueroRival.webm"
+              ref={rivalIdleRef}
+              src="/assets/cat/Animation/ArqueroRivalIdle.webm"
               autoPlay loop muted playsInline
-              style={{
-                width: '100%', height: 'auto', objectFit: 'contain', display: 'block',
-                opacity: rivalDiving ? 0 : 1, transition: 'opacity 0.1s',
-              }}
+              onLoadedData={(e) => e.currentTarget.play().catch(() => {})}
+              style={{ width: '100%', height: 'auto', objectFit: 'contain', display: 'block',
+                opacity: rivalDiving ? 0 : 1, transition: 'opacity 0.1s' }}
             />
-            {/* Salto — dura hasta que onEnded lo apaga */}
-            <video
-              ref={rivalDiveRef}
-              src="/assets/cat/Animation/ArqueroIzquierda.webm"
+            {/* Salto izquierda */}
+            <video ref={rivalDiveLeftRef}
+              src="/assets/cat/Animation/ArqueroRivalIzquierda.webm"
               muted playsInline preload="auto"
-              onEnded={() => setRivalDiving(false)}
-              style={{
-                position: 'absolute', inset: 0,
-                width: '100%', height: 'auto', objectFit: 'contain', display: 'block',
-                opacity: rivalDiving ? 1 : 0, transition: 'opacity 0.1s',
-                transform: rivalDiveFlip ? 'scaleX(-1)' : 'none',
-              }}
+              onEnded={() => { setRivalDiving(false); setRivalDiveDir(null); }}
+              style={{ position: 'absolute', inset: 0, width: '100%', height: 'auto', objectFit: 'contain', display: 'block',
+                opacity: rivalDiveDir === 'left' ? 1 : 0, transition: 'opacity 0.1s' }}
+            />
+            {/* Salto derecha */}
+            <video ref={rivalDiveRightRef}
+              src="/assets/cat/Animation/ArqueroRivalDerecha.webm"
+              muted playsInline preload="auto"
+              onEnded={() => { setRivalDiving(false); setRivalDiveDir(null); }}
+              style={{ position: 'absolute', inset: 0, width: '100%', height: 'auto', objectFit: 'contain', display: 'block',
+                opacity: rivalDiveDir === 'right' ? 1 : 0, transition: 'opacity 0.1s' }}
+            />
+            {/* Salto centro */}
+            <video ref={rivalDiveCenterRef}
+              src="/assets/cat/Animation/ArqueroRivalCentro.webm"
+              muted playsInline preload="auto"
+              onEnded={() => { setRivalDiving(false); setRivalDiveDir(null); }}
+              style={{ position: 'absolute', inset: 0, width: '100%', height: 'auto', objectFit: 'contain', display: 'block',
+                opacity: rivalDiveDir === 'center' ? 1 : 0, transition: 'opacity 0.1s' }}
             />
           </motion.div>
         )}
 
         {/* GK player (during rival kick) — draggable */}
         {inRivalPhases && (
-          <motion.img
-            src="/assets/cat/cat-goalkeeper.png" alt=""
+          <motion.div
             animate={{ left: `calc(${gkNX * 84 + 2}% - min(10vw, 5.6vh))` }}
             transition={{ duration: gkDragActive ? 0 : (phase === 'rival_fire' ? 0.35 : 0.12), ease: 'easeOut' }}
             onPointerDown={handleGkPointerDown}
@@ -522,15 +598,49 @@ export default function FootballGameScreen({ onGoal }: Props) {
             onPointerCancel={handleGkPointerEnd}
             style={{
               position: 'absolute',
-              bottom: 'calc(-8% + 170px)',
-              width: 'min(23vw, 13vh)', objectFit: 'contain',
+              bottom: 'calc(-8% + 80px)',
+              width: 'min(23vw, 13vh)',
               zIndex: 9,
               pointerEvents: (phase === 'rival_intro' || phase === 'rival_fire') ? 'auto' : 'none',
               touchAction: 'none',
               cursor: gkDragActive ? 'grabbing' : 'grab',
               filter: (phase === 'rival_intro' && !gkDragActive) ? 'drop-shadow(0 0 10px rgba(252,209,22,0.8))' : 'drop-shadow(0 6px 18px rgba(0,0,0,0.4))',
             }}
-          />
+          >
+            <video
+              src="/assets/cat/Animation/ArqueroPrincipalIdle.webm"
+              autoPlay
+              loop
+              muted
+              playsInline
+              style={{
+                width: '100%',
+                objectFit: 'contain',
+                display: 'block',
+                opacity: playerGkJumping ? 0 : 1,
+                transition: 'opacity 0.08s',
+                pointerEvents: 'none',
+              }}
+            />
+            <video
+              ref={playerGkJumpRef}
+              src="/assets/cat/Animation/ArqueroPrincipalSaltoCentro.webm"
+              muted
+              playsInline
+              preload="auto"
+              onEnded={() => setPlayerGkJumping(false)}
+              style={{
+                position: 'absolute',
+                inset: 0,
+                width: '100%',
+                objectFit: 'contain',
+                display: 'block',
+                opacity: playerGkJumping ? 1 : 0,
+                transition: 'opacity 0.08s',
+                pointerEvents: 'none',
+              }}
+            />
+          </motion.div>
         )}
 
         {/* Rival intro overlay — countdown, transparent background */}
@@ -629,28 +739,87 @@ export default function FootballGameScreen({ onGoal }: Props) {
 
       {/* ── Player cat (shown during player phases) ─────────────────── */}
       {inPlayerPhases && (
-        <div style={{ position: 'absolute', left: '5%', top: '57.65%', width: '39.34%', zIndex: 8, pointerEvents: 'none' }}>
+        <motion.div
+          animate={{ y: playerKicking ? PLAYER_KICK_APPROACH_Y : 0 }}
+          transition={{ duration: PLAYER_KICK_IMPACT_MS / 1000, ease: 'easeInOut' }}
+          style={{ position: 'absolute', left: 'calc(5% + 90px)', top: 'calc(57.65% + 90px)', width: '51.14%', aspectRatio: '1 / 1', zIndex: 19, pointerEvents: 'none' }}
+        >
           <video
             src="/assets/cat/Animation/EspaldasNaranja.webm"
             autoPlay
             loop
             muted
             playsInline
-            style={{ width: '100%', objectFit: 'contain', filter: 'drop-shadow(0 8px 24px rgba(0,0,0,0.3))' }}
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'contain',
+              display: 'block',
+              filter: 'drop-shadow(0 8px 24px rgba(0,0,0,0.3))',
+              opacity: playerKicking ? 0 : 1,
+              transition: 'opacity 0.08s',
+            }}
           />
-        </div>
+          <video
+            ref={playerKickRef}
+            src="/assets/cat/Animation/JugadorPrincipalGolpeobalon.webm"
+            muted
+            playsInline
+            preload="auto"
+            onEnded={() => setPlayerKicking(false)}
+            style={{
+              position: 'absolute',
+              inset: 0,
+              width: '100%',
+              height: '100%',
+              objectFit: 'contain',
+              display: 'block',
+              transform: 'scale(1.1)',
+              filter: 'drop-shadow(0 8px 24px rgba(0,0,0,0.3))',
+              opacity: playerKicking ? 1 : 0,
+              transition: 'opacity 0.08s',
+            }}
+          />
+        </motion.div>
       )}
 
       {/* ── Rival cat (shown during rival phases) ───────────────────── */}
       {inRivalPhases && (
-        <div style={{ position: 'absolute', left: '5%', top: '57.65%', width: '39.34%', zIndex: 8, pointerEvents: 'none' }}>
+        <div style={{ position: 'absolute', left: 'calc(5% + 100px)', top: 'calc(57.65% - 80px)', width: '39.34%', aspectRatio: '9 / 16', zIndex: 8, pointerEvents: 'none' }}>
           <video
-            src="/assets/cat/Animation/EspaldasRival.webm"
+            src="/assets/cat/Animation/RivalIdle.webm"
             autoPlay
             loop
             muted
             playsInline
-            style={{ width: '100%', objectFit: 'contain', filter: 'drop-shadow(0 8px 24px rgba(0,0,0,0.3))' }}
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'contain',
+              display: 'block',
+              filter: 'drop-shadow(0 8px 24px rgba(0,0,0,0.3))',
+              opacity: rivalKicking ? 0 : 1,
+              transition: 'opacity 0.08s',
+            }}
+          />
+          <video
+            ref={rivalKickRef}
+            src="/assets/cat/Animation/RivalGolpeo.webm"
+            muted
+            playsInline
+            preload="auto"
+            onEnded={() => setRivalKicking(false)}
+            style={{
+              position: 'absolute',
+              inset: 0,
+              width: '100%',
+              height: '100%',
+              objectFit: 'contain',
+              display: 'block',
+              filter: 'drop-shadow(0 8px 24px rgba(0,0,0,0.3))',
+              opacity: rivalKicking ? 1 : 0,
+              transition: 'opacity 0.08s',
+            }}
           />
         </div>
       )}
@@ -1012,7 +1181,7 @@ export default function FootballGameScreen({ onGoal }: Props) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 16 }}
             transition={{ duration: 0.22 }}
-            style={{ position: 'absolute', left: '9.4%', width: '81.3%', bottom: '2.6%', zIndex: 15 }}
+            style={{ position: 'absolute', left: '9.4%', width: '81.3%', bottom: '2.6%', zIndex: 22 }}
           >
             <div style={{
               background: 'white', borderRadius: 99,

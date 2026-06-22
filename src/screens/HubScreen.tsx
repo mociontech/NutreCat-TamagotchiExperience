@@ -383,7 +383,7 @@ export default function HubScreen({ cat, onNavigate, pointsEarned, onPointsShown
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.35 }}
             style={{
-              marginTop: 'min(2.78vw, 1.56vh)',
+              marginTop: 'calc(min(2.78vw, 1.56vh) + 5px)',
               background: 'rgba(255,255,255,0.22)',
               borderRadius: 99,
               padding: 'min(0.9vw, 0.5vh) min(4vw, 2.2vh)',
@@ -400,6 +400,8 @@ export default function HubScreen({ cat, onNavigate, pointsEarned, onPointsShown
               letterSpacing: '0.06em',
               whiteSpace: 'nowrap',
               textAlign: 'center',
+              paddingTop: 8.5,
+              display: 'block',
             }}>
               {cat.name}
             </span>
@@ -607,16 +609,20 @@ function NavCircle({ icon, label, done, showLabel, pulse = false, shake = false,
             }}
           />
         )}
-        <img
-          src={icon}
-          alt=""
+        <div
           style={{
-            width: '62%', height: 'auto',
-            objectFit: 'contain',
+            width: '62%', aspectRatio: '1',
             position: 'relative', zIndex: 3,
-            filter: done ? 'none' : 'brightness(0) invert(1)',
-            transition: 'filter 0.3s ease',
             pointerEvents: 'none',
+            backgroundColor: '#00B6ED',
+            WebkitMaskImage: `url(${icon})`,
+            maskImage: `url(${icon})`,
+            WebkitMaskSize: 'contain',
+            maskSize: 'contain',
+            WebkitMaskRepeat: 'no-repeat',
+            maskRepeat: 'no-repeat',
+            WebkitMaskPosition: 'center',
+            maskPosition: 'center',
           }}
         />
       </motion.button>

@@ -27,6 +27,7 @@ interface Bag {
 }
 
 interface Effect { id: number; x: number; y: number; points: number; special: boolean; }
+interface TapIndicator { id: number; x: number; y: number; }
 
 interface Props { onDone: (score: number) => void; }
 
@@ -52,6 +53,7 @@ export default function FallingBagsGameScreen({ onDone }: Props) {
   const [timeLeft,     setTimeLeft]     = useState(GAME_TIME);
   const [phase,        setPhase]        = useState<'playing' | 'done'>('playing');
   const [catchEffects, setCatchEffects] = useState<Effect[]>([]);
+  const [tapIndicators, setTapIndicators] = useState<TapIndicator[]>([]);
   const [combo,        setCombo]        = useState(0);
   const [mouseFlash,   setMouseFlash]   = useState(false);
   const [screenShake,  setScreenShake]  = useState(false);
@@ -59,6 +61,7 @@ export default function FallingBagsGameScreen({ onDone }: Props) {
 
   const nextId         = useRef(0);
   const effectId       = useRef(0);
+  const tapId          = useRef(0);
   const scoreRef       = useRef(0);
   const speedMult      = useRef(1.0);
   const comboRef       = useRef(0);
@@ -314,11 +317,22 @@ export default function FallingBagsGameScreen({ onDone }: Props) {
       </div>
 
       {/* ── Campo de juego ── */}
-      <div style={{
-        flex: 1, position: 'relative', overflow: 'hidden',
-        WebkitMaskImage: 'linear-gradient(to bottom, transparent 0px, black 120px)',
-        maskImage: 'linear-gradient(to bottom, transparent 0px, black 120px)',
-      }}>
+      <div
+        style={{
+          flex: 1, position: 'relative', overflow: 'hidden',
+          WebkitMaskImage: 'linear-gradient(to bottom, transparent 0px, black 120px)',
+          maskImage: 'linear-gradient(to bottom, transparent 0px, black 120px)',
+        }}
+        onClick={e => {
+          if (phase !== 'playing') return;
+          const rect = e.currentTarget.getBoundingClientRect();
+          const x = ((e.clientX - rect.left) / rect.width) * 100;
+          const y = ((e.clientY - rect.top) / rect.height) * 100;
+          const id = tapId.current++;
+          setTapIndicators(prev => [...prev, { id, x, y }]);
+          setTimeout(() => setTapIndicators(p => p.filter(t => t.id !== id)), 500);
+        }}
+      >
         {phase === 'playing' ? (
           <>
             {bags.map(bag => {
@@ -358,6 +372,30 @@ export default function FallingBagsGameScreen({ onDone }: Props) {
                 />
               );
             })}
+
+            {/* Patita — indicador de tap */}
+            <AnimatePresence>
+              {tapIndicators.map(t => (
+                <motion.img
+                  key={t.id}
+                  src="/assets/cat/PaticaAtrapalo.png"
+                  alt=""
+                  initial={{ opacity: 1, scale: 0.6 }}
+                  animate={{ opacity: 0, scale: 1.1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.45, ease: 'easeOut' }}
+                  style={{
+                    position: 'absolute',
+                    left: `${t.x}%`, top: `${t.y}%`,
+                    width: 'min(14vw, 7.9vh)',
+                    height: 'auto',
+                    transform: 'translate(-50%, -50%)',
+                    pointerEvents: 'none',
+                    zIndex: 30,
+                  }}
+                />
+              ))}
+            </AnimatePresence>
 
             {/* Efectos de atrapar */}
             <AnimatePresence>
