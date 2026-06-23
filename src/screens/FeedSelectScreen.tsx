@@ -99,11 +99,61 @@ export default function FeedSelectScreen({ onSelect, onBack, score = 0, hasFed =
       </div>
 
       {/* Score pill */}
-      <div style={{ position: 'absolute', top: '5%', right: '9%', zIndex: 3, background: 'white', borderRadius: 99, padding: 'min(1.5vw, 0.85vh) min(4.5vw, 2.5vh)', boxShadow: '0 2px 14px rgba(0,87,122,0.18)' }}>
-        <span style={{ fontFamily: 'var(--font-display)', fontSize: 'min(6.6vw, 3.7vh)', color: '#00577a', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>
+      <motion.div
+        key={score}
+        animate={{ scale: [1.12, 1] }}
+        transition={{ duration: 0.3 }}
+        style={{
+          position: 'absolute',
+          top: '5%',
+          right: '9%',
+          zIndex: 3,
+          background: 'white',
+          borderRadius: 'min(3.8vw, 2.14vh)',
+          width: 'min(33.3vw, 18.75vh)',
+          height: 'min(7.6vw, 4.27vh)',
+          boxShadow: '0 2px 14px rgba(0,87,122,0.18)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          flexShrink: 0,
+        }}
+      >
+        <span style={{
+          fontFamily: 'var(--font-display)',
+          fontSize: 'min(6.57vw, 3.7vh)',
+          color: '#00577a',
+          textTransform: 'uppercase',
+          textAlign: 'center',
+          whiteSpace: 'nowrap',
+          lineHeight: 1,
+          paddingTop: '0.25em',
+        }}>
           Puntos: {score}
         </span>
-      </div>
+      </motion.div>
+
+      <motion.button
+        onClick={onBack}
+        whileTap={{ scale: 0.88 }}
+        style={{
+          position: 'absolute',
+          top: '85.6%',
+          left: '6.5%',
+          zIndex: 20,
+          background: 'none',
+          border: 'none',
+          cursor: 'pointer',
+          padding: 16,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <svg width="36" height="36" viewBox="0 0 44 44" fill="none">
+          <path d="M28 8 L14 22 L28 36" stroke="white" strokeWidth="4.5" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </motion.button>
 
       {/* Gato esperando comida */}
       <video
@@ -234,7 +284,7 @@ export default function FeedSelectScreen({ onSelect, onBack, score = 0, hasFed =
                 <svg
                   viewBox="0 0 100 58"
                   preserveAspectRatio="none"
-                  style={{ position: 'absolute', left: 0, right: 0, bottom: -6, width: '100%', height: 'calc(58% + 16px)', zIndex: 0, pointerEvents: 'none' }}
+                  style={{ position: 'absolute', left: 0, right: 0, bottom: -2, width: '100%', height: 'calc(58% + 32px)', zIndex: 0, pointerEvents: 'none' }}
                 >
                   <path d="M0 16 C18 4 32 28 50 16 C68 4 82 28 100 16 L100 58 L0 58 Z" fill="white" />
                 </svg>

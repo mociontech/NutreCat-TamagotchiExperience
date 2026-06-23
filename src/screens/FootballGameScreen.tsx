@@ -10,6 +10,7 @@ const PLAYER_KICK_APPROACH_Y = -80;
 const RESULT_MS  = 1600;
 const INTRO_MS   = 5000;
 const PTS_GOAL   = 60;
+const BENEFIT_ICON_SIZE = 'min(5.5vw, 3.1vh)';
 
 // GK half-width as fraction of game area (min(20vw)/gameWidth ≈ 0.10 for 1080px totem)
 const GK_HALF_W = 0.10;
@@ -598,7 +599,7 @@ export default function FootballGameScreen({ onGoal }: Props) {
             onPointerCancel={handleGkPointerEnd}
             style={{
               position: 'absolute',
-              bottom: 'calc(-8% + 80px)',
+              bottom: 'calc(-8% + 155px)',
               width: 'min(23vw, 13vh)',
               zIndex: 9,
               pointerEvents: (phase === 'rival_intro' || phase === 'rival_fire') ? 'auto' : 'none',
@@ -966,7 +967,7 @@ export default function FootballGameScreen({ onGoal }: Props) {
                 transition={{ type: 'spring', stiffness: 200, damping: 18, delay: 0.24 }}
                 style={{
                   position: 'absolute',
-                  left: 'calc(-1% - 20px)', top: 'calc(-6% + 40px)',
+                  left: 'calc(-1% - 20px)', top: 'calc(-6% + 55px)',
                   zIndex: 3,
                   width: 'calc(min(36.9vw, 20.8vh) - 50px)',
                   height: 'calc(min(7.07vw, 3.975vh) + 15px)',
@@ -1095,7 +1096,7 @@ export default function FootballGameScreen({ onGoal }: Props) {
               >
                 <img
                   src={selectedProduct.benefitIcons[0]} alt=""
-                  style={{ width: 'min(5.5vw, 3.1vh)', height: 'min(5.5vw, 3.1vh)', objectFit: 'contain', flexShrink: 0 }}
+                  style={{ width: BENEFIT_ICON_SIZE, height: BENEFIT_ICON_SIZE, aspectRatio: '1 / 1', objectFit: 'contain', flexShrink: 0 }}
                 />
                 <p style={{
                   fontFamily: 'var(--font-body)',
@@ -1131,8 +1132,8 @@ export default function FootballGameScreen({ onGoal }: Props) {
                 <img
                   src={selectedProduct.benefitIcons[1]} alt=""
                   style={{
-                    width: selectedProduct.benefitIcons[1] === '/assets/cat/Tilapila2.png' ? 59.064 : 'min(5.5vw, 3.1vh)',
-                    height: selectedProduct.benefitIcons[1] === '/assets/cat/Tilapila2.png' ? 59.064 : 'min(5.5vw, 3.1vh)',
+                    width: BENEFIT_ICON_SIZE,
+                    height: BENEFIT_ICON_SIZE,
                     aspectRatio: '1 / 1',
                     objectFit: 'contain',
                     flexShrink: 0,

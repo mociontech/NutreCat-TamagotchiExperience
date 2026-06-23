@@ -4,7 +4,7 @@ import type { CatState, ScreenName } from '../data/gameStates';
 import { sfx, bgPlay, bgStop } from '../utils/sounds';
 
 
-const SLEEPY_PHRASES = ['Tiene sueño... 😴', 'Zzz... 💤', 'Se está durmiendo...', '💤 Zzz...'];
+const SLEEPY_PHRASES = ['Tiene sueño...', 'Zzz...', 'Se está durmiendo...', 'Zzz...'];
 
 const CONFETTI_COLORS = ['#FCD116', '#ffffff', '#00577a', '#ff6b6b', '#a8edea', '#fed330'];
 
@@ -365,7 +365,7 @@ export default function HubScreen({ cat, onNavigate, pointsEarned, onPointsShown
               exit={{ opacity: 0, scale: 0.7, y: -10 }}
               transition={{ duration: 0.4 }}
               style={{
-                position: 'absolute', top: 'calc(8% + 150px)', left: 'calc(50% + 50px)',
+                position: 'absolute', top: 'calc(8% + 230px)', left: 'calc(50% + 50px)',
                 transform: 'translateX(-50%)',
                 background: 'white', borderRadius: 99,
                 padding: 'min(1.5vw, 0.85vh) min(4vw, 2.2vh)',
@@ -506,7 +506,8 @@ export default function HubScreen({ cat, onNavigate, pointsEarned, onPointsShown
             flexShrink: 0,
             userSelect: 'none', pointerEvents: 'none',
             filter: 'drop-shadow(0 20px 40px rgba(0,87,122,0.2))',
-            marginTop: 180,
+            marginTop: 375,
+            marginLeft: 70,
           }}
         />
 
@@ -520,7 +521,7 @@ export default function HubScreen({ cat, onNavigate, pointsEarned, onPointsShown
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.35, type: 'spring' }}
-            style={{ flexShrink: 0, position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'center', padding: '0 9% min(2vw, 1.1vh)', marginBottom: 30 }}
+            style={{ flexShrink: 0, position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'center', padding: '0 9% min(2vw, 1.1vh)', marginBottom: 110 }}
           >
             <motion.button
               animate={{ boxShadow: ['0 0 20px rgba(0,87,122,0.3)', '0 0 55px rgba(0,87,122,0.75)', '0 0 20px rgba(0,87,122,0.3)'] }}
@@ -528,17 +529,21 @@ export default function HubScreen({ cat, onNavigate, pointsEarned, onPointsShown
               onClick={() => { sfx('snap', 0.6); onNavigate('rewardQr'); }}
               style={{
                 width: '100%',
+                height: 'max(57px, calc(min(8.6vw, 4.8vh) - 25px))',
                 background: '#00577a', color: 'white', border: 'none',
                 borderRadius: 99,
-                padding: 'min(2.8vw, 1.6vh) min(7vw, 4vh)',
+                padding: '0 min(7vw, 4vh)',
                 fontFamily: 'var(--font-display)',
                 fontSize: 'min(5.5vw, 3.1vh)',
                 textTransform: 'uppercase',
                 cursor: 'pointer',
                 letterSpacing: '0.03em',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
               }}
             >
-            ¡Ver resultado campeón!
+              <span style={{ transform: 'translateY(8px)' }}>Ver resultado campeón</span>
             </motion.button>
           </motion.div>
         )}

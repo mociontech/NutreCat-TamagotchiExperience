@@ -89,7 +89,7 @@ export default function RewardQrScreen({ onNext }: Props) {
           position: 'absolute',
           left: '18%', right: '18%', top: '47.1%',
           fontFamily: 'var(--font-display)',
-          fontSize: 'min(41.16vw, 23.17vh)',
+          fontSize: 'min(45.28vw, 25.49vh)',
           color: '#00577a',
           textAlign: 'center',
           lineHeight: 0.9,
@@ -103,8 +103,8 @@ export default function RewardQrScreen({ onNext }: Props) {
       <div style={{
         position: 'absolute',
         left: '50%',
-        top: 'calc(70.2% - 40px)',
-        width: '64%',
+        top: 'calc(70.2% - 60px)',
+        width: '57.6%',
         transform: 'translateX(-50%)',
         display: 'flex',
         alignItems: 'center',
@@ -156,7 +156,7 @@ export default function RewardQrScreen({ onNext }: Props) {
       </div>
 
       {/* Lugar */}
-      <div style={{ position: 'absolute', left: '18%', right: '18%', top: '91.55%', transform: 'translateY(-50%)', zIndex: 2 }}>
+      <div style={{ position: 'absolute', left: '18%', right: '18%', top: 'calc(91.55% - 80px)', transform: 'translateY(-50%)', zIndex: 2 }}>
         <motion.p
           initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}

@@ -194,11 +194,11 @@ const handleTalkDone = () => {
       />;
 
       case 'fallingBagsBenefits':     return <FallingBagsBenefitsScreen     onDone={() => nav('fallingBagsInstructions')} />;
-      case 'fallingBagsInstructions': return <FallingBagsInstructionsScreen onDone={() => nav('fallingBagsCountdown')} />;
+      case 'fallingBagsInstructions': return <FallingBagsInstructionsScreen onDone={() => nav('fallingBagsCountdown')} score={cat.score} />;
       case 'fallingBagsCountdown':    return <CountdownScreen               onDone={() => nav('fallingBagsGame')} />;
       case 'fallingBagsGame':         return <FallingBagsGameScreen         onDone={handleBagsDone} />;
 
-      case 'talk': return <TalkScreen onDone={handleTalkDone} hasFed={cat.hasFed} hasPlayed={cat.hasPlayed} hasTalked={cat.hasTalked} score={cat.score} />;
+      case 'talk': return <TalkScreen onDone={handleTalkDone} onBack={() => nav('hub')} hasFed={cat.hasFed} hasPlayed={cat.hasPlayed} hasTalked={cat.hasTalked} score={cat.score} />;
 
       case 'rewardQr': return <RewardQrScreen cat={cat} onNext={handleRestart} />;
 

@@ -3,6 +3,8 @@ import { useState, useEffect, useRef } from 'react';
 type FoodType = 'dry' | 'wet' | 'treats';
 import { sfx, sfxStop } from '../utils/sounds';
 
+const FEED_POINTS = 30;
+
 const PRODUCTS: { id: FoodType; img: string; left: string; width: string }[] = [
   { id: 'treats', img: '/assets/products/product-1.png', left: '13.61%', width: '21.48%' },
   { id: 'dry',    img: '/assets/products/product-3.png', left: '37.41%', width: '22.13%' },
@@ -33,6 +35,7 @@ interface Props {
 
 export default function FeedInteractionScreen({ selectedFood, onDone, score = 0 }: Props) {
   const [showBtn,     setShowBtn]     = useState(false);
+  const [displayScore, setDisplayScore] = useState(score);
   const [ripple,      setRipple]      = useState(false);
   const [bagServed,   setBagServed]   = useState(false);
   const [bagReturned, setBagReturned] = useState(false);
@@ -46,9 +49,14 @@ export default function FeedInteractionScreen({ selectedFood, onDone, score = 0 
 
   const handleDone = () => { sfxStop('eat'); onDone(); };
   const handlePress = () => {
+    setDisplayScore(score + FEED_POINTS);
     setRipple(true);
     setTimeout(() => { setRipple(false); handleDone(); }, 420);
   };
+
+  useEffect(() => {
+    setDisplayScore(score);
+  }, [score]);
 
   useEffect(() => {
     const t0 = setTimeout(() => setBagServed(true), 50);
@@ -101,11 +109,16 @@ export default function FeedInteractionScreen({ selectedFood, onDone, score = 0 
       </div>
 
       {/* Score */}
-      <div style={{ position: 'absolute', top: '5%', right: '9%', zIndex: 3, background: 'white', borderRadius: 'min(3.8vw, 2.14vh)', width: 'min(33.3vw, 18.75vh)', height: 'min(7.6vw, 4.27vh)', boxShadow: '0 2px 14px rgba(0,87,122,0.18)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <motion.div
+        key={displayScore}
+        animate={{ scale: [1.12, 1] }}
+        transition={{ duration: 0.3 }}
+        style={{ position: 'absolute', top: '5%', right: '9%', zIndex: 3, background: 'white', borderRadius: 'min(3.8vw, 2.14vh)', width: 'min(33.3vw, 18.75vh)', height: 'min(7.6vw, 4.27vh)', boxShadow: '0 2px 14px rgba(0,87,122,0.18)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+      >
         <span style={{ fontFamily: 'var(--font-display)', fontSize: 'min(6.57vw, 3.7vh)', color: '#00577a', textTransform: 'uppercase', textAlign: 'center', whiteSpace: 'nowrap', lineHeight: 1, paddingTop: '0.25em' }}>
-          Puntos: {score}
+          Puntos: {displayScore}
         </span>
-      </div>
+      </motion.div>
 
       {/* ── Pills de beneficios — una de cada lado, alturas escalonadas ── */}
       <AnimatePresence>

@@ -291,7 +291,7 @@ export default function PetScreen({ onNext, name = 'Simón' }: Props) {
                 animate={{ opacity: 1, scale: 1, y: 0, x: '-50%' }}
                 exit={{ opacity: 0 }}
                 transition={{ type: 'spring', stiffness: 280, delay: 0.35 }}
-                style={{ position: 'absolute', top: 'calc(6% - 150px)', left: 'calc(50% + 80px)', zIndex: 10, maxWidth: '65%' }}
+                style={{ position: 'absolute', top: 'calc(6% - 150px)', left: 'calc(50% + 240px)', zIndex: 10, maxWidth: '65%' }}
               >
                 <motion.div
                   animate={{ scale: [1, 1.05, 1] }}
@@ -307,7 +307,7 @@ export default function PetScreen({ onNext, name = 'Simón' }: Props) {
                   <p style={{ fontFamily: 'var(--font-display)', fontSize: 'min(5vw, 2.8vh)', color: '#00577a', margin: 0, whiteSpace: 'nowrap' }}>
                     ¡Estoy listo para jugar!
                   </p>
-                  <div style={{ position: 'absolute', bottom: -11, left: '50%', transform: 'translateX(-50%)', width: 0, height: 0, borderLeft: '10px solid transparent', borderRight: '10px solid transparent', borderTop: '12px solid rgba(255,255,255,0.45)' }} />
+                  <div style={{ position: 'absolute', bottom: -11, left: 'calc(18% - 50px)', transform: 'translateX(-50%)', width: 0, height: 0, borderLeft: '10px solid transparent', borderRight: '10px solid transparent', borderTop: '12px solid rgba(255,255,255,0.45)' }} />
                 </motion.div>
               </motion.div>
             )}

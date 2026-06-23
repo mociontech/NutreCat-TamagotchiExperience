@@ -140,7 +140,7 @@ export default function GameSelectScreen({ onSelect, onBack, score = 0, hasFed =
         onClick={onBack}
         whileTap={{ scale: 0.88 }}
         style={{
-          position: 'absolute', top: '4%', left: '2%',
+          position: 'absolute', top: '85.6%', left: '6.5%',
           zIndex: 20, background: 'none', border: 'none',
           cursor: 'pointer', padding: 16,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -289,7 +289,7 @@ export default function GameSelectScreen({ onSelect, onBack, score = 0, hasFed =
                     <svg
                       viewBox="0 0 100 58"
                       preserveAspectRatio="none"
-                      style={{ position: 'absolute', left: 0, right: 0, bottom: -6, width: '100%', height: 'calc(58% + 16px)', zIndex: 0, pointerEvents: 'none' }}
+                      style={{ position: 'absolute', left: 0, right: 0, bottom: -2, width: '100%', height: 'calc(58% + 32px)', zIndex: 0, pointerEvents: 'none' }}
                     >
                       <path d="M0 16 C18 4 32 28 50 16 C68 4 82 28 100 16 L100 58 L0 58 Z" fill="white" />
                     </svg>

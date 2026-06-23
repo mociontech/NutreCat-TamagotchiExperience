@@ -242,7 +242,9 @@ export default function FallingBagsInstructionsScreen({ onDone, score = 0 }: Pro
             />
           )}
         </AnimatePresence>
-        ENTIENDO
+        <span style={{ transform: 'translateY(-5px)' }}>
+          ENTIENDO
+        </span>
       </motion.button>
     </div>
   );

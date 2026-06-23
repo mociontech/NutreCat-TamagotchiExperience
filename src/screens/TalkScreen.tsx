@@ -21,6 +21,7 @@ interface DreamBubble { id: number; x: number; y: number; size: number; drift: n
 
 interface Props {
   onDone: () => void;
+  onBack?: () => void;
   score?: number;
   hasFed?: boolean;
   hasPlayed?: boolean;
@@ -28,7 +29,7 @@ interface Props {
 
 }
 
-export default function TalkScreen({ onDone, score = 0, hasFed = true, hasPlayed = true, hasTalked = false }: Props) {
+export default function TalkScreen({ onDone, onBack, score = 0, hasFed = true, hasPlayed = true, hasTalked = false }: Props) {
   const [phase,        setPhase]        = useState<'light' | 'dimming' | 'dark'>('light');
   const [showBtn,      setShowBtn]      = useState(false);
   const [zzzList,      setZzzList]      = useState<Zzz[]>([]);
@@ -452,6 +453,30 @@ export default function TalkScreen({ onDone, score = 0, hasFed = true, hasPlayed
         )}
       </AnimatePresence>
 
+      {phase !== 'dark' && (
+        <motion.button
+          onClick={onBack}
+          whileTap={{ scale: 0.88 }}
+          style={{
+            position: 'absolute',
+            top: '85.6%',
+            left: '6.5%',
+            zIndex: 20,
+            background: 'none',
+            border: 'none',
+            cursor: 'pointer',
+            padding: 16,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <svg width="36" height="36" viewBox="0 0 44 44" fill="none">
+            <path d="M28 8 L14 22 L28 36" stroke="white" strokeWidth="4.5" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </motion.button>
+      )}
+
       {/* ── Tracker de actividades completadas ── */}
       <AnimatePresence>
       {phase !== 'dark' && (
@@ -478,7 +503,7 @@ export default function TalkScreen({ onDone, score = 0, hasFed = true, hasPlayed
                   <svg
                     viewBox="0 0 100 58"
                     preserveAspectRatio="none"
-                    style={{ position: 'absolute', left: 0, right: 0, bottom: -6, width: '100%', height: 'calc(58% + 16px)', zIndex: 0, pointerEvents: 'none' }}
+                    style={{ position: 'absolute', left: 0, right: 0, bottom: -2, width: '100%', height: 'calc(58% + 32px)', zIndex: 0, pointerEvents: 'none' }}
                   >
                     <path d="M0 16 C18 4 32 28 50 16 C68 4 82 28 100 16 L100 58 L0 58 Z" fill="white" />
                   </svg>
