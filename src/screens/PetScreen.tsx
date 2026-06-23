@@ -159,31 +159,6 @@ export default function PetScreen({ onNext, name = 'Simón' }: Props) {
           }}
         />
 
-        {/* Estrella decorativa — Figma 477:168, esquina sup-izq de la card */}
-        {!done && (
-          <svg
-            viewBox="0 0 100 100"
-            style={{
-              position: 'absolute',
-              left: 'calc(50.9% - 3.5% + 410px)',
-              top: 'calc(29.7% - 4% - 4px + 100px)',
-              width: 'min(10.4vw, 5.85vh)',
-              height: 'min(10.4vw, 5.85vh)',
-              zIndex: 4,
-              transform: 'rotate(-28deg)',
-              pointerEvents: 'none',
-              overflow: 'visible',
-            }}
-          >
-            <polygon
-              points="50,4 61,35 94,36 67,56 77,87 50,68 23,87 33,56 6,36 39,35"
-              fill="#b0e8f9"
-              stroke="#00577a"
-              strokeWidth="5"
-            />
-          </svg>
-        )}
-
         {/* Card "ACARICIA A / nombre" — Figma 477:165, rotación -8.24deg */}
         {!done && (
           <motion.div
@@ -204,6 +179,27 @@ export default function PetScreen({ onNext, name = 'Simón' }: Props) {
               boxShadow: '0 4px 18px rgba(0,87,122,0.22)',
             }}
           >
+            <svg
+              viewBox="0 0 100 100"
+              style={{
+                position: 'absolute',
+                right: 'calc(-1 * min(5.2vw, 2.93vh) + 3px)',
+                top: 'calc(-1 * min(5.2vw, 2.93vh) - 1px)',
+                width: 'min(10.4vw, 5.85vh)',
+                height: 'min(10.4vw, 5.85vh)',
+                zIndex: 1,
+                transform: 'rotate(-24.5deg)',
+                pointerEvents: 'none',
+                overflow: 'visible',
+              }}
+            >
+              <polygon
+                points="50,4 61,35 94,36 67,56 77,87 50,68 23,87 33,56 6,36 39,35"
+                fill="#b0e8f9"
+                stroke="#00577a"
+                strokeWidth="5"
+              />
+            </svg>
             <span style={{
               fontFamily: 'var(--font-display)',
               fontSize: 'min(6.62vw, 3.73vh)',
@@ -242,7 +238,7 @@ export default function PetScreen({ onNext, name = 'Simón' }: Props) {
             autoPlay
             style={{
               position: 'absolute',
-              width: '71.42%', height: 'auto',
+              width: '76.79%', height: 'auto',
               objectFit: 'contain',
               userSelect: 'none', pointerEvents: 'none',
               opacity: !petting && !done ? 1 : 0,
@@ -260,7 +256,7 @@ export default function PetScreen({ onNext, name = 'Simón' }: Props) {
             playsInline
             style={{
               position: 'absolute',
-              width: '71.42%', height: 'auto',
+              width: '76.79%', height: 'auto',
               objectFit: 'contain',
               userSelect: 'none', pointerEvents: 'none',
               opacity: petting && !done ? 1 : 0,
@@ -278,7 +274,7 @@ export default function PetScreen({ onNext, name = 'Simón' }: Props) {
             loop
             style={{
               position: 'absolute',
-              width: '71.42%', height: 'auto',
+              width: '76.79%', height: 'auto',
               objectFit: 'contain',
               userSelect: 'none', pointerEvents: 'none',
               opacity: done ? 1 : 0,

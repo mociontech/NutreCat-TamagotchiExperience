@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useRef } from 'react';
-import type { FoodType } from '../data/gameStates';
+import type { CatState, FoodType } from '../data/gameStates';
 
 const PRODUCTS: { id: FoodType; img: string; left: string; width: string }[] = [
   { id: 'treats', img: '/assets/products/product-1.png', left: '13.61%', width: '21.48%' },
@@ -9,16 +9,23 @@ const PRODUCTS: { id: FoodType; img: string; left: string; width: string }[] = [
 ];
 
 const NAV = [
-  { id: 'game',    icon: '/assets/nav/icon-game.svg'    },
-  { id: 'food',  icon: '/assets/nav/icon-food.svg'  },
-  { id: 'sleep', icon: '/assets/nav/icon-sleep.svg' },
+  { id: 'game',  icon: '/assets/nav/icon-game.svg',  doneKey: 'hasPlayed' as keyof Pick<CatState, 'hasFed' | 'hasPlayed' | 'hasTalked'> },
+  { id: 'food',  icon: '/assets/nav/icon-food.svg',  doneKey: 'hasFed'    as keyof Pick<CatState, 'hasFed' | 'hasPlayed' | 'hasTalked'> },
+  { id: 'sleep', icon: '/assets/nav/icon-sleep.svg', doneKey: 'hasTalked' as keyof Pick<CatState, 'hasFed' | 'hasPlayed' | 'hasTalked'> },
 ] as const;
 
-interface Props { onSelect: (food: FoodType) => void; onBack: () => void; score?: number; }
+interface Props {
+  onSelect: (food: FoodType) => void;
+  onBack: () => void;
+  score?: number;
+  hasFed?: boolean;
+  hasPlayed?: boolean;
+  hasTalked?: boolean;
+}
 
 interface Drag { id: FoodType; img: string; cx: number; cy: number; }
 
-export default function FeedSelectScreen({ onSelect, onBack, score = 0 }: Props) {
+export default function FeedSelectScreen({ onSelect, onBack, score = 0, hasFed = false, hasPlayed = false, hasTalked = false }: Props) {
   const [drag,     setDrag]     = useState<Drag | null>(null);
   const [selected, setSelected] = useState<FoodType | null>(null);
   const [flash,    setFlash]    = useState(false);
@@ -217,11 +224,39 @@ export default function FeedSelectScreen({ onSelect, onBack, score = 0 }: Props)
       {/* Nav botones circulares */}
       <div style={{ position: 'absolute', top: '82.6%', left: 0, right: 0, display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 'min(4.4vw, 2.5vh)', padding: '0 9%', zIndex: 2 }}>
         {NAV.map(item => {
-          const isFood = item.id === 'food';
+          const doneMap = { hasFed, hasPlayed, hasTalked };
+          const done = doneMap[item.doneKey];
+          const inProgress = item.id === 'food' && !done;
           return (
             <motion.button key={item.id} onClick={onBack} whileTap={{ scale: 0.88 }}
-              style={{ width: 'min(17.13vw, 9.64vh)', aspectRatio: '1', borderRadius: '50%', border: 'none', cursor: 'pointer', background: isFood ? 'white' : '#00577a', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: isFood ? '0 0 0 3px rgba(255,255,255,0.8), 0 6px 22px rgba(0,87,122,0.25)' : '0 4px 16px rgba(0,0,0,0.2)', flexShrink: 0 }}>
-              <img src={item.icon} alt="" style={{ width: '54%', height: '54%', objectFit: 'contain', filter: isFood ? 'none' : 'brightness(0) invert(1)' }} />
+              style={{ width: 'min(17.13vw, 9.64vh)', aspectRatio: '1', borderRadius: '50%', border: 'none', cursor: 'pointer', background: done ? 'white' : '#00577a', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: done ? '0 0 0 3px rgba(255,255,255,0.8), 0 6px 22px rgba(0,87,122,0.25)' : '0 4px 16px rgba(0,0,0,0.2)', flexShrink: 0, position: 'relative', overflow: 'hidden' }}>
+              {inProgress && (
+                <svg
+                  viewBox="0 0 100 58"
+                  preserveAspectRatio="none"
+                  style={{ position: 'absolute', left: 0, right: 0, bottom: -6, width: '100%', height: 'calc(58% + 16px)', zIndex: 0, pointerEvents: 'none' }}
+                >
+                  <path d="M0 16 C18 4 32 28 50 16 C68 4 82 28 100 16 L100 58 L0 58 Z" fill="white" />
+                </svg>
+              )}
+              <div
+                style={{
+                  width: '62%',
+                  aspectRatio: '1',
+                  position: 'relative',
+                  zIndex: 1,
+                  backgroundColor: '#00B6ED',
+                  WebkitMaskImage: `url(${item.icon})`,
+                  maskImage: `url(${item.icon})`,
+                  WebkitMaskSize: 'contain',
+                  maskSize: 'contain',
+                  WebkitMaskRepeat: 'no-repeat',
+                  maskRepeat: 'no-repeat',
+                  WebkitMaskPosition: 'center',
+                  maskPosition: 'center',
+                  pointerEvents: 'none',
+                }}
+              />
             </motion.button>
           );
         })}

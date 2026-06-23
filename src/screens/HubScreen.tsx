@@ -47,6 +47,8 @@ export default function HubScreen({ cat, onNavigate, pointsEarned, onPointsShown
   const [phraseIdx, setPhraseIdx] = useState(0);
   const [showPoints,  setShowPoints]  = useState(false);
   const [pointsKey,   setPointsKey]   = useState(0);
+  const [displayedScore, setDisplayedScore] = useState(cat.score);
+  const [transferPoints, setTransferPoints] = useState(0);
   const [confetti,    setConfetti]    = useState<ConfettiPiece[]>([]);
   const [showLabels,  setShowLabels]  = useState(true);
   const [shakeGame,   setShakeGame]   = useState(false);
@@ -133,17 +135,47 @@ export default function HubScreen({ cat, onNavigate, pointsEarned, onPointsShown
     return () => clearInterval(t);
   }, [isSleepy]);
 
-  /* Flash +N puntos al entrar al hub con puntos nuevos */
+  useEffect(() => {
+    if (!pointsEarned) setDisplayedScore(cat.score);
+  }, [cat.score, pointsEarned]);
+
+  /* Inyecta los puntos ganados al contador del Hub */
   useEffect(() => {
     if (!pointsEarned) return;
+    const startScore = Math.max(0, cat.score - pointsEarned);
+    const duration = 1500;
+    const start = performance.now();
+
+    setDisplayedScore(startScore);
+    setTransferPoints(pointsEarned);
     setShowPoints(true);
     setPointsKey(k => k + 1);
+
+    let raf = 0;
+    let delayTimer: ReturnType<typeof setTimeout> | null = null;
+    const tick = (now: number) => {
+      const progress = Math.max(0, Math.min((now - start - 650) / duration, 1));
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const injected = Math.round(pointsEarned * eased);
+      setDisplayedScore(startScore + injected);
+      setTransferPoints(Math.max(0, pointsEarned - injected));
+      if (progress < 1) raf = requestAnimationFrame(tick);
+    };
+
+    delayTimer = setTimeout(() => {
+      raf = requestAnimationFrame(tick);
+    }, 650);
     const t = setTimeout(() => {
       setShowPoints(false);
+      setDisplayedScore(cat.score);
       onPointsShown?.();
-    }, 2200);
-    return () => clearTimeout(t);
-  }, [pointsEarned, onPointsShown]);
+    }, 2600);
+    return () => {
+      cancelAnimationFrame(raf);
+      if (delayTimer) clearTimeout(delayTimer);
+      clearTimeout(t);
+    };
+  }, [cat.score, pointsEarned, onPointsShown]);
 
   /* Bling al recibir puntos */
   useEffect(() => {
@@ -243,10 +275,42 @@ export default function HubScreen({ cat, onNavigate, pointsEarned, onPointsShown
             lineHeight: 1,
             paddingTop: '0.25em',
           }}>
-            Puntos: {cat.score}
+            Puntos: {displayedScore}
           </span>
         </motion.div>
       </div>
+
+      <AnimatePresence>
+        {showPoints && pointsEarned && (
+          <motion.div
+            key={pointsKey}
+            initial={{ opacity: 0, scale: 0.82, y: -8 }}
+            animate={{ opacity: [0, 1, 1, 0], scale: [0.92, 1.1, 1.04, 0.9], y: [-8, 0, 0, -10] }}
+            exit={{ opacity: 0, scale: 0.85, y: -12 }}
+            transition={{ duration: 2.2, ease: 'easeInOut', times: [0, 0.18, 0.78, 1] }}
+            style={{
+              position: 'absolute',
+              top: 'calc(5% + min(7.6vw, 4.27vh) + 10px)',
+              right: '9%',
+              width: 'min(33.3vw, 18.75vh)',
+              zIndex: 18,
+              pointerEvents: 'none',
+              fontFamily: 'var(--font-display)',
+              fontSize: 'min(6.2vw, 3.5vh)',
+              color: 'white',
+              textTransform: 'uppercase',
+              textAlign: 'center',
+              lineHeight: 1,
+              letterSpacing: '0.04em',
+              textShadow: '0 0 14px rgba(255,255,255,0.95), 0 4px 14px rgba(0,87,122,0.45)',
+              filter: 'drop-shadow(0 0 12px rgba(255,255,255,0.45))',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            +{transferPoints} puntos
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Gato central */}
       <div style={{
@@ -317,41 +381,6 @@ export default function HubScreen({ cat, onNavigate, pointsEarned, onPointsShown
           )}
         </AnimatePresence>
 
-        {/* +N puntos flotante */}
-        <AnimatePresence>
-          {showPoints && pointsEarned && (
-            <motion.div
-              key={pointsKey}
-              initial={{ opacity: 0, scale: 0.5, y: 0 }}
-              animate={{ opacity: 1, scale: 1.2, y: -60 }}
-              exit={{ opacity: 0, scale: 0.8, y: -100 }}
-              transition={{ duration: 0.5, ease: 'backOut' }}
-              style={{
-                position: 'absolute',
-                top: '30%', left: '50%',
-                transform: 'translateX(-50%)',
-                background: 'rgba(255,255,255,0.25)',
-                backdropFilter: 'blur(16px)',
-                WebkitBackdropFilter: 'blur(16px)',
-                border: '1.5px solid rgba(255,255,255,0.5)',
-                color: 'white',
-                borderRadius: 99,
-                padding: 'min(2vw, 1.1vh) min(5vw, 2.8vh)',
-                fontFamily: 'var(--font-display)',
-                fontSize: 'min(7vw, 3.9vh)',
-                textTransform: 'uppercase',
-                letterSpacing: '0.04em',
-                whiteSpace: 'nowrap',
-                boxShadow: '0 8px 30px rgba(0,87,122,0.2)',
-                zIndex: 15,
-                pointerEvents: 'none',
-              }}
-            >
-              +{pointsEarned} puntos
-            </motion.div>
-          )}
-        </AnimatePresence>
-
         {/* Nombre del gato + progreso */}
         <div style={{
           position: 'absolute', top: '4%', left: '50%',
@@ -359,23 +388,23 @@ export default function HubScreen({ cat, onNavigate, pointsEarned, onPointsShown
           display: 'flex', flexDirection: 'column', alignItems: 'center',
           gap: 'min(1vw, 0.55vh)', zIndex: 2, pointerEvents: 'none',
         }}>
-          {!allDone && (
-            <motion.span
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.2 }}
-              style={{
-                fontFamily: 'var(--font-body)',
-                fontSize: 'min(3.8vw, 2.1vh)',
-                color: 'rgba(255,255,255,0.85)',
-                letterSpacing: '0.03em',
-                fontWeight: 700,
-                whiteSpace: 'nowrap',
-              }}
-            >
-              {[cat.hasFed, cat.hasPlayed, cat.hasTalked].filter(Boolean).length} de 3 actividades completadas
-            </motion.span>
-          )}
+          <motion.span
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            style={{
+              fontFamily: 'var(--font-body)',
+              fontSize: 'min(3.8vw, 2.1vh)',
+              color: 'rgba(255,255,255,0.85)',
+              letterSpacing: '0.03em',
+              fontWeight: 700,
+              whiteSpace: 'nowrap',
+            }}
+          >
+            {allDone
+              ? 'Todas las actividades completadas'
+              : `${[cat.hasFed, cat.hasPlayed, cat.hasTalked].filter(Boolean).length} de 3 actividades completadas`}
+          </motion.span>
 
           {/* Badge con nombre del gato */}
           <motion.div
@@ -472,7 +501,7 @@ export default function HubScreen({ cat, onNavigate, pointsEarned, onPointsShown
             });
           }}
           style={{
-            width: animState.name === 'Saludar' ? '71.42%' : '71.42%',
+            width: animState.name === 'Saludar' ? '90.34%' : '90.34%',
             height: 'auto',
             flexShrink: 0,
             userSelect: 'none', pointerEvents: 'none',
@@ -491,7 +520,7 @@ export default function HubScreen({ cat, onNavigate, pointsEarned, onPointsShown
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.35, type: 'spring' }}
-            style={{ flexShrink: 0, position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'center', padding: '0 9% min(2vw, 1.1vh)' }}
+            style={{ flexShrink: 0, position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'center', padding: '0 9% min(2vw, 1.1vh)', marginBottom: 30 }}
           >
             <motion.button
               animate={{ boxShadow: ['0 0 20px rgba(0,87,122,0.3)', '0 0 55px rgba(0,87,122,0.75)', '0 0 20px rgba(0,87,122,0.3)'] }}
@@ -516,25 +545,35 @@ export default function HubScreen({ cat, onNavigate, pointsEarned, onPointsShown
       </AnimatePresence>
 
       {/* Botones nav circulares */}
-      <div style={{
-        position: 'relative', zIndex: 1, flexShrink: 0,
-        display: 'flex', justifyContent: 'center', alignItems: 'flex-end',
-        gap: 'min(4.4vw, 2.5vh)',
-        padding: 'min(2.5vw, 1.4vh) 9% min(3.5vw, 2vh)',
-      }}>
-        {NAV.map(item => (
-          <NavCircle
-            key={item.id}
-            icon={item.icon}
-            label={item.label}
-            done={cat[item.doneKey] as boolean}
-            showLabel={showLabels}
-            pulse={item.id === 'game' && animState.name === 'Aburrido' && !cat.hasPlayed}
-            shake={item.id === 'game' && shakeGame}
-            onClick={() => onNavigate(item.screen)}
-          />
-        ))}
-      </div>
+      <AnimatePresence>
+        {!allDone && (
+          <motion.div
+            initial={{ opacity: 1, y: 0 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 14 }}
+            transition={{ duration: 0.45, ease: 'easeOut' }}
+            style={{
+              position: 'relative', zIndex: 1, flexShrink: 0,
+              display: 'flex', justifyContent: 'center', alignItems: 'flex-end',
+              gap: 'min(4.4vw, 2.5vh)',
+              padding: 'min(2.5vw, 1.4vh) 9% min(3.5vw, 2vh)',
+            }}
+          >
+            {NAV.map(item => (
+              <NavCircle
+                key={item.id}
+                icon={item.icon}
+                label={item.label}
+                done={cat[item.doneKey] as boolean}
+                showLabel={showLabels}
+                pulse={item.id === 'game' && animState.name === 'Aburrido' && !cat.hasPlayed}
+                shake={item.id === 'game' && shakeGame}
+                onClick={() => onNavigate(item.screen)}
+              />
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

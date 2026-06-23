@@ -434,9 +434,16 @@ export default function FallingBagsGameScreen({ onDone }: Props) {
             transition={{ duration: 0.4, type: 'spring' }}
             style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 'min(4vw, 2.2vh)', padding: '0 10%' }}
           >
-            <motion.img src="/assets/cat/cat-hub.png" alt=""
-              animate={{ y: [0, -12, 0] }} transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-              style={{ width: '55%', objectFit: 'contain', pointerEvents: 'none' }} />
+            <motion.video
+              src={score > 0 ? '/assets/cat/Animation/Celebrando.webm' : '/assets/cat/Animation/Perdedor.webm'}
+              autoPlay
+              loop
+              muted
+              playsInline
+              animate={{ y: [0, -12, 0] }}
+              transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+              style={{ width: '55%', objectFit: 'contain', pointerEvents: 'none' }}
+            />
             <p style={{ fontFamily: 'var(--font-display)', fontSize: 'min(9vw, 5vh)', color: 'white', textTransform: 'uppercase', textShadow: '0 4px 16px rgba(0,87,122,0.4)' }}>¡Tiempo!</p>
             <div style={{ background: 'white', borderRadius: 'min(4vw, 2.2vh)', padding: 'min(3vw, 1.7vh) min(8vw, 4.5vh)', boxShadow: '0 6px 24px rgba(0,87,122,0.2)', textAlign: 'center' }}>
               <span style={{ fontFamily: 'var(--font-display)', fontSize: 'min(8vw, 4.5vh)', color: '#00577a' }}>+{score} pts ⭐</span>
@@ -448,21 +455,22 @@ export default function FallingBagsGameScreen({ onDone }: Props) {
       {/* ── Timer ── */}
       {phase === 'playing' && (
         <div style={{
-          position: 'absolute', left: '29.81%', top: '21.93%',
-          width: '40.37%',
+          position: 'absolute', left: '35.87%', top: '21.93%',
+          width: '28.26%',
           zIndex: 20, background: '#00577a', borderRadius: 99,
-          padding: 'min(2vw, 1.1vh) min(4vw, 2.2vh)',
-          display: 'flex', alignItems: 'center', gap: 'min(2.5vw, 1.4vh)',
+          padding: 'min(1.4vw, 0.77vh) min(4vw, 2.2vh)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
           boxShadow: '0 4px 20px rgba(0,87,122,0.4)',
+          boxSizing: 'border-box',
         }}>
-          <div style={{ width: 'min(5vw, 2.8vh)', height: 'min(5vw, 2.8vh)', flexShrink: 0, overflow: 'hidden' }}>
+          <div style={{ position: 'absolute', left: 'min(3vw, 1.7vh)', top: '50%', transform: 'translateY(-50%)', width: 'min(5.46vw, 3.06vh)', height: 'min(5.46vw, 3.06vh)', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <img src="/assets/ui/icon-clock.svg" alt="" style={{ width: '100%', height: '100%', filter: 'brightness(0) invert(1)', display: 'block' }} />
           </div>
           <motion.span
             key={timeLeft}
-            animate={timeLeft <= 10 ? { scale: [1.15, 1] } : {}}
+            animate={timeLeft <= 10 ? { scale: [1.15, 1], x: 35, y: 3 } : { x: 35, y: 3 }}
             transition={{ duration: 0.2 }}
-            style={{ fontFamily: 'var(--font-display)', fontSize: 'min(10.7vw, 6vh)', color: timeLeft <= 10 ? '#fcd116' : 'white', whiteSpace: 'nowrap', lineHeight: 1, transition: 'color 0.3s' }}
+            style={{ fontFamily: 'var(--font-display)', fontSize: 'min(7.92vw, 4.44vh)', color: timeLeft <= 10 ? '#fcd116' : 'white', whiteSpace: 'nowrap', lineHeight: 1, paddingTop: '0.08em', transformOrigin: 'center center', transition: 'color 0.3s' }}
           >{mm}:{ss}</motion.span>
         </div>
       )}

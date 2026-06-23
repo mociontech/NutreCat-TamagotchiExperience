@@ -1,16 +1,23 @@
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
-import type { ScreenName } from '../data/gameStates';
+import type { CatState, ScreenName } from '../data/gameStates';
 
 const NAV = [
-  { id: 'game',    label: 'Jugar',  icon: '/assets/nav/icon-game.svg'    },
-  { id: 'food',    label: 'Comer',  icon: '/assets/nav/icon-food.svg'    },
-  { id: 'sleep',   label: 'Dormir', icon: '/assets/nav/icon-sleep.svg'   },
+  { id: 'game',  label: 'Jugar',  icon: '/assets/nav/icon-game.svg',  doneKey: 'hasPlayed' as keyof Pick<CatState, 'hasFed' | 'hasPlayed' | 'hasTalked'> },
+  { id: 'food',  label: 'Comer',  icon: '/assets/nav/icon-food.svg',  doneKey: 'hasFed'    as keyof Pick<CatState, 'hasFed' | 'hasPlayed' | 'hasTalked'> },
+  { id: 'sleep', label: 'Dormir', icon: '/assets/nav/icon-sleep.svg', doneKey: 'hasTalked' as keyof Pick<CatState, 'hasFed' | 'hasPlayed' | 'hasTalked'> },
 ] as const;
 
 const SIZE = 'min(17.13vw, 9.64vh)';
 
-interface Props { onSelect:(game:ScreenName)=>void; onBack:()=>void; score?:number; }
+interface Props {
+  onSelect:(game:ScreenName)=>void;
+  onBack:()=>void;
+  score?:number;
+  hasFed?: boolean;
+  hasPlayed?: boolean;
+  hasTalked?: boolean;
+}
 
 const GAMES = [
   {
@@ -104,7 +111,7 @@ function FloatingProducts() {
   );
 }
 
-export default function GameSelectScreen({ onSelect, onBack, score = 0 }: Props) {
+export default function GameSelectScreen({ onSelect, onBack, score = 0, hasFed = false, hasPlayed = false, hasTalked = false }: Props) {
   const [showLabels, setShowLabels] = useState(true);
   useEffect(() => {
     const t = setTimeout(() => setShowLabels(false), 5000);
@@ -152,26 +159,31 @@ export default function GameSelectScreen({ onSelect, onBack, score = 0 }: Props)
       </div>
 
       {/* Gato detrás de las tarjetas */}
-      <video
-        src="/assets/cat/Animation/Esperando.webm"
-        autoPlay
-        loop
-        muted
-        playsInline
-        style={{
-          position: 'absolute',
-          left: '50%',
-          top: '27.3%',
-          transform: 'translateX(-50%)',
-          width: '71.42%',
-          height: 'auto',
-          objectFit: 'contain',
-          zIndex: 0,
-          pointerEvents: 'none',
-          userSelect: 'none',
-          filter: 'drop-shadow(0 16px 32px rgba(0,87,122,0.2))',
-        }}
-      />
+      <div style={{
+        position: 'absolute',
+        inset: 0,
+        zIndex: 0,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        pointerEvents: 'none',
+      }}>
+        <video
+          src="/assets/cat/Animation/Esperando.webm"
+          autoPlay
+          loop
+          muted
+          playsInline
+          style={{
+            width: '90.34%',
+            height: 'auto',
+            objectFit: 'contain',
+            userSelect: 'none',
+            filter: 'drop-shadow(0 20px 40px rgba(0,87,122,0.2))',
+            marginTop: 180,
+          }}
+        />
+      </div>
 
       {/* ── Tarjetas de juego ──
           Figma: left card left=10% | right card left=51.48%
@@ -252,7 +264,10 @@ export default function GameSelectScreen({ onSelect, onBack, score = 0 }: Props)
         gap:'min(4.4vw, 2.5vh)', padding:'0 9%', zIndex:2,
       }}>
         {NAV.map(item => {
+          const doneMap = { hasFed, hasPlayed, hasTalked };
           const isGame = item.id === 'game';
+          const done = doneMap[item.doneKey];
+          const inProgress = isGame && !done;
           return (
             <div key={item.id} style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:'min(1.2vw, 0.68vh)', flexShrink:0 }}>
               <div style={{ width:SIZE, height:SIZE, flexShrink:0, position:'relative' }}>
@@ -262,15 +277,41 @@ export default function GameSelectScreen({ onSelect, onBack, score = 0 }: Props)
                   style={{
                     position:'absolute', inset:0,
                     borderRadius:'50%', border:'none', cursor:isGame?'default':'pointer',
-                    background:isGame?'white':'#00577a',
+                    background:done?'white':'#00577a',
                     display:'flex', alignItems:'center', justifyContent:'center',
-                    boxShadow:isGame
-                      ?'0 0 0 3px rgba(255,255,255,0.8), 0 6px 22px rgba(0,87,122,0.25)'
+                    boxShadow:done || inProgress
+                      ?'0 6px 22px rgba(0,87,122,0.25)'
                       :'0 4px 16px rgba(0,0,0,0.2)',
                     overflow:'hidden',
                   }}
                 >
-                  <img src={item.icon} alt="" style={{ width:'62%', height:'auto', objectFit:'contain', filter:isGame?'none':'brightness(0) invert(1)' }}/>
+                  {inProgress && (
+                    <svg
+                      viewBox="0 0 100 58"
+                      preserveAspectRatio="none"
+                      style={{ position: 'absolute', left: 0, right: 0, bottom: -6, width: '100%', height: 'calc(58% + 16px)', zIndex: 0, pointerEvents: 'none' }}
+                    >
+                      <path d="M0 16 C18 4 32 28 50 16 C68 4 82 28 100 16 L100 58 L0 58 Z" fill="white" />
+                    </svg>
+                  )}
+                  <div
+                    style={{
+                      width: '62%',
+                      aspectRatio: '1',
+                      position: 'relative',
+                      zIndex: 1,
+                      backgroundColor: '#00B6ED',
+                      WebkitMaskImage: `url(${item.icon})`,
+                      maskImage: `url(${item.icon})`,
+                      WebkitMaskSize: 'contain',
+                      maskSize: 'contain',
+                      WebkitMaskRepeat: 'no-repeat',
+                      maskRepeat: 'no-repeat',
+                      WebkitMaskPosition: 'center',
+                      maskPosition: 'center',
+                      pointerEvents: 'none',
+                    }}
+                  />
                 </motion.button>
               </div>
               <motion.span

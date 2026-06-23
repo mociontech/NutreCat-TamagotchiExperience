@@ -95,7 +95,7 @@ export default function AttractLoop({ onStart }: Props) {
       </motion.div>
 
       {/* ── SUBTÍTULO ── */}
-      <motion.div style={{ position: 'absolute', top: '41.98%', left: '50%', x: '-50%', width: '67.04%', textAlign: 'center' }}>
+      <motion.div style={{ position: 'absolute', top: '41.98%', left: '50%', x: '-50%', width: '78%', textAlign: 'center' }}>
         <motion.p
           initial={{ y: 28, opacity: 0 }}
           animate={{ y: 0, opacity: [1, 0.72, 1] }}
@@ -103,9 +103,9 @@ export default function AttractLoop({ onStart }: Props) {
             y:       { delay: 0.68, type: 'spring', stiffness: 140, damping: 18 },
             opacity: { delay: 0.68, duration: 3.6, repeat: Infinity, ease: 'easeInOut', times: [0, 0.5, 1] },
           }}
-          style={{ fontFamily: 'var(--font-body)', fontSize: 'min(6.11vw, 3.44vh)', color: '#00577a', textTransform: 'uppercase', letterSpacing: 'min(0.3vw, 0.17vh)', fontWeight: 700, lineHeight: 1.25, margin: 0 }}
+          style={{ fontFamily: 'var(--font-body)', fontSize: 'min(6.11vw, 3.44vh)', color: '#00577a', textTransform: 'uppercase', letterSpacing: 'min(0.3vw, 0.17vh)', fontWeight: 700, lineHeight: 1.25, margin: 0, whiteSpace: 'pre-line' }}
         >
-          Cuida a tu gato y hazlo feliz con Nutrecat
+          Cuida a tu gato y hazlo{'\n'}Feliz con Nutre Cat
         </motion.p>
       </motion.div>
 

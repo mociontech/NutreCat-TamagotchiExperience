@@ -2,14 +2,13 @@ import { motion } from 'framer-motion';
 
 interface Props { onDone: () => void; }
 
-// Figma asset URLs — canvas 1080×1920, node 391:2
 const ICONS = {
-  leche1:   'https://www.figma.com/api/mcp/asset/5ae95404-3345-4aed-a865-664ce26e05f9',
-  leche2:   'https://www.figma.com/api/mcp/asset/6c9ddaea-6fa2-4620-945f-05fbc944e333',
-  salmon1:  'https://www.figma.com/api/mcp/asset/e865696b-d2ea-41f7-81a9-c271a28fb7db',
-  salmon2:  'https://www.figma.com/api/mcp/asset/538cae56-dc4a-4cd5-bb88-a2fa33e64cf0',
-  tilapia1: 'https://www.figma.com/api/mcp/asset/6be43df1-9753-48de-a6e4-3d1d5b0c8af0',
-  tilapia2: 'https://www.figma.com/api/mcp/asset/1ede36ea-1d61-4237-8b62-b897eee3e74d',
+  leche1:   '/assets/icons/benefit-digestive.svg',
+  leche2:   '/assets/icons/benefit-bone.svg',
+  salmon1:  '/assets/cat/Salmon1.png?v=salmon-popup-1',
+  salmon2:  '/assets/cat/Salmon2.png?v=salmon-popup-1',
+  tilapia1: '/assets/icons/benefit-digestive-tilapia.svg',
+  tilapia2: '/assets/cat/Tilapila2.png',
 };
 
 // All positions derived from Figma pixel coords → % of card (887×432) or screen (1080×1920)

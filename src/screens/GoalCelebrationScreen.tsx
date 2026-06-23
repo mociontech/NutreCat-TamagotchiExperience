@@ -3,6 +3,8 @@ import { motion } from 'framer-motion';
 interface Props { score: number; onContinue: () => void; }
 
 export default function GoalCelebrationScreen({ score, onContinue }: Props) {
+  const wonPoints = score > 0;
+
   return (
     <div style={{
       width: '100%', height: '100%',
@@ -41,7 +43,7 @@ export default function GoalCelebrationScreen({ score, onContinue }: Props) {
 
       <div style={{ flex: '0.5' }} />
 
-      {/* ¡GOOOL! */}
+      {/* Resultado */}
       <motion.div
         initial={{ scale: 0, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
@@ -56,7 +58,7 @@ export default function GoalCelebrationScreen({ score, onContinue }: Props) {
           lineHeight: 1, margin: 0,
           textShadow: '0 6px 24px rgba(0,87,122,0.4)',
           letterSpacing: '0.04em',
-        }}>¡GOOOL!</p>
+        }}>{wonPoints ? '¡Buen trabajo!' : '¡Inténtalo de nuevo!'}</p>
         <p style={{
           fontFamily: 'var(--font-body)',
           fontSize: 'min(4.5vw, 2.5vh)',
@@ -66,16 +68,19 @@ export default function GoalCelebrationScreen({ score, onContinue }: Props) {
           textTransform: 'uppercase',
           letterSpacing: '0.04em',
         }}>
-          ¡Tu gato está más feliz! 🐱💕
+          {wonPoints ? '¡Tu gato está más feliz!' : 'Esta vez no atrapaste puntos'}
         </p>
       </motion.div>
 
       <div style={{ flex: '0.3' }} />
 
-      {/* Gato campeón */}
-      <motion.img
-        src="/assets/cat/cat-champion.png"
-        alt="Campeón"
+      {/* Gato resultado */}
+      <motion.video
+        src={wonPoints ? '/assets/cat/Animation/Celebrando.webm' : '/assets/cat/Animation/Perdedor.webm'}
+        autoPlay
+        loop
+        muted
+        playsInline
         animate={{ y: [0, -18, 0], rotate: [0, -4, 4, 0] }}
         transition={{ duration: 1.2, repeat: Infinity, ease: 'easeInOut' }}
         style={{
@@ -110,7 +115,7 @@ export default function GoalCelebrationScreen({ score, onContinue }: Props) {
           color: 'white',
           whiteSpace: 'nowrap',
         }}>
-          +{score} puntos ⚽
+          +{score} puntos
         </span>
       </motion.div>
 
@@ -138,7 +143,7 @@ export default function GoalCelebrationScreen({ score, onContinue }: Props) {
           cursor: 'pointer', whiteSpace: 'nowrap',
         }}
       >
-        Continuar 🎉
+        Continuar
       </motion.button>
 
       <div style={{ flex: '0.4' }} />

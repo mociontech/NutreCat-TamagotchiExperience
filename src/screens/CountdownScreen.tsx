@@ -39,26 +39,29 @@ export default function CountdownScreen({ onDone }: Props) {
       {/* Timer pill — izquierda, debajo del logo */}
       <div style={{
         position: 'absolute',
-        left: '29.81%', top: '21.93%',
-        width: '40.37%',
+        left: '35.87%', top: '21.93%',
+        width: '28.26%',
         zIndex: 2,
         background: '#00577a',
         borderRadius: 99,
-        padding: 'min(2vw, 1.1vh) min(4vw, 2.2vh)',
-        display: 'flex', alignItems: 'center', gap: 'min(2.5vw, 1.4vh)',
+        padding: 'min(1.4vw, 0.77vh) min(4vw, 2.2vh)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
         boxShadow: '0 4px 20px rgba(0,87,122,0.4)',
+        boxSizing: 'border-box',
       }}>
         {/* wrapper necesario: el SVG tiene overflow:visible */}
-        <div style={{ width: 'min(5vw, 2.8vh)', height: 'min(5vw, 2.8vh)', flexShrink: 0, overflow: 'hidden' }}>
+        <div style={{ position: 'absolute', left: 'min(3vw, 1.7vh)', top: '50%', transform: 'translateY(-50%)', width: 'min(5.46vw, 3.06vh)', height: 'min(5.46vw, 3.06vh)', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
           <img src="/assets/ui/icon-clock.svg" alt=""
             style={{ width: '100%', height: '100%', filter: 'brightness(0) invert(1)', display: 'block' }} />
         </div>
         <span style={{
           fontFamily: 'var(--font-display)',
-          fontSize: 'min(10.7vw, 6vh)',
+          fontSize: 'min(7.92vw, 4.44vh)',
           color: 'white',
           whiteSpace: 'nowrap',
           lineHeight: 1,
+          paddingTop: '0.08em',
+          transform: 'translate(35px, 3px)',
         }}>00:30</span>
       </div>
 

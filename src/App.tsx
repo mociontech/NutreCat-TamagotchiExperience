@@ -179,9 +179,9 @@ const handleTalkDone = () => {
       case 'hub':
       case 'dashboard':    return <HubScreen cat={cat} onNavigate={nav} pointsEarned={pointsEarned} onPointsShown={() => setPointsEarned(null)} comingFromSleep={comingFromSleep} onComingFromSleepConsumed={() => setComingFromSleep(false)} />;
 
-      case 'gameSelect':   return <GameSelectScreen onSelect={nav} onBack={() => nav('hub')} score={cat.score} />;
+      case 'gameSelect':   return <GameSelectScreen onSelect={nav} onBack={() => nav('hub')} score={cat.score} hasFed={cat.hasFed} hasPlayed={cat.hasPlayed} hasTalked={cat.hasTalked} />;
 
-      case 'feedSelect':      return <FeedSelectScreen onSelect={handleFeedSelect} onBack={() => nav('hub')} score={cat.score} />;
+      case 'feedSelect':      return <FeedSelectScreen onSelect={handleFeedSelect} onBack={() => nav('hub')} score={cat.score} hasFed={cat.hasFed} hasPlayed={cat.hasPlayed} hasTalked={cat.hasTalked} />;
       case 'feedInteraction': return <FeedInteractionScreen selectedFood={cat.selectedFood ?? 'treats'} onDone={handleFeedDone} onBack={() => nav('hub')} score={cat.score} />;
 
       case 'footballInstructions': return <FootballInstructionsScreen onDone={() => nav('footballGame')} score={cat.score} />;
@@ -198,7 +198,7 @@ const handleTalkDone = () => {
       case 'fallingBagsCountdown':    return <CountdownScreen               onDone={() => nav('fallingBagsGame')} />;
       case 'fallingBagsGame':         return <FallingBagsGameScreen         onDone={handleBagsDone} />;
 
-      case 'talk': return <TalkScreen onDone={handleTalkDone} hasFed={cat.hasFed} hasPlayed={cat.hasPlayed} score={cat.score} />;
+      case 'talk': return <TalkScreen onDone={handleTalkDone} hasFed={cat.hasFed} hasPlayed={cat.hasPlayed} hasTalked={cat.hasTalked} score={cat.score} />;
 
       case 'rewardQr': return <RewardQrScreen cat={cat} onNext={handleRestart} />;
 

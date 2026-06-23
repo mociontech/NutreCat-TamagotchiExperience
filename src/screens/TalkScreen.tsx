@@ -6,7 +6,7 @@ import { sfx, bgPlay, bgStop } from '../utils/sounds';
 const ACTIVITY_NAV = [
   { id: 'game',  label: 'Jugar',  icon: '/assets/nav/icon-game.svg',  doneKey: 'hasPlayed' as const },
   { id: 'food',  label: 'Comer',  icon: '/assets/nav/icon-food.svg',  doneKey: 'hasFed'    as const },
-  { id: 'sleep', label: 'Dormir', icon: '/assets/nav/icon-sleep.svg', doneKey: null },
+  { id: 'sleep', label: 'Dormir', icon: '/assets/nav/icon-sleep.svg', doneKey: 'hasTalked' as const },
 ] as const;
 
 interface Zzz { id: number; x: number; y: number; size: number; rot: number; char: string; }
@@ -24,10 +24,11 @@ interface Props {
   score?: number;
   hasFed?: boolean;
   hasPlayed?: boolean;
+  hasTalked?: boolean;
 
 }
 
-export default function TalkScreen({ onDone, score = 0, hasFed = true, hasPlayed = true }: Props) {
+export default function TalkScreen({ onDone, score = 0, hasFed = true, hasPlayed = true, hasTalked = false }: Props) {
   const [phase,        setPhase]        = useState<'light' | 'dimming' | 'dark'>('light');
   const [showBtn,      setShowBtn]      = useState(false);
   const [zzzList,      setZzzList]      = useState<Zzz[]>([]);
@@ -39,7 +40,7 @@ export default function TalkScreen({ onDone, score = 0, hasFed = true, hasPlayed
   const casiDormidoRef = useRef<HTMLVideoElement>(null);
   const dormidoRef     = useRef<HTMLVideoElement>(null);
   const dormidoLoops   = useRef(0);
-  const doneMap = { hasPlayed, hasFed };
+  const doneMap = { hasPlayed, hasFed, hasTalked };
 
   useEffect(() => {
     const t = setTimeout(() => setShowLabels(false), 5000);
@@ -458,8 +459,9 @@ export default function TalkScreen({ onDone, score = 0, hasFed = true, hasPlayed
         initial={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }}
         style={{ position: 'absolute', top: '80%', left: 0, right: 0, display: 'flex', justifyContent: 'center', alignItems: 'flex-end', gap: 'min(4.4vw, 2.5vh)', padding: '0 9%', zIndex: 10 }}>
         {ACTIVITY_NAV.map(item => {
-          const done = item.doneKey ? doneMap[item.doneKey] : false;
+          const done = doneMap[item.doneKey];
           const isCurrent = item.id === 'sleep';
+          const inProgress = isCurrent && !done;
           return (
             <div key={item.id} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 'min(1.2vw, 0.68vh)', flexShrink: 0 }}>
               <div style={{
@@ -467,11 +469,24 @@ export default function TalkScreen({ onDone, score = 0, hasFed = true, hasPlayed
                 borderRadius: '50%',
                 background: done ? 'white' : '#00577a',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                boxShadow: isCurrent ? '0 0 0 3px rgba(255,255,255,0.8), 0 6px 22px rgba(0,87,122,0.25)' : done ? '0 0 0 3px rgba(255,255,255,0.5)' : '0 4px 16px rgba(0,0,0,0.2)',
+                boxShadow: done || inProgress ? '0 6px 22px rgba(0,87,122,0.25)' : '0 4px 16px rgba(0,0,0,0.2)',
                 flexShrink: 0,
+                position: 'relative',
+                overflow: 'hidden',
               }}>
+                {inProgress && (
+                  <svg
+                    viewBox="0 0 100 58"
+                    preserveAspectRatio="none"
+                    style={{ position: 'absolute', left: 0, right: 0, bottom: -6, width: '100%', height: 'calc(58% + 16px)', zIndex: 0, pointerEvents: 'none' }}
+                  >
+                    <path d="M0 16 C18 4 32 28 50 16 C68 4 82 28 100 16 L100 58 L0 58 Z" fill="white" />
+                  </svg>
+                )}
                 <div style={{
                   width: '62%', aspectRatio: '1',
+                  position: 'relative',
+                  zIndex: 1,
                   backgroundColor: '#00B6ED',
                   WebkitMaskImage: `url(${item.icon})`,
                   maskImage: `url(${item.icon})`,

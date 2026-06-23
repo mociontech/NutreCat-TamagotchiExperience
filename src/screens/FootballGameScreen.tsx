@@ -33,7 +33,7 @@ const PRODUCTS = [
     subtitle: 'Para gatitos con sensibilidad a la lactosa.',
     benefits: [
       'Favorece una mejor digestión.',
-      'Con vitamina D, calcio y fósforo que apoyan el desarrollo de huesos y dientes fuertes.',
+      'Con vitamina D, calcio y fósforo\nque apoyan el desarrollo de\nhuesos y dientes fuertes',
     ],
     benefitIcons: ['/assets/icons/benefit-digestive.svg', '/assets/icons/benefit-bone.svg'],
     badge: 'Sin colorantes y sin\nsabores artificiales.',
@@ -44,12 +44,12 @@ const PRODUCTS = [
   {
     id: 1, src: '/assets/products/product-3.png', nx: 0.50,
     name: 'NutreCat\ncon Salmón',
-    subtitle: 'Para gatitos con sensibilidad a la lactosa.',
+    subtitle: 'Digestión saludable y bienestar integral',
     benefits: [
       'Ayuda a mantener una digestión equilibrada.',
       'Contiene ácidos grasos y omega 3 lo que contribuye a la salud cardiovascular.',
     ],
-    benefitIcons: ['/assets/icons/benefit-digestive.svg', '/assets/icons/benefit-bone.svg'],
+    benefitIcons: ['/assets/cat/Salmon1.png?v=salmon-popup-1', '/assets/cat/Salmon2.png?v=salmon-popup-1'],
     badge: 'Sin colorantes y sin\nsabores artificiales.',
     nameTop: '27.14%', subtitleTop: '42.16%',
     benefit1Top: '53.91%', dividerTop: '64.2%', benefit2Top: '66.02%',
@@ -58,12 +58,12 @@ const PRODUCTS = [
   {
     id: 2, src: '/assets/products/product-2.png', nx: 0.82,
     name: 'NutreCat\ncon Tilapia',
-    subtitle: 'Para gatitos con sensibilidad a la lactosa.',
+    subtitle: 'Para gatos con sistema digestivo sensible.',
     benefits: [
       'Apoya la salud digestiva y la regeneración intestinal.',
       'Fortalece los músculos con el aporte de fósforo y potasio.',
     ],
-    benefitIcons: ['/assets/icons/benefit-digestive.svg', '/assets/icons/benefit-bone.svg'],
+    benefitIcons: ['/assets/icons/benefit-digestive-tilapia.svg', '/assets/cat/Tilapila2.png'],
     badge: 'Sin colorantes y sin\nsabores artificiales.',
     nameTop: '27.14%', subtitleTop: '42.16%',
     benefit1Top: '53.91%', dividerTop: '64.2%', benefit2Top: '66.02%',
@@ -962,13 +962,14 @@ export default function FootballGameScreen({ onGoal }: Props) {
               {/* Badge — top-left, tilted, overflows card edge */}
               <motion.div
                 initial={{ opacity: 0, x: -18, rotate: -10 }}
-                animate={{ opacity: 1, x: 0, rotate: -15.74 }}
+                animate={{ opacity: 1, x: 0, rotate: -12.002 }}
                 transition={{ type: 'spring', stiffness: 200, damping: 18, delay: 0.24 }}
                 style={{
                   position: 'absolute',
-                  left: '-1%', top: '-6%',
+                  left: 'calc(-1% - 20px)', top: 'calc(-6% + 40px)',
                   zIndex: 3,
-                  maxWidth: '52%',
+                  width: 'calc(min(36.9vw, 20.8vh) - 50px)',
+                  height: 'calc(min(7.07vw, 3.975vh) + 15px)',
                   transformOrigin: 'center center',
                 }}
               >
@@ -984,10 +985,13 @@ export default function FootballGameScreen({ onGoal }: Props) {
                   transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut', delay: 0.7 }}
                   style={{
                     position: 'relative', overflow: 'hidden',
+                    width: '100%',
+                    height: '100%',
+                    boxSizing: 'border-box',
                     background: selectedProduct.cardBg,
-                    border: `3px solid ${selectedProduct.borderColor}`,
-                    borderRadius: 'min(2.5vw, 1.4vh)',
-                    padding: 'min(1.5vw, 0.85vh) min(2.5vw, 1.4vh)',
+                    border: `3.631px solid ${selectedProduct.borderColor}`,
+                    borderRadius: 25.417,
+                    padding: 5,
                   }}
                 >
                   <p style={{
@@ -1000,6 +1004,7 @@ export default function FootballGameScreen({ onGoal }: Props) {
                     lineHeight: 1.1, margin: 0,
                     letterSpacing: '0.04em',
                     whiteSpace: 'pre-line',
+                    paddingTop: 3,
                   }}>
                     {selectedProduct.badge}
                   </p>
@@ -1071,6 +1076,7 @@ export default function FootballGameScreen({ onGoal }: Props) {
                   color: selectedProduct.textColor,
                   textTransform: 'uppercase',
                   lineHeight: 1.25, margin: 0,
+                  whiteSpace: 'pre-line',
                 }}
               >
                 {selectedProduct.subtitle}
@@ -1084,7 +1090,7 @@ export default function FootballGameScreen({ onGoal }: Props) {
                   position: 'absolute',
                   left: '8.32%', top: selectedProduct.benefit1Top,
                   width: '83.36%', zIndex: 1,
-                  display: 'flex', alignItems: 'flex-start', gap: '3%',
+                  display: 'flex', alignItems: 'center', gap: '3%',
                 }}
               >
                 <img
@@ -1117,14 +1123,21 @@ export default function FootballGameScreen({ onGoal }: Props) {
                 transition={{ delay: 0.3 }}
                 style={{
                   position: 'absolute',
-                  left: '8.32%', top: selectedProduct.benefit2Top,
+                  left: '8.32%', top: selectedProduct.id === 0 ? `calc(${selectedProduct.benefit2Top} - 35px)` : selectedProduct.benefit2Top,
                   width: '83.36%', zIndex: 1,
-                  display: 'flex', alignItems: 'flex-start', gap: '3%',
+                  display: 'flex', alignItems: 'center', gap: '3%',
                 }}
               >
                 <img
                   src={selectedProduct.benefitIcons[1]} alt=""
-                  style={{ width: 'min(5.5vw, 3.1vh)', height: 'min(5.5vw, 3.1vh)', objectFit: 'contain', flexShrink: 0 }}
+                  style={{
+                    width: selectedProduct.benefitIcons[1] === '/assets/cat/Tilapila2.png' ? 59.064 : 'min(5.5vw, 3.1vh)',
+                    height: selectedProduct.benefitIcons[1] === '/assets/cat/Tilapila2.png' ? 59.064 : 'min(5.5vw, 3.1vh)',
+                    aspectRatio: '1 / 1',
+                    objectFit: 'contain',
+                    flexShrink: 0,
+                    transform: selectedProduct.id === 0 ? 'translateY(2px)' : undefined,
+                  }}
                 />
                 <p style={{
                   fontFamily: 'var(--font-body)',
@@ -1132,6 +1145,7 @@ export default function FootballGameScreen({ onGoal }: Props) {
                   color: selectedProduct.textColor,
                   textTransform: 'uppercase',
                   lineHeight: 1.25, margin: 0,
+                  whiteSpace: 'pre-line',
                 }}>
                   {selectedProduct.benefits[1]}
                 </p>
@@ -1183,28 +1197,43 @@ export default function FootballGameScreen({ onGoal }: Props) {
             transition={{ duration: 0.22 }}
             style={{ position: 'absolute', left: '9.4%', width: '81.3%', bottom: '2.6%', zIndex: 22 }}
           >
-            <div style={{
+            <motion.div
+              animate={phase === 'aim' ? {
+                scale: [1, 1.035, 1],
+                boxShadow: [
+                  '0 4px 20px rgba(0,87,122,0.22), 0 0 0 rgba(255,255,255,0)',
+                  '0 8px 32px rgba(0,87,122,0.28), 0 0 22px rgba(255,255,255,0.9)',
+                  '0 4px 20px rgba(0,87,122,0.22), 0 0 0 rgba(255,255,255,0)',
+                ],
+              } : {
+                scale: 1,
+                boxShadow: '0 4px 20px rgba(0,87,122,0.22)',
+              }}
+              transition={phase === 'aim' ? { duration: 1.8, repeat: Infinity, ease: 'easeInOut' } : { duration: 0.22 }}
+              style={{
               background: 'white', borderRadius: 99,
-              height: 'min(8.5vw, 4.8vh)',
+              height: phase === 'aim' ? 'min(8vw, 4.5vh)' : 'min(8.5vw, 4.8vh)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               boxShadow: '0 4px 20px rgba(0,87,122,0.22)',
+              overflow: 'hidden',
             }}>
               <span style={{
                 fontFamily: 'var(--font-display)',
-                fontSize: 'min(4.2vw, 2.36vh)',
+                fontSize: phase === 'aim' ? 'min(6.72vw, 3.78vh)' : 'min(4.2vw, 2.36vh)',
                 color: phase === 'rival_result'
                   ? (rivalScored ? '#ef4444' : '#22c55e')
                   : '#00577a',
                 textTransform: 'uppercase',
-                lineHeight: 1, paddingTop: '0.18em',
+                lineHeight: phase === 'aim' ? 0.92 : 1, paddingTop: '0.18em',
                 textAlign: 'center',
+                maxWidth: '92%',
               }}>
                 {phase === 'aim'          && 'TOCA UN PAQUETE PARA TIRAR'}
                 {phase === 'firing'       && '¡DISPARO!'}
                 {phase === 'rival_fire'   && '¡ATAJA! ← ARRASTRA EL ARQUERO →'}
                 {phase === 'rival_result' && (rivalScored ? '¡GOL DEL RIVAL!' : '¡ATAJADO!')}
               </span>
-            </div>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
