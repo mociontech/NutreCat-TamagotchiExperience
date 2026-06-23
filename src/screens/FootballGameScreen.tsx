@@ -34,7 +34,7 @@ const PRODUCTS = [
     subtitle: 'Para gatitos con sensibilidad a la lactosa.',
     benefits: [
       'Favorece una mejor digestión.',
-      'Con vitamina D, calcio y fósforo\nque apoyan el desarrollo de\nhuesos y dientes fuertes',
+      'Con vitamina D, calcio y fósforo\nque apoyan el desarrollo de\nhuesos y dientes fuertes.',
     ],
     benefitIcons: ['/assets/icons/benefit-digestive.svg', '/assets/icons/benefit-bone.svg'],
     badge: 'Sin colorantes y sin\nsabores artificiales.',
@@ -45,7 +45,7 @@ const PRODUCTS = [
   {
     id: 1, src: '/assets/products/product-3.png', nx: 0.50,
     name: 'NutreCat\ncon Salmón',
-    subtitle: 'Digestión saludable y bienestar integral',
+    subtitle: 'Digestión saludable y bienestar integral.',
     benefits: [
       'Ayuda a mantener una digestión equilibrada.',
       'Contiene ácidos grasos y omega 3 lo que contribuye a la salud cardiovascular.',

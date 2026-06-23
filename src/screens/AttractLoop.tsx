@@ -74,13 +74,13 @@ export default function AttractLoop({ onStart }: Props) {
       <motion.div
         animate={{ y: [0, -6, 0] }}
         transition={{ delay: 1.8, duration: 4.2, repeat: Infinity, ease: 'easeInOut' }}
-        style={{ position: 'absolute', top: '27.97%', left: '50%', x: '-50%', width: '86.76%', textAlign: 'center', lineHeight: 0.88 }}
+        style={{ position: 'absolute', top: '27.97%', left: '50%', x: '-50%', width: 'calc(86.76% - 80px)', textAlign: 'center', lineHeight: 0.88 }}
       >
         <motion.p
           initial={{ x: '-115%', opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           transition={{ delay: 0.2, type: 'spring', stiffness: 160, damping: 22 }}
-          style={{ fontFamily: 'var(--font-display)', fontSize: 'min(13.43vw, 7.55vh)', color: '#00577a', textTransform: 'uppercase', letterSpacing: 'min(0.27vw, 0.15vh)', margin: 0 }}
+          style={{ fontFamily: 'var(--font-display)', fontSize: 'calc(min(12.8vw, 7.2vh) - 10px)', color: '#00577a', textTransform: 'uppercase', letterSpacing: 'min(0.24vw, 0.13vh)', margin: 0 }}
         >
           El Verdadero
         </motion.p>
@@ -88,14 +88,14 @@ export default function AttractLoop({ onStart }: Props) {
           initial={{ x: '115%', opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           transition={{ delay: 0.42, type: 'spring', stiffness: 160, damping: 22 }}
-          style={{ fontFamily: 'var(--font-display)', fontSize: 'min(13.43vw, 7.55vh)', color: '#00577a', textTransform: 'uppercase', letterSpacing: 'min(0.27vw, 0.15vh)', margin: 0 }}
+          style={{ fontFamily: 'var(--font-display)', fontSize: 'calc(min(12.8vw, 7.2vh) - 10px)', color: '#00577a', textTransform: 'uppercase', letterSpacing: 'min(0.24vw, 0.13vh)', margin: 0 }}
         >
           Talento Nutrecat
         </motion.p>
       </motion.div>
 
       {/* ── SUBTÍTULO ── */}
-      <motion.div style={{ position: 'absolute', top: '41.98%', left: '50%', x: '-50%', width: '78%', textAlign: 'center' }}>
+      <motion.div style={{ position: 'absolute', top: 'calc(41.98% - 15px)', left: '50%', x: '-50%', width: 'calc(78% - 80px)', textAlign: 'center' }}>
         <motion.p
           initial={{ y: 28, opacity: 0 }}
           animate={{ y: 0, opacity: [1, 0.72, 1] }}
@@ -103,7 +103,7 @@ export default function AttractLoop({ onStart }: Props) {
             y:       { delay: 0.68, type: 'spring', stiffness: 140, damping: 18 },
             opacity: { delay: 0.68, duration: 3.6, repeat: Infinity, ease: 'easeInOut', times: [0, 0.5, 1] },
           }}
-          style={{ fontFamily: 'var(--font-body)', fontSize: 'min(6.11vw, 3.44vh)', color: '#00577a', textTransform: 'uppercase', letterSpacing: 'min(0.3vw, 0.17vh)', fontWeight: 700, lineHeight: 1.25, margin: 0, whiteSpace: 'pre-line' }}
+          style={{ fontFamily: 'var(--font-body)', fontSize: 'calc((min(5.8vw, 3.26vh) - 10px) * 1.15)', color: '#00577a', textTransform: 'uppercase', letterSpacing: 'min(0.24vw, 0.13vh)', fontWeight: 700, lineHeight: 1.25, margin: 0, whiteSpace: 'pre-line' }}
         >
           Cuida a tu gato y hazlo{'\n'}Feliz con Nutre Cat
         </motion.p>

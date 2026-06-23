@@ -13,14 +13,31 @@ export default function RewardQrScreen({ onNext }: Props) {
       <img src="/assets/backgrounds/bg-Inicio.png" alt=""
         style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', pointerEvents: 'none', zIndex: 0 }} />
 
-      <div style={{
-        position: 'absolute',
-        inset: '3.4% 6% 3.4%',
-        border: '2px dashed rgba(255,255,255,0.95)',
-        borderRadius: 'min(4vw, 2.25vh)',
-        zIndex: 1,
-        pointerEvents: 'none',
-      }} />
+      <svg
+        viewBox="0 0 100 100"
+        preserveAspectRatio="none"
+        style={{
+          position: 'absolute',
+          inset: '3.4% 6% 3.4%',
+          zIndex: 1,
+          pointerEvents: 'none',
+          overflow: 'visible',
+        }}
+      >
+        <rect
+          x="0.6"
+          y="0.6"
+          width="98.8"
+          height="98.8"
+          rx="3"
+          ry="3"
+          fill="none"
+          stroke="rgba(255,255,255,0.95)"
+          strokeWidth="0.35"
+          strokeDasharray="0.9 0.75"
+          vectorEffect="non-scaling-stroke"
+        />
+      </svg>
 
       <div style={{
         position: 'absolute',
