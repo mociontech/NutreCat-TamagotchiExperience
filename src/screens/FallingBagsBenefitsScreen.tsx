@@ -110,10 +110,10 @@ export default function FallingBagsBenefitsScreen({ onDone }: Props) {
       {/* Estrella — right de la badge, top 52/1920=2.71%, size 85.7px */}
       <div style={{
         position: 'absolute',
-        right: '3.35%', top: '3.23%',
+        right: 'calc(7.2% - min(3.97vw, 2.23vh) + 6px)', top: 'calc(6.33% - min(3.97vw, 2.23vh) - 11px)',
         width: 'min(7.94vw, 4.46vh)',
         height: 'min(7.94vw, 4.46vh)',
-        transform: 'rotate(-27.7deg)',
+        transform: 'rotate(0.5deg)',
         zIndex: 7, pointerEvents: 'none',
       }}>
         <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 81 81" fill="none">

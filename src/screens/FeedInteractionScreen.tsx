@@ -13,16 +13,16 @@ const PRODUCTS: { id: FoodType; img: string; left: string; width: string }[] = [
 
 const BENEFITS: Record<FoodType, { line1: string; line2: string; bg: string; color: string }[]> = {
   treats: [
-    { line1: 'Favorece una',           line2: 'mejor digestión',            bg: '#f4a875', color: '#7a1e0e' },
-    { line1: 'Calcio y fósforo', line2: 'para huesos fuertes', bg: '#f4a875', color: '#7a1e0e' },
+    { line1: 'Favorece una',           line2: 'mejor digestión.',            bg: '#f4a875', color: '#7a1e0e' },
+    { line1: 'Calcio y fósforo', line2: 'para huesos fuertes.', bg: '#f4a875', color: '#7a1e0e' },
   ],
   dry: [
-    { line1: 'Ayuda a mantener una',   line2: 'digestión equilibrada',       bg: '#dbd672', color: '#3a3b10' },
-    { line1: 'Ácidos grasos omega 3',  line2: 'para el corazón',             bg: '#dbd672', color: '#3a3b10' },
+    { line1: 'Ayuda a mantener una',   line2: 'digestión equilibrada.',       bg: '#dbd672', color: '#3a3b10' },
+    { line1: 'Ácidos grasos omega 3',  line2: 'para el corazón.',             bg: '#dbd672', color: '#3a3b10' },
   ],
   wet: [
-    { line1: 'Apoya la salud',         line2: 'digestiva intestinal',        bg: '#debbe7', color: '#5a1a6e' },
-    { line1: 'Fósforo y potasio',      line2: 'para los músculos',           bg: '#debbe7', color: '#5a1a6e' },
+    { line1: 'Apoya la salud',         line2: 'digestiva intestinal.',        bg: '#debbe7', color: '#5a1a6e' },
+    { line1: 'Fósforo y potasio',      line2: 'para los músculos.',           bg: '#debbe7', color: '#5a1a6e' },
   ],
 };
 
@@ -160,7 +160,7 @@ export default function FeedInteractionScreen({ selectedFood, onDone, score = 0 
                 background: b.bg,
                 border: `2px solid ${b.color}`,
                 borderRadius: 'min(2.5vw, 1.4vh)',
-                padding: 'min(1.8vw, 1.02vh) min(3vw, 1.65vh)',
+                padding: 'calc(min(1.8vw, 1.02vh) - 3px) min(3vw, 1.65vh)',
                 boxShadow: `0 4px 16px ${b.bg}99`,
                 display: 'inline-block',
               }}
@@ -170,7 +170,7 @@ export default function FeedInteractionScreen({ selectedFood, onDone, score = 0 
                 fontSize: 'min(2.85vw, 1.6vh)',
                 color: b.color,
                 fontWeight: 700,
-                lineHeight: 1.3,
+                lineHeight: 1.15,
                 textTransform: 'uppercase',
                 letterSpacing: '0.03em',
                 display: 'block',

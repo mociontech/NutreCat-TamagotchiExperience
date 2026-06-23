@@ -53,7 +53,7 @@ export default function HubScreen({ cat, onNavigate, pointsEarned, onPointsShown
   const [showLabels,  setShowLabels]  = useState(true);
   const [shakeGame,   setShakeGame]   = useState(false);
   const [animState,   setAnimState]   = useState<{ name: 'Saludar' | 'Aburrido' | 'ConHambreLobby' | 'Esperando' | 'Esperando2' | 'Esperando3' | 'Cansado' | 'Celebrando'; key: number }>(() =>
-    comingFromSleep ? { name: 'Celebrando', key: 0 } : { name: 'Saludar', key: 0 }
+    comingFromSleep ? { name: 'Celebrando', key: 0 } : cat.hasFed && !cat.hasTalked ? { name: 'Cansado', key: 0 } : { name: 'Saludar', key: 0 }
   );
   const saludarCount           = useRef(0);
   const esperandoCount         = useRef(0);
@@ -111,7 +111,7 @@ export default function HubScreen({ cat, onNavigate, pointsEarned, onPointsShown
   useEffect(() => {
     if (isSleepy) {
       esperandoSleepyCount.current = 0;
-      setAnimState(prev => ({ name: nextEsperando(), key: prev.key + 1 }));
+      setAnimState(prev => ({ name: 'Cansado', key: prev.key + 1 }));
     } else if (!isHungry) {
       if (skipSaludarReset.current) return;
       saludarCount.current = 0;
@@ -521,29 +521,43 @@ export default function HubScreen({ cat, onNavigate, pointsEarned, onPointsShown
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.35, type: 'spring' }}
-            style={{ flexShrink: 0, position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'center', padding: '0 9% min(2vw, 1.1vh)', marginBottom: 110 }}
+            style={{ flexShrink: 0, position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'center', padding: '0 9% min(2vw, 1.1vh)', marginBottom: 35 }}
           >
             <motion.button
-              animate={{ boxShadow: ['0 0 20px rgba(0,87,122,0.3)', '0 0 55px rgba(0,87,122,0.75)', '0 0 20px rgba(0,87,122,0.3)'] }}
-              transition={{ boxShadow: { duration: 1.8, repeat: Infinity } }}
+              animate={{
+                scale: [1, 1.035, 1],
+                boxShadow: ['0 0 20px rgba(255,255,255,0.3), 0 0 18px rgba(0,87,122,0.22)', '0 0 58px rgba(255,255,255,0.85), 0 0 46px rgba(0,87,122,0.58)', '0 0 20px rgba(255,255,255,0.3), 0 0 18px rgba(0,87,122,0.22)'],
+              }}
+              transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
               onClick={() => { sfx('snap', 0.6); onNavigate('rewardQr'); }}
               style={{
-                width: '100%',
-                height: 'max(57px, calc(min(8.6vw, 4.8vh) - 25px))',
-                background: '#00577a', color: 'white', border: 'none',
+                width: '100%', height: 82, padding: '15px min(4vw, 2.2vh) 0',
+                background: 'white', color: '#00577a',
+                border: 'none',
                 borderRadius: 99,
-                padding: '0 min(7vw, 4vh)',
                 fontFamily: 'var(--font-display)',
-                fontSize: 'min(5.5vw, 3.1vh)',
-                textTransform: 'uppercase',
+                fontSize: 77.742,
+                lineHeight: 1,
                 cursor: 'pointer',
-                letterSpacing: '0.03em',
+                textTransform: 'uppercase',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
+                position: 'relative',
+                overflow: 'hidden',
               }}
             >
-              <span style={{ transform: 'translateY(8px)' }}>Ver resultado campeón</span>
+              <motion.span
+                animate={{ opacity: [0.18, 0.45, 0.18], scale: [0.85, 1.25, 0.85] }}
+                transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
+                style={{
+                  position: 'absolute',
+                  inset: '-45% 10%',
+                  background: 'radial-gradient(circle, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.35) 38%, rgba(255,255,255,0) 70%)',
+                  pointerEvents: 'none',
+                }}
+              />
+              <span style={{ position: 'relative', zIndex: 1 }}>Ver resultado campeón</span>
             </motion.button>
           </motion.div>
         )}

@@ -482,7 +482,7 @@ export default function TalkScreen({ onDone, onBack, score = 0, hasFed = true, h
       {phase !== 'dark' && (
       <motion.div
         initial={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }}
-        style={{ position: 'absolute', top: '80%', left: 0, right: 0, display: 'flex', justifyContent: 'center', alignItems: 'flex-end', gap: 'min(4.4vw, 2.5vh)', padding: '0 9%', zIndex: 10 }}>
+        style={{ position: 'absolute', top: '82.6%', left: 0, right: 0, display: 'flex', justifyContent: 'center', alignItems: 'flex-end', gap: 'min(4.4vw, 2.5vh)', padding: '0 9%', zIndex: 10 }}>
         {ACTIVITY_NAV.map(item => {
           const done = doneMap[item.doneKey];
           const isCurrent = item.id === 'sleep';

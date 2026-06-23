@@ -66,7 +66,7 @@ export default function AttractLoop({ onStart }: Props) {
         style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', pointerEvents: 'none', zIndex: 0 }} />
 
       {/* ── LOGO ── */}
-      <div style={{ position: 'absolute', top: '5.52%', right: '27.96%', bottom: '76.75%', left: '27.97%' }}>
+      <div style={{ position: 'absolute', top: 'calc(5.52% + 50px)', right: '27.96%', bottom: '76.75%', left: '27.97%' }}>
         <img src="/assets/ui/logo-nutre-cat.svg" alt="Nutre Cat Premium" draggable={false} style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block' }} />
       </div>
 
@@ -74,7 +74,7 @@ export default function AttractLoop({ onStart }: Props) {
       <motion.div
         animate={{ y: [0, -6, 0] }}
         transition={{ delay: 1.8, duration: 4.2, repeat: Infinity, ease: 'easeInOut' }}
-        style={{ position: 'absolute', top: '27.97%', left: '50%', x: '-50%', width: 'calc(86.76% - 80px)', textAlign: 'center', lineHeight: 0.88 }}
+        style={{ position: 'absolute', top: 'calc(27.97% + 50px)', left: '50%', x: '-50%', width: 'calc(86.76% - 80px)', textAlign: 'center', lineHeight: 0.88 }}
       >
         <motion.p
           initial={{ x: '-115%', opacity: 0 }}
@@ -95,7 +95,7 @@ export default function AttractLoop({ onStart }: Props) {
       </motion.div>
 
       {/* ── SUBTÍTULO ── */}
-      <motion.div style={{ position: 'absolute', top: 'calc(41.98% - 15px)', left: '50%', x: '-50%', width: 'calc(78% - 80px)', textAlign: 'center' }}>
+      <motion.div style={{ position: 'absolute', top: 'calc(41.98% + 35px)', left: '50%', x: '-50%', width: 'calc(78% - 80px)', textAlign: 'center' }}>
         <motion.p
           initial={{ y: 28, opacity: 0 }}
           animate={{ y: 0, opacity: [1, 0.72, 1] }}

@@ -237,8 +237,8 @@ export default function FootballGameScreen({ onGoal }: Props) {
   // ── Phase: benefits → rival_intro (desactivado mientras se ajusta diseño) ──
   useEffect(() => {
     if (phase !== 'benefits') return;
-    // const t = setTimeout(() => setPhase('rival_intro'), BENEFITS_MS);
-    // return () => clearTimeout(t);
+    const t = setTimeout(() => setPhase('rival_intro'), 10000);
+    return () => clearTimeout(t);
   }, [phase]);
 
   // ── Phase: rival_intro → rival_fire ───────────────────────────────
@@ -909,11 +909,12 @@ export default function FootballGameScreen({ onGoal }: Props) {
               <button
                 onClick={() => setPhase('rival_intro')}
                 style={{
+                  display: 'none',
                   position: 'absolute', top: -18, right: -18, zIndex: 30,
                   width: 40, height: 40, borderRadius: '50%',
                   background: 'white', border: '2px solid #00577a',
                   color: '#00577a', fontSize: 18, fontWeight: 700,
-                  cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  cursor: 'pointer', alignItems: 'center', justifyContent: 'center',
                   boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
                 }}
               >✕</button>
@@ -1070,13 +1071,13 @@ export default function FootballGameScreen({ onGoal }: Props) {
                 transition={{ delay: 0.2 }}
                 style={{
                   position: 'absolute',
-                  left: '8.64%', top: selectedProduct.subtitleTop,
+                  left: '8.64%', top: `calc(${selectedProduct.subtitleTop} + 10px)`,
                   width: '71.54%', zIndex: 1,
                   fontFamily: 'var(--font-body)',
                   fontSize: 'min(5.19vw, 2.92vh)',
                   color: selectedProduct.textColor,
                   textTransform: 'uppercase',
-                  lineHeight: 1.25, margin: 0,
+                  lineHeight: 1, margin: 0,
                   whiteSpace: 'pre-line',
                 }}
               >
@@ -1103,7 +1104,7 @@ export default function FootballGameScreen({ onGoal }: Props) {
                   fontSize: 'min(4.17vw, 2.34vh)',
                   color: selectedProduct.textColor,
                   textTransform: 'uppercase',
-                  lineHeight: 1.25, margin: 0,
+                  lineHeight: 1, margin: 0,
                 }}>
                   {selectedProduct.benefits[0]}
                 </p>
@@ -1145,7 +1146,7 @@ export default function FootballGameScreen({ onGoal }: Props) {
                   fontSize: 'min(4.17vw, 2.34vh)',
                   color: selectedProduct.textColor,
                   textTransform: 'uppercase',
-                  lineHeight: 1.25, margin: 0,
+                  lineHeight: 1, margin: 0,
                   whiteSpace: 'pre-line',
                 }}>
                   {selectedProduct.benefits[1]}

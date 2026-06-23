@@ -55,7 +55,7 @@ export default function RewardQrScreen({ onNext }: Props) {
       </div>
 
       {/* ¡Gracias por participar! */}
-      <div style={{ position: 'absolute', left: '50%', top: '31.3%', transform: 'translate(-50%, -50%)', width: '82%', zIndex: 2 }}>
+      <div style={{ position: 'absolute', left: '50%', top: 'calc(31.3% + 15px)', transform: 'translate(-50%, -50%)', width: '82%', zIndex: 2 }}>
         <motion.p
           initial={{ opacity: 0, y: -18 }}
           animate={{ opacity: 1, y: 0 }}
@@ -200,7 +200,7 @@ export default function RewardQrScreen({ onNext }: Props) {
         transition={{ delay: 0.7 }}
         style={{
           position: 'absolute',
-          bottom: '1.5%', left: '50%',
+          bottom: 'calc(1.5% + 50px)', left: '50%',
           transform: 'translateX(-50%)',
           zIndex: 3,
         }}
