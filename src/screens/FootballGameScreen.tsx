@@ -4,25 +4,13 @@ import { useState, useEffect, useRef, useCallback, useLayoutEffect } from 'react
 // ─── Config ────────────────────────────────────────────────────────────────────
 const N_PENS     = 3;
 const SHOOT_MS   = 750;
-const PLAYER_KICK_IMPACT_MS = 2333;
+const PLAYER_KICK_IMPACT_MS = 3333;
 const RIVAL_KICK_IMPACT_MS = 1333;
 const PLAYER_KICK_APPROACH_Y = -80;
 const RESULT_MS  = 1600;
 const INTRO_MS   = 5000;
 const PTS_GOAL   = 60;
 const BENEFIT_ICON_SIZE = 'min(5.5vw, 3.1vh)';
-const FOOTBALL_VIDEO_SOURCES = [
-  '/assets/cat/Animation/ArqueroRivalIdle.webm',
-  '/assets/cat/Animation/ArqueroRivalIzquierda.webm',
-  '/assets/cat/Animation/ArqueroRivalDerecha.webm',
-  '/assets/cat/Animation/ArqueroRivalCentro.webm',
-  '/assets/cat/Animation/ArqueroPrincipalIdle.webm',
-  '/assets/cat/Animation/ArqueroPrincipalSaltoCentro.webm',
-  '/assets/cat/Animation/EspaldasNaranja.webm',
-  '/assets/cat/Animation/JugadorPrincipalGolpeobalon.webm',
-  '/assets/cat/Animation/RivalIdle.webm',
-  '/assets/cat/Animation/RivalGolpeo.webm',
-] as const;
 
 // GK half-width as fraction of game area (min(20vw)/gameWidth ≈ 0.10 for 1080px totem)
 const GK_HALF_W = 0.10;
@@ -146,35 +134,6 @@ export default function FootballGameScreen({ onGoal }: Props) {
   useEffect(() => { gkNXRef.current = gkNX; }, [gkNX]);
 
   useEffect(() => {
-    const links = FOOTBALL_VIDEO_SOURCES.map(src => {
-      const link = document.createElement('link');
-      link.rel = 'preload';
-      link.as = 'video';
-      link.href = src;
-      link.type = 'video/webm';
-      document.head.appendChild(link);
-      return link;
-    });
-    const warmups = FOOTBALL_VIDEO_SOURCES.map(src => {
-      const video = document.createElement('video');
-      video.preload = 'auto';
-      video.muted = true;
-      video.playsInline = true;
-      video.src = src;
-      video.load();
-      return video;
-    });
-    return () => {
-      links.forEach(link => link.remove());
-      warmups.forEach(video => {
-        video.pause();
-        video.removeAttribute('src');
-        video.load();
-      });
-    };
-  }, []);
-
-  useEffect(() => {
     if (!playerKicking) return;
     const v = playerKickRef.current;
     if (!v) return;
@@ -215,16 +174,6 @@ export default function FootballGameScreen({ onGoal }: Props) {
     }
   }, [phase]);
 
-  useEffect(() => {
-    const idleVideos = [
-      { video: rivalIdleRef.current, active: !rivalDiving },
-    ];
-    idleVideos.forEach(({ video, active }) => {
-      if (!video) return;
-      if (active) video.play().catch(() => {});
-      else video.pause();
-    });
-  }, [rivalDiving]);
 
 
   // ── Countdown 5→4→3→2→1 during rival_intro ──────────────────────
@@ -617,7 +566,6 @@ export default function FootballGameScreen({ onGoal }: Props) {
             <video ref={rivalDiveLeftRef}
               src="/assets/cat/Animation/ArqueroRivalIzquierda.webm"
               muted playsInline preload="auto"
-              onLoadedData={(e) => { if (rivalDiveDir === 'left') e.currentTarget.play().catch(() => {}); }}
               onEnded={() => { setRivalDiving(false); setRivalDiveDir(null); }}
               style={{ position: 'absolute', inset: 0, width: '100%', height: 'auto', objectFit: 'contain', display: 'block',
                 opacity: rivalDiveDir === 'left' ? 1 : 0, transition: 'opacity 0.1s' }}
@@ -626,7 +574,6 @@ export default function FootballGameScreen({ onGoal }: Props) {
             <video ref={rivalDiveRightRef}
               src="/assets/cat/Animation/ArqueroRivalDerecha.webm"
               muted playsInline preload="auto"
-              onLoadedData={(e) => { if (rivalDiveDir === 'right') e.currentTarget.play().catch(() => {}); }}
               onEnded={() => { setRivalDiving(false); setRivalDiveDir(null); }}
               style={{ position: 'absolute', inset: 0, width: '100%', height: 'auto', objectFit: 'contain', display: 'block',
                 opacity: rivalDiveDir === 'right' ? 1 : 0, transition: 'opacity 0.1s' }}
@@ -635,7 +582,6 @@ export default function FootballGameScreen({ onGoal }: Props) {
             <video ref={rivalDiveCenterRef}
               src="/assets/cat/Animation/ArqueroRivalCentro.webm"
               muted playsInline preload="auto"
-              onLoadedData={(e) => { if (rivalDiveDir === 'center') e.currentTarget.play().catch(() => {}); }}
               onEnded={() => { setRivalDiving(false); setRivalDiveDir(null); }}
               style={{ position: 'absolute', inset: 0, width: '100%', height: 'auto', objectFit: 'contain', display: 'block',
                 opacity: rivalDiveDir === 'center' ? 1 : 0, transition: 'opacity 0.1s' }}
@@ -684,7 +630,6 @@ export default function FootballGameScreen({ onGoal }: Props) {
               muted
               playsInline
               preload="auto"
-              onLoadedData={(e) => { if (playerGkJumping) e.currentTarget.play().catch(() => {}); }}
               onEnded={() => setPlayerGkJumping(false)}
               style={{
                 position: 'absolute',
@@ -823,7 +768,6 @@ export default function FootballGameScreen({ onGoal }: Props) {
             muted
             playsInline
             preload="auto"
-            onLoadedData={(e) => { if (playerKicking) e.currentTarget.play().catch(() => {}); }}
             onEnded={() => setPlayerKicking(false)}
             style={{
               position: 'absolute',
@@ -866,7 +810,6 @@ export default function FootballGameScreen({ onGoal }: Props) {
             muted
             playsInline
             preload="auto"
-            onLoadedData={(e) => { if (rivalKicking) e.currentTarget.play().catch(() => {}); }}
             onEnded={() => setRivalKicking(false)}
             style={{
               position: 'absolute',

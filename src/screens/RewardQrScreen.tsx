@@ -13,41 +13,6 @@ export default function RewardQrScreen({ onNext }: Props) {
       <img src="/assets/backgrounds/bg-Inicio.png" alt=""
         style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', pointerEvents: 'none', zIndex: 0 }} />
 
-      <svg
-        viewBox="0 0 100 100"
-        preserveAspectRatio="none"
-        style={{
-          position: 'absolute',
-          inset: '3.4% 6% 3.4%',
-          zIndex: 1,
-          pointerEvents: 'none',
-          overflow: 'visible',
-        }}
-      >
-        <rect
-          x="0.6"
-          y="0.6"
-          width="98.8"
-          height="98.8"
-          rx="3"
-          ry="3"
-          fill="none"
-          stroke="rgba(255,255,255,0.95)"
-          strokeWidth="0.35"
-          strokeDasharray="0.9 0.75"
-          vectorEffect="non-scaling-stroke"
-        />
-      </svg>
-
-      <div style={{
-        position: 'absolute',
-        left: 0, right: 0, bottom: 0,
-        height: '27%',
-        background: 'linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0.88))',
-        zIndex: 0,
-        pointerEvents: 'none',
-      }} />
-
       {/* Logo */}
       <div style={{ position: 'absolute', top: '6.15%', left: '31.4%', right: '31.4%', height: '14.7%', zIndex: 2 }}>
         <img src="/assets/ui/logo-nutre-cat.svg" alt="NutreCat Premium"

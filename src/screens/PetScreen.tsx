@@ -231,12 +231,11 @@ export default function PetScreen({ onNext, name = 'Simón' }: Props) {
           {/* Video Esperando — visible en idle y al soltar */}
           <video
             ref={esperandoRef}
-            src={!petting && !done ? '/assets/cat/Animation/Esperando.webm' : undefined}
+            src="/assets/cat/Animation/Esperando.webm"
             loop
             muted
             playsInline
             autoPlay
-            onLoadedData={(e) => e.currentTarget.play().catch(() => {})}
             style={{
               position: 'absolute',
               width: '76.79%', height: 'auto',
@@ -251,11 +250,10 @@ export default function PetScreen({ onNext, name = 'Simón' }: Props) {
           {/* Video de consentir — visible solo mientras se acaricia */}
           <video
             ref={videoRef}
-            src={petting && !done ? '/assets/cat/Animation/Concentir.webm' : undefined}
+            src="/assets/cat/Animation/Concentir.webm"
             loop
             muted
             playsInline
-            onLoadedData={(e) => e.currentTarget.play().catch(() => {})}
             style={{
               position: 'absolute',
               width: '76.79%', height: 'auto',
@@ -270,11 +268,10 @@ export default function PetScreen({ onNext, name = 'Simón' }: Props) {
           {/* Video Celebrando — visible cuando termina, en loop */}
           <video
             ref={celebrandoRef}
-            src={done ? '/assets/cat/Animation/Celebrando.webm' : undefined}
+            src="/assets/cat/Animation/Celebrando.webm"
             muted
             playsInline
             loop
-            onLoadedData={(e) => e.currentTarget.play().catch(() => {})}
             style={{
               position: 'absolute',
               width: '76.79%', height: 'auto',

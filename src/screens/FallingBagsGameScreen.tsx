@@ -238,7 +238,7 @@ export default function FallingBagsGameScreen({ onDone }: Props) {
 
       {/* Indicadores de combo y doble puntos — superpuestos, fuera del flujo */}
       <div style={{
-        position: 'absolute', top: 'min(16vw, 9vh)', right: '9%',
+        position: 'absolute', top: 'calc(min(16vw, 9vh) + 50px)', right: '9%',
         zIndex: 15, display: 'flex', flexDirection: 'column',
         alignItems: 'flex-end', gap: 'min(1.5vw, 0.85vh)', pointerEvents: 'none',
       }}>
@@ -292,9 +292,9 @@ export default function FallingBagsGameScreen({ onDone }: Props) {
       <div style={{
         flexShrink: 0, position: 'relative', zIndex: 10,
         display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between',
-        padding: 'min(4.8vw, 2.7vh) 9%',
+        padding: 'calc(min(4.8vw, 2.7vh) + 50px) 9% min(4.8vw, 2.7vh)',
       }}>
-        <img src="/assets/ui/logo-nutre-cat.svg" alt="Nutre Cat" style={{ width: '28.5%', objectFit: 'contain' }} />
+        <div style={{ width: '28.5%' }} />
 
           <motion.div
             key={score}
@@ -317,6 +317,15 @@ export default function FallingBagsGameScreen({ onDone }: Props) {
       </div>
 
       {/* ── Campo de juego ── */}
+      <div style={{
+        position: 'absolute',
+        top: '4.79%', left: '9.07%', right: '62.31%', bottom: '83.7%',
+        zIndex: 20,
+        pointerEvents: 'none',
+      }}>
+        <img src="/assets/ui/logo-nutre-cat.svg" alt="Nutre Cat" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+      </div>
+
       <div
         style={{
           flex: 1, position: 'relative', overflow: 'hidden',
@@ -451,7 +460,7 @@ export default function FallingBagsGameScreen({ onDone }: Props) {
       {/* ── Timer ── */}
       {phase === 'playing' && (
         <div style={{
-          position: 'absolute', left: '35.87%', top: '21.93%',
+          position: 'absolute', left: '35.87%', top: 'calc(21.93% + 50px)',
           width: '28.26%',
           zIndex: 20, background: '#00577a', borderRadius: 99,
           padding: 'min(1.4vw, 0.77vh) min(4vw, 2.2vh)',
