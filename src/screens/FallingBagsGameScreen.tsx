@@ -89,7 +89,7 @@ export default function FallingBagsGameScreen({ onDone }: Props) {
       t:        Math.random() * Math.PI * 2,
       points:   ITEM_CONFIG[type].points,
     };
-    setBags(prev => [...prev, bag]);
+    setBags(prev => (prev.length >= 18 ? prev : [...prev, bag]));
   }, []);
 
   /* Música */
@@ -339,21 +339,15 @@ export default function FallingBagsGameScreen({ onDone }: Props) {
               const isMouse    = bag.type === 'mouse';
               const isFishbone = bag.type === 'fishbone';
               const size = isMouse ? 'min(16vw, 9vh)' : isFishbone ? 'min(15vw, 8.4vh)' : 'min(17vw, 9.6vh)';
+              const rotation = isMouse
+                ? bag.rotation + bag.t * 80
+                : bag.rotation + Math.sin(bag.t) * bag.wobble;
               return (
-                <motion.img
+                <img
                   key={bag.id}
                   src={bag.img}
                   alt=""
                   onClick={() => catchBag(bag.id, bag.x, bag.y, bag.points, bag.type)}
-                  initial={{ rotate: bag.rotation }}
-                  animate={isMouse
-                    ? { rotate: [bag.rotation, bag.rotation + 360] }
-                    : { rotate: [bag.rotation - bag.wobble, bag.rotation + bag.wobble, bag.rotation - bag.wobble] }
-                  }
-                  transition={isMouse
-                    ? { duration: 1.4, repeat: Infinity, ease: 'linear' }
-                    : { duration: 1.2 + Math.random() * 0.6, repeat: Infinity, ease: 'easeInOut' }
-                  }
                   style={{
                     position: 'absolute',
                     left:   `${bag.x}%`,
@@ -368,6 +362,8 @@ export default function FallingBagsGameScreen({ onDone }: Props) {
                       : 'drop-shadow(0 6px 16px rgba(0,87,122,0.35))',
                     touchAction: 'none',
                     zIndex: isMouse ? 8 : 5,
+                    transform: `translate(-50%, -50%) rotate(${rotation}deg)`,
+                    willChange: 'transform',
                   }}
                 />
               );

@@ -197,7 +197,7 @@ export default function FeedInteractionScreen({ selectedFood, onDone, score = 0 
 
       {/* ── Videos del gato ── */}
       <video
-        src="/assets/cat/Animation/EsperandoComida.webm"
+        src={!eating ? '/assets/cat/Animation/EsperandoComida.webm' : undefined}
         autoPlay loop muted playsInline
         style={{
           position: 'absolute', left: '8.5%', top: 'calc(20.73% + 150px)', width: '83%',
@@ -207,7 +207,7 @@ export default function FeedInteractionScreen({ selectedFood, onDone, score = 0 
         }}
       />
       <video
-        src="/assets/cat/Animation/Comiendo.webm"
+        src={eating && !satisfied ? '/assets/cat/Animation/Comiendo.webm' : undefined}
         autoPlay loop muted playsInline
         style={{
           position: 'absolute', left: '8.5%', top: 'calc(20.73% + 150px)', width: '83%',
@@ -219,8 +219,9 @@ export default function FeedInteractionScreen({ selectedFood, onDone, score = 0 
       {/* SalidaComida — arranca solo cuando satisfied, sin autoPlay */}
       <video
         ref={salidaVideoRef}
-        src="/assets/cat/Animation/SalidaComida.webm"
+        src={satisfied && !showWait ? '/assets/cat/Animation/SalidaComida.webm' : undefined}
         muted playsInline
+        onLoadedData={(e) => e.currentTarget.play().catch(() => {})}
         onEnded={() => setShowWait(true)}
         style={{
           position: 'absolute', left: '8.5%', top: 'calc(20.73% + 150px)', width: '83%',
@@ -233,6 +234,7 @@ export default function FeedInteractionScreen({ selectedFood, onDone, score = 0 
       <video
         ref={waitVideoRef}
         muted playsInline
+        onLoadedData={(e) => e.currentTarget.play().catch(() => {})}
         onEnded={() => setWaitAnim(p => p === 'Esperando2' ? 'Esperando3' : 'Esperando2')}
         style={{
           position: 'absolute', left: '8.5%', top: 'calc(20.73% + 150px)', width: '83%',

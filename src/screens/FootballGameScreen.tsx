@@ -555,7 +555,7 @@ export default function FootballGameScreen({ onGoal }: Props) {
             {/* Idle loop */}
             <video
               ref={rivalIdleRef}
-              src="/assets/cat/Animation/ArqueroRivalIdle.webm"
+              src={!rivalDiving ? '/assets/cat/Animation/ArqueroRivalIdle.webm' : undefined}
               autoPlay loop muted playsInline
               onLoadedData={(e) => e.currentTarget.play().catch(() => {})}
               style={{ width: '100%', height: 'auto', objectFit: 'contain', display: 'block',
@@ -563,24 +563,27 @@ export default function FootballGameScreen({ onGoal }: Props) {
             />
             {/* Salto izquierda */}
             <video ref={rivalDiveLeftRef}
-              src="/assets/cat/Animation/ArqueroRivalIzquierda.webm"
+              src={rivalDiveDir === 'left' ? '/assets/cat/Animation/ArqueroRivalIzquierda.webm' : undefined}
               muted playsInline preload="auto"
+              onLoadedData={(e) => e.currentTarget.play().catch(() => {})}
               onEnded={() => { setRivalDiving(false); setRivalDiveDir(null); }}
               style={{ position: 'absolute', inset: 0, width: '100%', height: 'auto', objectFit: 'contain', display: 'block',
                 opacity: rivalDiveDir === 'left' ? 1 : 0, transition: 'opacity 0.1s' }}
             />
             {/* Salto derecha */}
             <video ref={rivalDiveRightRef}
-              src="/assets/cat/Animation/ArqueroRivalDerecha.webm"
+              src={rivalDiveDir === 'right' ? '/assets/cat/Animation/ArqueroRivalDerecha.webm' : undefined}
               muted playsInline preload="auto"
+              onLoadedData={(e) => e.currentTarget.play().catch(() => {})}
               onEnded={() => { setRivalDiving(false); setRivalDiveDir(null); }}
               style={{ position: 'absolute', inset: 0, width: '100%', height: 'auto', objectFit: 'contain', display: 'block',
                 opacity: rivalDiveDir === 'right' ? 1 : 0, transition: 'opacity 0.1s' }}
             />
             {/* Salto centro */}
             <video ref={rivalDiveCenterRef}
-              src="/assets/cat/Animation/ArqueroRivalCentro.webm"
+              src={rivalDiveDir === 'center' ? '/assets/cat/Animation/ArqueroRivalCentro.webm' : undefined}
               muted playsInline preload="auto"
+              onLoadedData={(e) => e.currentTarget.play().catch(() => {})}
               onEnded={() => { setRivalDiving(false); setRivalDiveDir(null); }}
               style={{ position: 'absolute', inset: 0, width: '100%', height: 'auto', objectFit: 'contain', display: 'block',
                 opacity: rivalDiveDir === 'center' ? 1 : 0, transition: 'opacity 0.1s' }}
@@ -609,7 +612,7 @@ export default function FootballGameScreen({ onGoal }: Props) {
             }}
           >
             <video
-              src="/assets/cat/Animation/ArqueroPrincipalIdle.webm"
+              src={!playerGkJumping ? '/assets/cat/Animation/ArqueroPrincipalIdle.webm' : undefined}
               autoPlay
               loop
               muted
@@ -625,10 +628,11 @@ export default function FootballGameScreen({ onGoal }: Props) {
             />
             <video
               ref={playerGkJumpRef}
-              src="/assets/cat/Animation/ArqueroPrincipalSaltoCentro.webm"
+              src={playerGkJumping ? '/assets/cat/Animation/ArqueroPrincipalSaltoCentro.webm' : undefined}
               muted
               playsInline
               preload="auto"
+              onLoadedData={(e) => e.currentTarget.play().catch(() => {})}
               onEnded={() => setPlayerGkJumping(false)}
               style={{
                 position: 'absolute',
@@ -746,7 +750,7 @@ export default function FootballGameScreen({ onGoal }: Props) {
           style={{ position: 'absolute', left: 'calc(5% + 90px)', top: 'calc(57.65% + 90px)', width: '51.14%', aspectRatio: '1 / 1', zIndex: 19, pointerEvents: 'none' }}
         >
           <video
-            src="/assets/cat/Animation/EspaldasNaranja.webm"
+            src={!playerKicking ? '/assets/cat/Animation/EspaldasNaranja.webm' : undefined}
             autoPlay
             loop
             muted
@@ -763,10 +767,11 @@ export default function FootballGameScreen({ onGoal }: Props) {
           />
           <video
             ref={playerKickRef}
-            src="/assets/cat/Animation/JugadorPrincipalGolpeobalon.webm"
+            src={playerKicking ? '/assets/cat/Animation/JugadorPrincipalGolpeobalon.webm' : undefined}
             muted
             playsInline
             preload="auto"
+            onLoadedData={(e) => e.currentTarget.play().catch(() => {})}
             onEnded={() => setPlayerKicking(false)}
             style={{
               position: 'absolute',
@@ -788,7 +793,7 @@ export default function FootballGameScreen({ onGoal }: Props) {
       {inRivalPhases && (
         <div style={{ position: 'absolute', left: 'calc(5% + 100px)', top: 'calc(57.65% - 80px)', width: '39.34%', aspectRatio: '9 / 16', zIndex: 8, pointerEvents: 'none' }}>
           <video
-            src="/assets/cat/Animation/RivalIdle.webm"
+            src={!rivalKicking ? '/assets/cat/Animation/RivalIdle.webm' : undefined}
             autoPlay
             loop
             muted
@@ -805,10 +810,11 @@ export default function FootballGameScreen({ onGoal }: Props) {
           />
           <video
             ref={rivalKickRef}
-            src="/assets/cat/Animation/RivalGolpeo.webm"
+            src={rivalKicking ? '/assets/cat/Animation/RivalGolpeo.webm' : undefined}
             muted
             playsInline
             preload="auto"
+            onLoadedData={(e) => e.currentTarget.play().catch(() => {})}
             onEnded={() => setRivalKicking(false)}
             style={{
               position: 'absolute',

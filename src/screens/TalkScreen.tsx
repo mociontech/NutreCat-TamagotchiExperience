@@ -198,10 +198,11 @@ export default function TalkScreen({ onDone, onBack, score = 0, hasFed = true, h
       {/* ── Videos del gato ── */}
       <video
         ref={casiDormidoRef}
-        src="/assets/cat/Animation/CasiDormido.webm"
+        src={phase !== 'dark' ? '/assets/cat/Animation/CasiDormido.webm' : undefined}
         loop
         muted
         playsInline
+        onLoadedData={(e) => e.currentTarget.play().catch(() => {})}
         style={{
           position: 'absolute',
           bottom: 'calc(18% - 260px)',
@@ -220,9 +221,10 @@ export default function TalkScreen({ onDone, onBack, score = 0, hasFed = true, h
       />
       <video
         ref={dormidoRef}
-        src="/assets/cat/Animation/Dormido.webm"
+        src={phase === 'dark' ? '/assets/cat/Animation/Dormido.webm' : undefined}
         muted
         playsInline
+        onLoadedData={(e) => e.currentTarget.play().catch(() => {})}
         onEnded={() => {
           dormidoLoops.current += 1;
           const v = dormidoRef.current;
