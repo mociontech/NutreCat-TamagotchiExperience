@@ -4,7 +4,7 @@ import './styles/global.css';
 
 import type { CatState, ScreenName, FoodType } from './data/gameStates';
 import { initialCatState, clamp } from './data/gameStates';
-import { bgPlay, muteAll, unmuteAll } from './utils/sounds';
+import { bgPlay, bgStop, muteAll, unmuteAll } from './utils/sounds';
 
 import AttractLoop            from './screens/AttractLoop';
 import PetScreen              from './screens/PetScreen';
@@ -116,14 +116,19 @@ export default function App() {
   }, [resetIdle]);
 
   useEffect(() => {
-    if (['attract', 'registration', 'pet'].includes(screen)) {
-      bgPlay('ukulele', 0.04);
+    if (screen === 'talk') {
+      bgStop('soundtrack');
+    } else if (['attract', 'registration', 'pet'].includes(screen)) {
+      bgPlay('soundtrack', 0.06, 1.0);
     } else if (['hub', 'dashboard'].includes(screen)) {
-      bgPlay('ukulele', 0.01);
+      bgPlay('soundtrack', 0.08, 1.0);
     } else if (INTERACTION_SCREENS.includes(screen)) {
-      bgPlay('ukulele', 0.015);
+      bgPlay('soundtrack', 0.04, 1.0);
+    } else if (screen === 'fallingBagsGame' || screen === 'footballGame') {
+      bgPlay('soundtrack', 0.05, 1.0);
+    } else if (screen === 'rewardQr') {
+      bgPlay('soundtrack', 0.1, 1.0);
     }
-    // fallingBagsGame gestiona su propio volumen vía bgPlay en el componente
   }, [screen]);
 
   const nav = useCallback((s: ScreenName) => setScreen(s), []);

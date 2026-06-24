@@ -94,7 +94,7 @@ export default function FallingBagsGameScreen({ onDone }: Props) {
 
   /* Música */
   useEffect(() => {
-    bgPlay('ukulele', 0.16, 1.0);
+    bgPlay('soundtrack', 0.05, 1.0);
   }, []);
 
   /* Spawn + timer */
@@ -120,13 +120,13 @@ export default function FallingBagsGameScreen({ onDone }: Props) {
   useEffect(() => {
     if (phase !== 'playing') return;
     if (timeLeft <= 10) {
-      bgSetRate('ukulele', 1.28);
+      bgSetRate('soundtrack', 1.28);
       speedMult.current = 1.18;
     } else if (timeLeft <= 20) {
-      bgSetRate('ukulele', 1.14);
+      bgSetRate('soundtrack', 1.14);
       speedMult.current = 1.09;
     } else {
-      bgSetRate('ukulele', 1.0);
+      bgSetRate('soundtrack', 1.0);
       speedMult.current = 1.0;
     }
   }, [timeLeft, phase]);

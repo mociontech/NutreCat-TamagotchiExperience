@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useRef, useEffect, useCallback } from 'react';
 import ScreenLayout from '../components/ScreenLayout';
-import { bgPlay, bgStop, bgFade } from '../utils/sounds';
+import { bgPlay, bgStop } from '../utils/sounds';
 
 
 interface Particle { id: number; x: number; y: number; text: string; }
@@ -64,7 +64,6 @@ export default function PetScreen({ onNext, name = 'Simón' }: Props) {
   };
 
   useEffect(() => {
-    bgFade('ukulele', 1400, 0.01);
     return () => {
       clearInterval(petTimer.current!);
       clearInterval(blinkTimer.current!);
@@ -291,7 +290,7 @@ export default function PetScreen({ onNext, name = 'Simón' }: Props) {
                 animate={{ opacity: 1, scale: 1, y: 0, x: '-50%' }}
                 exit={{ opacity: 0 }}
                 transition={{ type: 'spring', stiffness: 280, delay: 0.35 }}
-                style={{ position: 'absolute', top: 'calc(6% - 150px)', left: 'calc(50% + 240px)', zIndex: 10, maxWidth: '65%' }}
+                style={{ position: 'absolute', top: 'calc(6% - 150px)', left: '50%', zIndex: 10, maxWidth: '65%' }}
               >
                 <motion.div
                   animate={{ scale: [1, 1.05, 1] }}

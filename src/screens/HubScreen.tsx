@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect, useRef } from 'react';
 import type { CatState, ScreenName } from '../data/gameStates';
-import { sfx, bgPlay, bgStop } from '../utils/sounds';
+import { sfx } from '../utils/sounds';
 
 
 const SLEEPY_PHRASES = ['Tiene sueño...', 'Zzz...', 'Se está durmiendo...', 'Zzz...'];
@@ -37,11 +37,6 @@ const NAV = [
 export default function HubScreen({ cat, onNavigate, pointsEarned, onPointsShown, comingFromSleep = false, onComingFromSleepConsumed }: Props) {
   const allDone  = cat.hasFed && cat.hasPlayed && cat.hasTalked;
 
-  // Música ambiental del Hub
-  useEffect(() => {
-    bgPlay('ukulele', 0.08);
-    return () => bgStop('ukulele');
-  }, []);
   const isSleepy  = cat.hasFed && !cat.hasTalked;
   const isHungry  = cat.hasPlayed && !cat.hasFed;
   const [phraseIdx, setPhraseIdx] = useState(0);
