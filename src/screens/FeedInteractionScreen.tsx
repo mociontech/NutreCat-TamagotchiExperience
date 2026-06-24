@@ -137,7 +137,8 @@ export default function FeedInteractionScreen({ selectedFood, onDone, score = 0 
               maxWidth: '40%',
               zIndex: 8, pointerEvents: 'none',
               rotate: i === 0 ? '-10deg' : '15deg',
-              scale: 0.95,
+              scale: 1.3,
+              transformOrigin: i === 0 ? 'left center' : 'right center',
             }}
           >
             <motion.div

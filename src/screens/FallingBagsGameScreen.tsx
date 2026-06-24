@@ -473,9 +473,23 @@ export default function FallingBagsGameScreen({ onDone }: Props) {
           </div>
           <motion.span
             key={timeLeft}
-            animate={timeLeft <= 10 ? { scale: [1.15, 1], x: 35, y: 3 } : { x: 35, y: 3 }}
-            transition={{ duration: 0.2 }}
-            style={{ fontFamily: 'var(--font-display)', fontSize: 'min(7.92vw, 4.44vh)', color: timeLeft <= 10 ? '#fcd116' : 'white', whiteSpace: 'nowrap', lineHeight: 1, paddingTop: '0.08em', transformOrigin: 'center center', transition: 'color 0.3s' }}
+            initial={false}
+            animate={{ scale: [1, 1.06, 1], x: 35, y: 3 }}
+            transition={{ duration: 0.28, ease: 'easeOut' }}
+            style={{
+              fontFamily: 'var(--font-display)',
+              fontSize: 'min(7.92vw, 4.44vh)',
+              color: timeLeft <= 10 ? '#fcd116' : 'white',
+              whiteSpace: 'nowrap',
+              lineHeight: 1,
+              paddingTop: '0.08em',
+              transformOrigin: 'center center',
+              transition: 'color 0.3s',
+              display: 'inline-block',
+              width: 'min(18vw, 10.12vh)',
+              textAlign: 'center',
+              fontVariantNumeric: 'tabular-nums',
+            }}
           >{mm}:{ss}</motion.span>
         </div>
       )}
