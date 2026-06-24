@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useCallback, useLayoutEffect } from 'react
 // ─── Config ────────────────────────────────────────────────────────────────────
 const N_PENS     = 3;
 const SHOOT_MS   = 750;
-const PLAYER_KICK_IMPACT_MS = 3333;
+const PLAYER_KICK_IMPACT_MS = 2583;
 const RIVAL_KICK_IMPACT_MS = 1333;
 const PLAYER_KICK_APPROACH_Y = -80;
 const RESULT_MS  = 1600;
@@ -600,7 +600,7 @@ export default function FootballGameScreen({ onGoal }: Props) {
             onPointerCancel={handleGkPointerEnd}
             style={{
               position: 'absolute',
-              bottom: 'calc(-8% + 155px)',
+              bottom: 'calc(-8% + 105px)',
               width: 'min(23vw, 13vh)',
               zIndex: 9,
               pointerEvents: (phase === 'rival_intro' || phase === 'rival_fire') ? 'auto' : 'none',
