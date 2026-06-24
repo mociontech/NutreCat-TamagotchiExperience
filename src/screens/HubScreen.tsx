@@ -506,7 +506,7 @@ export default function HubScreen({ cat, onNavigate, pointsEarned, onPointsShown
             flexShrink: 0,
             userSelect: 'none', pointerEvents: 'none',
             filter: 'drop-shadow(0 20px 40px rgba(0,87,122,0.2))',
-            marginTop: 195,
+            marginTop: 215,
             marginLeft: 70,
           }}
         />

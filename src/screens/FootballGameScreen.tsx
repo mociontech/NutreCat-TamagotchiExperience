@@ -393,6 +393,8 @@ export default function FootballGameScreen({ onGoal }: Props) {
       const vRef = dir === 'left' ? rivalDiveLeftRef : dir === 'right' ? rivalDiveRightRef : rivalDiveCenterRef;
       const v = vRef.current;
       if (v) { v.currentTime = 0; v.play().catch(() => {}); }
+    }, Math.max(0, PLAYER_KICK_IMPACT_MS - 500));
+    setTimeout(() => {
       setPhase('firing');
     }, PLAYER_KICK_IMPACT_MS);
   }, [phase, playerKicking]);
