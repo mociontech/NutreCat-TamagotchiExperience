@@ -4,7 +4,8 @@ import { useState, useEffect, useRef, useCallback, useLayoutEffect } from 'react
 // ─── Config ────────────────────────────────────────────────────────────────────
 const N_PENS     = 3;
 const SHOOT_MS   = 750;
-const PLAYER_KICK_IMPACT_MS = 2583;
+const PLAYER_KICK_IMPACT_MS = 3000;
+const RIVAL_GK_DIVE_LEAD_MS = 500;
 const RIVAL_KICK_IMPACT_MS = 1333;
 const PLAYER_KICK_APPROACH_Y = -80;
 const RESULT_MS  = 1600;
@@ -393,7 +394,7 @@ export default function FootballGameScreen({ onGoal }: Props) {
       const vRef = dir === 'left' ? rivalDiveLeftRef : dir === 'right' ? rivalDiveRightRef : rivalDiveCenterRef;
       const v = vRef.current;
       if (v) { v.currentTime = 0; v.play().catch(() => {}); }
-    }, Math.max(0, PLAYER_KICK_IMPACT_MS - 500));
+    }, Math.max(0, PLAYER_KICK_IMPACT_MS - RIVAL_GK_DIVE_LEAD_MS));
     setTimeout(() => {
       setPhase('firing');
     }, PLAYER_KICK_IMPACT_MS);
