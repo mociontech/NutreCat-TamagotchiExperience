@@ -286,8 +286,8 @@ export default function PetScreen({ onNext, name = 'Simón' }: Props) {
           <AnimatePresence>
             {done && (
               <motion.div
-                initial={{ opacity: 0, scale: 0, y: 10, x: '-50%' }}
-                animate={{ opacity: 1, scale: 1, y: 0, x: '-50%' }}
+                initial={{ opacity: 0, scale: 0, y: 10 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0 }}
                 transition={{ type: 'spring', stiffness: 280, delay: 0.35 }}
                 style={{ position: 'absolute', top: 'calc(6% - 150px)', left: '50%', zIndex: 10, maxWidth: '65%' }}

@@ -13,7 +13,7 @@ const SRC = {
   water:       '/sounds/alemaldonadoc-agua-llave-sin-efectos-247529.mp3',
   bling:       '/sounds/u_o8xh7gwsrj-correct_answer_toy_bi-bling-476370.mp3',
   musicbox:    '/sounds/freesound_community-music-box-34179.mp3',
-  soundtrack:  '/sounds/bbmusic-friendly-melody-14015.mp3',
+  soundtrack:  '/sounds/waveloom-happy-ukulele-478610.mp3',
   ukulele:     '/sounds/waveloom-happy-ukulele-478610.mp3',
   ukulelef:    '/sounds/waveloom-happy-ukulele-478610f.mp3',
   lightswitch: '/sounds/freesound_community-light-switch-106505.mp3',
