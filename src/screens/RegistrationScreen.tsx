@@ -5,6 +5,7 @@ interface Props { onNext: (name: string) => void; }
 
 export default function RegistrationScreen({ onNext }: Props) {
   const [name, setName] = useState('');
+  const hasName = name.trim().length > 0;
 
   const handleSubmit = () => {
     const trimmed = name.trim();
@@ -50,8 +51,24 @@ export default function RegistrationScreen({ onNext }: Props) {
       }}>
         <motion.div
           initial={{ opacity: 0, scale: 0.92 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.15, type: 'spring', stiffness: 300, damping: 22 }}
+          animate={{
+            opacity: 1,
+            scale: hasName ? 1 : [1, 1, 1, 1.015, 1],
+            x: hasName ? 0 : [0, 0, 0, -5, 5, -3, 3, 0, 0],
+            rotate: hasName ? 0 : [0, 0, 0, -0.7, 0.7, -0.45, 0.45, 0, 0],
+          }}
+          transition={{
+            opacity: { delay: 0.15, duration: 0.2 },
+            scale: hasName
+              ? { duration: 0.2 }
+              : { delay: 0.15, duration: 4.2, repeat: Infinity, ease: 'easeInOut' },
+            x: hasName
+              ? { duration: 0.2 }
+              : { delay: 0.15, duration: 4.2, repeat: Infinity, ease: 'easeInOut' },
+            rotate: hasName
+              ? { duration: 0.2 }
+              : { delay: 0.15, duration: 4.2, repeat: Infinity, ease: 'easeInOut' },
+          }}
           style={{
             background: '#00577a',
             borderRadius: 54,
@@ -120,7 +137,7 @@ export default function RegistrationScreen({ onNext }: Props) {
 
         {/* Botón ¡Listo! — aparece al escribir */}
         <AnimatePresence>
-          {name.trim().length > 0 && (
+          {hasName && (
             <motion.button
               key="submit"
               initial={{ opacity: 0, y: 12 }}
