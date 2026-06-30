@@ -17,6 +17,7 @@ const DATAHUB_EVENT_ID = import.meta.env.VITE_DATAHUB_EVENT_ID as string | undef
 const DATAHUB_URL = import.meta.env.VITE_DATAHUB_URL as string | undefined;
 const EXPERIENCE_NAME = (import.meta.env.VITE_EXPERIENCE_NAME as string | undefined) || 'NutreCat Play';
 const DATAHUB_EXPERIENCE_ID = import.meta.env.VITE_DATAHUB_EXPERIENCE_ID as string | undefined;
+const DATAHUB_DEBUG = true; // Temporal: quitar cuando terminemos QA de Datahub.
 
 const FOOD_LABELS: Record<Exclude<FoodType, null>, string> = {
   treats: 'NutreCat con Leche Deslactosada',
@@ -44,6 +45,7 @@ function queuePayload(payload: unknown): void {
     const queue = readQueue();
     queue.push(payload);
     localStorage.setItem(QUEUE_KEY, JSON.stringify(queue));
+    if (DATAHUB_DEBUG) console.warn('[Datahub] Envio encolado para reintento offline:', payload);
   } catch {
     // Ignore storage failures so the experience never blocks.
   }
@@ -51,12 +53,25 @@ function queuePayload(payload: unknown): void {
 
 async function postToDatahub(payload: unknown): Promise<void> {
   const url = getExperiencesUrl();
-  if (!url || !DATAHUB_EVENT_ID || !DATAHUB_EXPERIENCE_ID) return;
+  if (!url || !DATAHUB_EVENT_ID || !DATAHUB_EXPERIENCE_ID) {
+    if (DATAHUB_DEBUG) {
+      console.warn('[Datahub] Envio omitido por configuracion incompleta:', {
+        hasUrl: Boolean(url),
+        hasEventId: Boolean(DATAHUB_EVENT_ID),
+        hasExperienceId: Boolean(DATAHUB_EXPERIENCE_ID),
+      });
+    }
+    return;
+  }
 
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
   };
   if (DATAHUB_TOKEN) headers.Authorization = `Bearer ${DATAHUB_TOKEN}`;
+
+  if (DATAHUB_DEBUG) {
+    console.log('[Datahub] Enviando experience:', { url, payload });
+  }
 
   const response = await fetch(url, {
     method: 'POST',
@@ -65,8 +80,30 @@ async function postToDatahub(payload: unknown): Promise<void> {
     body: JSON.stringify(payload),
   });
 
+  const responseText = await response.text().catch(() => '');
+  let responseBody: unknown = responseText;
+  try {
+    responseBody = responseText ? JSON.parse(responseText) : null;
+  } catch {
+    responseBody = responseText;
+  }
+
   if (!response.ok) {
-    throw new Error(`Datahub error ${response.status}`);
+    if (DATAHUB_DEBUG) {
+      console.error('[Datahub] Error en envio:', {
+        status: response.status,
+        statusText: response.statusText,
+        response: responseBody,
+      });
+    }
+    throw new Error(`Datahub error ${response.status}: ${responseText || response.statusText}`);
+  }
+
+  if (DATAHUB_DEBUG) {
+    console.log('[Datahub] Envio exitoso:', {
+      status: response.status,
+      response: responseBody,
+    });
   }
 }
 
@@ -74,11 +111,14 @@ export async function flushDatahubQueue(): Promise<void> {
   const queue = readQueue();
   if (!queue.length) return;
 
+  if (DATAHUB_DEBUG) console.log('[Datahub] Reintentando cola offline:', queue.length);
+
   const pending: unknown[] = [];
   for (const payload of queue) {
     try {
       await postToDatahub(payload);
-    } catch {
+    } catch (error) {
+      if (DATAHUB_DEBUG) console.error('[Datahub] Error reintentando payload en cola:', error);
       pending.push(payload);
     }
   }
@@ -99,8 +139,20 @@ export async function sendNutreCatExperience({
   sessionId,
 }: NutreCatExperienceInput): Promise<void> {
   const completed = cat.hasFed && cat.hasPlayed && cat.hasTalked;
-  if (!completed) return;
-  if (!DATAHUB_EVENT_ID || !DATAHUB_EXPERIENCE_ID || !getExperiencesUrl()) return;
+  if (!completed) {
+    if (DATAHUB_DEBUG) console.warn('[Datahub] Envio omitido: experiencia incompleta');
+    return;
+  }
+  if (!DATAHUB_EVENT_ID || !DATAHUB_EXPERIENCE_ID || !getExperiencesUrl()) {
+    if (DATAHUB_DEBUG) {
+      console.warn('[Datahub] Envio omitido por configuracion incompleta antes de crear payload:', {
+        hasUrl: Boolean(getExperiencesUrl()),
+        hasEventId: Boolean(DATAHUB_EVENT_ID),
+        hasExperienceId: Boolean(DATAHUB_EXPERIENCE_ID),
+      });
+    }
+    return;
+  }
 
   const selectedFood = cat.selectedFood ? FOOD_LABELS[cat.selectedFood] : null;
   const startedMs = Date.parse(startedAt);
@@ -152,7 +204,8 @@ export async function sendNutreCatExperience({
   try {
     await postToDatahub(payload);
     await flushDatahubQueue();
-  } catch {
+  } catch (error) {
+    if (DATAHUB_DEBUG) console.error('[Datahub] Fallo el envio, se guardara en cola:', error);
     queuePayload(payload);
   }
 }

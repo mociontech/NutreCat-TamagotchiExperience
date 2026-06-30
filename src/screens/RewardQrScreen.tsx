@@ -277,7 +277,7 @@ export default function RewardQrScreen({ onNext }: Props) {
         style={{
           position: 'absolute',
           left: 'calc(5.45% + 25px)',
-          top: 'calc(88.65% - 14px)',
+          top: 'calc(88.65% + 11px)',
           width: '41.02%',
           height: '2.66%',
           background: LIGHT_BLUE,
@@ -311,7 +311,7 @@ export default function RewardQrScreen({ onNext }: Props) {
         style={{
           position: 'absolute',
           left: 'calc(5.45% + 25px)',
-          top: 'calc(88.65% + 32px)',
+          top: 'calc(88.65% + 77px)',
           width: '41.02%',
           textAlign: 'center',
           zIndex: 9,
