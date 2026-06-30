@@ -1,21 +1,12 @@
 // Rutas de todos los efectos de sonido
 const SRC = {
-  kick:        '/sounds/u_id15birb4y-deep-kick-397047.mp3',
-  crowd:       '/sounds/vishiv-crowd-cheering-in-stadium-435357.mp3',
-  fail:        '/sounds/freesound_community-wrong-47985.mp3',
-  correct:     '/sounds/dragon-studio-correct-472358.mp3',
-  victory:     '/sounds/eaglaxle-gaming-victory-464016.mp3',
   fanfare:     '/sounds/freesound_community-fanfare-46385.mp3',
   meow:        '/sounds/stu9-cute-cat-352656.mp3',
   purr:        '/sounds/dragon-studio-cat-purr-sfx-482870.mp3',
   eat:         '/sounds/freesound_community-cat-eats-28338.mp3',
-  sponge:      '/sounds/spinopel-washing-sponge-411684.mp3',
-  water:       '/sounds/alemaldonadoc-agua-llave-sin-efectos-247529.mp3',
   bling:       '/sounds/u_o8xh7gwsrj-correct_answer_toy_bi-bling-476370.mp3',
   musicbox:    '/sounds/freesound_community-music-box-34179.mp3',
   soundtrack:  '/sounds/waveloom-happy-ukulele-478610.mp3',
-  ukulele:     '/sounds/waveloom-happy-ukulele-478610.mp3',
-  ukulelef:    '/sounds/waveloom-happy-ukulele-478610f.mp3',
   lightswitch: '/sounds/freesound_community-light-switch-106505.mp3',
   snap:        '/sounds/pensieri_profondi_scuba-snap-274158.mp3',
 } as const;

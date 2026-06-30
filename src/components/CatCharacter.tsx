@@ -2,7 +2,7 @@ import { motion, type TargetAndTransition } from 'framer-motion';
 
 export type CatMood =
   | 'idle' | 'sleeping' | 'awake' | 'happy' | 'excited'
-  | 'eating' | 'playing' | 'care' | 'talking' | 'champion';
+  | 'eating' | 'playing' | 'talking' | 'champion';
 
 interface CatCharacterProps {
   mood: CatMood;
@@ -18,7 +18,6 @@ const CAT_IMAGES: Record<CatMood, string> = {
   excited:  '/assets/cat/cat-champion.png',
   eating:   '/assets/cat/cat-food.png',
   playing:  '/assets/cat/cat-game.png',
-  care:     '/assets/cat/cat-hygiene.png',
   talking:  '/assets/cat/cat-hub.png',
   champion: '/assets/cat/cat-champion.png',
 };
@@ -38,7 +37,6 @@ const MOOD_ANIM: Record<CatMood, string> = {
   excited:  'wiggle',
   eating:   'bounce',
   playing:  'wiggle',
-  care:     'breathe',
   talking:  'wiggle',
   champion: 'jump',
 };

@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 
-export type NavTabId = 'game' | 'food' | 'hygiene' | 'sleep';
+export type NavTabId = 'game' | 'food' | 'sleep';
 
 export interface NavTabDef {
   id: NavTabId;
