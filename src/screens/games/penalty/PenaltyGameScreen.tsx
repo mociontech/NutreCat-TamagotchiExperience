@@ -17,6 +17,35 @@ const BENEFIT_ICON_SIZE = 'min(5.5vw, 3.1vh)';
 // GK half-width as fraction of game area (min(20vw)/gameWidth ≈ 0.10 for 1080px totem)
 const GK_HALF_W = 0.10;
 
+function playVideo(video: HTMLVideoElement | null, restart = false) {
+  if (!video) return;
+  try {
+    if (restart) video.currentTime = 0;
+    video.play().catch(() => {});
+  } catch {
+    // Video playback can be rejected while the browser is warming assets.
+  }
+}
+
+function pauseVideo(video: HTMLVideoElement | null, reset = false) {
+  if (!video) return;
+  try {
+    video.pause();
+    if (reset) video.currentTime = 0;
+  } catch {
+    // Ignore media state errors.
+  }
+}
+
+function loadVideo(video: HTMLVideoElement | null) {
+  if (!video) return;
+  try {
+    video.load();
+  } catch {
+    // Ignore preload errors.
+  }
+}
+
 type Outcome = boolean | null;
 type Phase =
   | 'aim'
@@ -130,51 +159,114 @@ export default function PenaltyGameScreen({ onGoal }: Props) {
   const rivalDiveLeftRef   = useRef<HTMLVideoElement>(null);
   const rivalDiveRightRef  = useRef<HTMLVideoElement>(null);
   const rivalDiveCenterRef = useRef<HTMLVideoElement>(null);
+  const playerBackRef      = useRef<HTMLVideoElement>(null);
   const playerKickRef      = useRef<HTMLVideoElement>(null);
+  const rivalCatIdleRef    = useRef<HTMLVideoElement>(null);
   const rivalKickRef       = useRef<HTMLVideoElement>(null);
+  const playerGkIdleRef    = useRef<HTMLVideoElement>(null);
   const playerGkJumpRef    = useRef<HTMLVideoElement>(null);
   useEffect(() => { gkNXRef.current = gkNX; }, [gkNX]);
+  const inPlayerPhases = phase === 'aim' || phase === 'firing' || phase === 'benefits';
+  const inRivalPhases  = phase === 'rival_intro' || phase === 'rival_fire' || phase === 'rival_result';
 
   useEffect(() => {
-    if (!playerKicking) return;
-    const v = playerKickRef.current;
-    if (!v) return;
-    v.currentTime = 0;
-    v.play().catch(() => {});
-  }, [playerKicking]);
+    [
+      rivalIdleRef.current,
+      rivalDiveLeftRef.current,
+      rivalDiveRightRef.current,
+      rivalDiveCenterRef.current,
+      playerKickRef.current,
+      rivalKickRef.current,
+      playerGkJumpRef.current,
+    ].forEach(loadVideo);
+  }, []);
+
+  useEffect(() => {
+    if (playerKicking) {
+      pauseVideo(playerBackRef.current);
+      playVideo(playerKickRef.current, true);
+      return;
+    }
+    pauseVideo(playerKickRef.current, true);
+    if (inPlayerPhases) playVideo(playerBackRef.current);
+  }, [playerKicking, inPlayerPhases]);
 
   useEffect(() => {
     if (phase !== 'aim') return;
     setRivalDiving(false);
     setRivalDiveDir(null);
-    const v = rivalIdleRef.current;
-    if (!v) return;
-    v.currentTime = 0;
-    v.play().catch(() => {});
   }, [phase]);
 
   useEffect(() => {
-    if (!rivalKicking) return;
-    const v = rivalKickRef.current;
-    if (!v) return;
-    v.currentTime = 0;
-    v.play().catch(() => {});
-  }, [rivalKicking]);
+    if (!inPlayerPhases) {
+      pauseVideo(rivalIdleRef.current, true);
+      pauseVideo(rivalDiveLeftRef.current, true);
+      pauseVideo(rivalDiveRightRef.current, true);
+      pauseVideo(rivalDiveCenterRef.current, true);
+      return;
+    }
+
+    const activeDive =
+      rivalDiveDir === 'left' ? rivalDiveLeftRef.current :
+      rivalDiveDir === 'right' ? rivalDiveRightRef.current :
+      rivalDiveDir === 'center' ? rivalDiveCenterRef.current :
+      null;
+
+    if (rivalDiving && activeDive) {
+      pauseVideo(rivalIdleRef.current);
+      [rivalDiveLeftRef.current, rivalDiveRightRef.current, rivalDiveCenterRef.current]
+        .filter(video => video !== activeDive)
+        .forEach(video => pauseVideo(video, true));
+      playVideo(activeDive, true);
+    } else {
+      [rivalDiveLeftRef.current, rivalDiveRightRef.current, rivalDiveCenterRef.current]
+        .forEach(video => pauseVideo(video, true));
+      playVideo(rivalIdleRef.current);
+    }
+  }, [inPlayerPhases, rivalDiving, rivalDiveDir]);
 
   useEffect(() => {
-    if (!rivalKicking) return;
-    setPlayerGkJumping(true);
-    const v = playerGkJumpRef.current;
-    if (!v) return;
-    v.currentTime = 0;
-    v.play().catch(() => {});
-  }, [rivalKicking]);
+    if (rivalKicking) {
+      pauseVideo(rivalCatIdleRef.current);
+      playVideo(rivalKickRef.current, true);
+      return;
+    }
+    pauseVideo(rivalKickRef.current, true);
+    if (inRivalPhases) playVideo(rivalCatIdleRef.current);
+  }, [rivalKicking, inRivalPhases]);
+
+  useEffect(() => {
+    if (playerGkJumping) {
+      pauseVideo(playerGkIdleRef.current);
+      playVideo(playerGkJumpRef.current, true);
+      return;
+    }
+    pauseVideo(playerGkJumpRef.current, true);
+    if (inRivalPhases) playVideo(playerGkIdleRef.current);
+  }, [playerGkJumping, inRivalPhases]);
 
   useEffect(() => {
     if (phase === 'rival_intro' || phase === 'rival_result' || phase === 'aim') {
       setPlayerGkJumping(false);
     }
   }, [phase]);
+
+  useEffect(() => {
+    return () => {
+      [
+        rivalIdleRef.current,
+        rivalDiveLeftRef.current,
+        rivalDiveRightRef.current,
+        rivalDiveCenterRef.current,
+        playerBackRef.current,
+        playerKickRef.current,
+        rivalCatIdleRef.current,
+        rivalKickRef.current,
+        playerGkIdleRef.current,
+        playerGkJumpRef.current,
+      ].forEach(video => pauseVideo(video, true));
+    };
+  }, []);
 
 
 
@@ -294,6 +386,7 @@ export default function PenaltyGameScreen({ onGoal }: Props) {
     }
     timers.push(setTimeout(() => {
       setRivalKicking(true);
+      setPlayerGkJumping(true);
       setTimeout(() => setPhase('rival_fire'), RIVAL_KICK_IMPACT_MS);
     }, INTRO_MS));
     return () => timers.forEach(clearTimeout);
@@ -392,9 +485,6 @@ export default function PenaltyGameScreen({ onGoal }: Props) {
       setRivalDiveDir(dir);
       setRivalDiving(true);
       setRivalGkNX(newRivalGkNX);
-      const vRef = dir === 'left' ? rivalDiveLeftRef : dir === 'right' ? rivalDiveRightRef : rivalDiveCenterRef;
-      const v = vRef.current;
-      if (v) { v.currentTime = 0; v.play().catch(() => {}); }
     }, Math.max(0, PLAYER_KICK_IMPACT_MS - RIVAL_GK_DIVE_LEAD_MS));
     setTimeout(() => {
       setPhase('firing');
@@ -428,8 +518,6 @@ export default function PenaltyGameScreen({ onGoal }: Props) {
   const pScore       = pOuts.filter(x => x === true).length;
   const mScore       = mOuts.filter(x => x === true).length;
   const rivalScored  = mOuts[round] === true;
-  const inPlayerPhases = phase === 'aim' || phase === 'firing' || phase === 'benefits';
-  const inRivalPhases  = phase === 'rival_intro' || phase === 'rival_fire' || phase === 'rival_result';
   const ballHidden     = phase === 'firing' || phase === 'rival_fire';
 
   if (phase === 'gameover') {
@@ -561,8 +649,7 @@ export default function PenaltyGameScreen({ onGoal }: Props) {
             <video
               ref={rivalIdleRef}
               src={ASSETS.catVideos.rivalKeeperIdle}
-              autoPlay loop muted playsInline
-              onLoadedData={(e) => e.currentTarget.play().catch(() => {})}
+              loop muted playsInline preload="auto"
               style={{ width: '100%', height: 'auto', objectFit: 'contain', display: 'block',
                 opacity: rivalDiving ? 0 : 1, transition: 'opacity 0.1s' }}
             />
@@ -614,11 +701,12 @@ export default function PenaltyGameScreen({ onGoal }: Props) {
             }}
           >
             <video
+              ref={playerGkIdleRef}
               src={ASSETS.catVideos.playerKeeperIdle}
-              autoPlay
               loop
               muted
               playsInline
+              preload="auto"
               style={{
                 width: '100%',
                 objectFit: 'contain',
@@ -751,11 +839,12 @@ export default function PenaltyGameScreen({ onGoal }: Props) {
           style={{ position: 'absolute', left: 'calc(5% + 90px)', top: 'calc(57.65% + 90px)', width: '51.14%', aspectRatio: '1 / 1', zIndex: 19, pointerEvents: 'none' }}
         >
           <video
+            ref={playerBackRef}
             src={ASSETS.catVideos.playerBack}
-            autoPlay
             loop
             muted
             playsInline
+            preload="auto"
             style={{
               width: '100%',
               height: '100%',
@@ -793,11 +882,12 @@ export default function PenaltyGameScreen({ onGoal }: Props) {
       {inRivalPhases && (
         <div style={{ position: 'absolute', left: 'calc(5% + 100px)', top: 'calc(57.65% - 80px)', width: '39.34%', aspectRatio: '9 / 16', zIndex: 8, pointerEvents: 'none' }}>
           <video
+            ref={rivalCatIdleRef}
             src={ASSETS.catVideos.rivalIdle}
-            autoPlay
             loop
             muted
             playsInline
+            preload="auto"
             style={{
               width: '100%',
               height: '100%',
