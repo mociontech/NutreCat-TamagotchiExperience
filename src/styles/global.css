@@ -1,3 +1,6 @@
+/* Inter como fallback del sistema */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
+
 @font-face {
   font-family: 'Rafigen';
   src: url('/fonts/Rafigen Regular.otf') format('opentype');
@@ -18,9 +21,6 @@
   font-weight: 400;
   font-display: swap;
 }
-
-/* Inter como fallback del sistema */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
 
 *, *::before, *::after {
   box-sizing: border-box;

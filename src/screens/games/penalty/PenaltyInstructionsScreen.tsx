@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
+import { ASSETS } from '../../../config/assets';
 
 interface Props { onDone: () => void; score?: number; }
 
@@ -7,7 +8,7 @@ interface Props { onDone: () => void; score?: number; }
 // Dividers at 36.4% / 56.4% / 76% within card
 // Title occupies top 0 → ~17% of card
 
-export default function FootballInstructionsScreen({ onDone, score = 0 }: Props) {
+export default function PenaltyInstructionsScreen({ onDone, score = 0 }: Props) {
   const [refill, setRefill] = useState(false);
 
   const handlePress = () => {
@@ -20,7 +21,7 @@ export default function FootballInstructionsScreen({ onDone, score = 0 }: Props)
 
       {/* ── Logo ─────────────────────────────────────────────────────── */}
       <div style={{ position: 'absolute', top: '4.79%', left: '9.07%', right: '62.31%', bottom: '83.7%', zIndex: 5, pointerEvents: 'none' }}>
-        <img src="/assets/ui/logo-nutre-cat.svg" alt="Nutre Cat" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+        <img src={ASSETS.ui.logo} alt="Nutre Cat" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
       </div>
 
       {/* ── Puntos pill ──────────────────────────────────────────────── */}
@@ -78,7 +79,7 @@ export default function FootballInstructionsScreen({ onDone, score = 0 }: Props)
         {/* Zone 1: after title (~17%) → divider 1 (36.4%) */}
         <StepZone
           n={1} top="14%" bottom="63.6%"
-          img="/assets/games/FG-Instruction1.png"
+          img={ASSETS.games.instruction1}
           lines={[
             { text: 'LANZA EL',    color: '#00577a' },
             { text: 'BALÓN A LOS', color: '#00577a' },
@@ -91,7 +92,7 @@ export default function FootballInstructionsScreen({ onDone, score = 0 }: Props)
         {/* Zone 2: divider 1 (36.4%) → divider 2 (56.4%) */}
         <StepZone
           n={2} top="36.4%" bottom="43.6%"
-          img="/assets/games/FG-Instruction2.png"
+          img={ASSETS.games.instruction2}
           lines={[
             { text: 'SOLO TIENES', color: '#00577a' },
             { text: '3 INTENTOS',  color: '#00b6ed' },
@@ -103,7 +104,7 @@ export default function FootballInstructionsScreen({ onDone, score = 0 }: Props)
         {/* Zone 3: divider 2 (56.4%) → divider 3 (76%) */}
         <StepZone
           n={3} top="56.4%" bottom="24%"
-          img="/assets/games/FG-Instruction3.png"
+          img={ASSETS.games.instruction3}
           lines={[
             { text: 'DESLIZA CON', color: '#00577a' },
             { text: 'EL DEDO Y',   color: '#00577a' },
@@ -116,7 +117,7 @@ export default function FootballInstructionsScreen({ onDone, score = 0 }: Props)
         {/* Zone 4: divider 3 (76%) → card bottom (~97%) */}
         <StepZone
           n={4} top="76%" bottom="3%"
-          img="/assets/games/FG-Instruction4.png"
+          img={ASSETS.games.instruction4}
           lines={[
             { text: 'ATAJA LOS',  color: '#00577a' },
             { text: 'TRES TIROS', color: '#00b6ed' },

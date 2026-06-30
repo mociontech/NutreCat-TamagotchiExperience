@@ -1,15 +1,13 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect, useRef } from 'react';
 type FoodType = 'dry' | 'wet' | 'treats';
-import { sfx, sfxStop } from '../utils/sounds';
+import { sfx, sfxStop } from '../../utils/sounds';
+import { ASSETS, catVideoByName, cssUrl } from '../../config/assets';
+import { PRODUCT_LAYOUTS } from '../../config/products';
 
 const FEED_POINTS = 30;
 
-const PRODUCTS: { id: FoodType; img: string; left: string; width: string }[] = [
-  { id: 'treats', img: '/assets/products/product-1.png', left: '13.61%', width: '21.48%' },
-  { id: 'dry',    img: '/assets/products/product-3.png', left: '37.41%', width: '22.13%' },
-  { id: 'wet',    img: '/assets/products/product-2.png', left: '63.52%', width: '21.48%' },
-];
+const PRODUCTS: { id: FoodType; img: string; left: string; width: string }[] = PRODUCT_LAYOUTS;
 
 const BENEFITS: Record<FoodType, { line1: string; line2: string; bg: string; color: string }[]> = {
   treats: [
@@ -88,7 +86,7 @@ export default function FeedInteractionScreen({ selectedFood, onDone, score = 0 
   useEffect(() => {
     const v = waitVideoRef.current;
     if (!v || !showWait) return;
-    v.src = `/assets/cat/Animation/${waitAnim}.webm`;
+    v.src = catVideoByName(waitAnim);
     v.load();
     v.play().catch(() => {});
   }, [waitAnim, showWait]);
@@ -101,11 +99,11 @@ export default function FeedInteractionScreen({ selectedFood, onDone, score = 0 
     <div style={{ width: '100%', height: '100%', background: '#00b6ed', position: 'relative', overflow: 'hidden' }}>
 
       {/* Fondo */}
-      <div style={{ position: 'absolute', inset: 0, backgroundImage: 'url(/assets/backgrounds/bg-pet2.png)', backgroundSize: 'cover', backgroundPosition: 'center bottom', opacity: 0.44, pointerEvents: 'none' }} />
+      <div style={{ position: 'absolute', inset: 0, backgroundImage: cssUrl(ASSETS.backgrounds.pet), backgroundSize: 'cover', backgroundPosition: 'center bottom', opacity: 0.44, pointerEvents: 'none' }} />
 
       {/* Logo */}
       <div style={{ position: 'absolute', top: '4.79%', left: '9.07%', right: '62.31%', bottom: '83.7%', zIndex: 2 }}>
-        <img src="/assets/ui/logo-nutre-cat.svg" alt="Nutre Cat" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+        <img src={ASSETS.ui.logo} alt="Nutre Cat" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
       </div>
 
       {/* Score */}
@@ -198,7 +196,7 @@ export default function FeedInteractionScreen({ selectedFood, onDone, score = 0 
 
       {/* ── Videos del gato ── */}
       <video
-        src="/assets/cat/Animation/EsperandoComida.webm"
+        src={ASSETS.catVideos.foodIdle}
         autoPlay loop muted playsInline
         style={{
           position: 'absolute', left: '8.5%', top: 'calc(20.73% + 150px)', width: '83%',
@@ -208,7 +206,7 @@ export default function FeedInteractionScreen({ selectedFood, onDone, score = 0 
         }}
       />
       <video
-        src="/assets/cat/Animation/Comiendo.webm"
+        src={ASSETS.catVideos.eating}
         autoPlay loop muted playsInline
         style={{
           position: 'absolute', left: '8.5%', top: 'calc(20.73% + 150px)', width: '83%',
@@ -220,7 +218,7 @@ export default function FeedInteractionScreen({ selectedFood, onDone, score = 0 
       {/* SalidaComida — arranca solo cuando satisfied, sin autoPlay */}
       <video
         ref={salidaVideoRef}
-        src="/assets/cat/Animation/SalidaComida.webm"
+        src={ASSETS.catVideos.foodExit}
         muted playsInline
         onEnded={() => setShowWait(true)}
         style={{
@@ -336,7 +334,7 @@ export default function FeedInteractionScreen({ selectedFood, onDone, score = 0 
         </AnimatePresence>
 
 
-        {/* Botón ¡Listo! — mismo estilo que Continuar en PetScreen */}
+        {/* Botón ¡Listo! — mismo estilo que Continuar en PettingScreen */}
         <AnimatePresence>
           {showBtn && (
             <motion.div

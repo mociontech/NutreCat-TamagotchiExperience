@@ -1,11 +1,12 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { sfx, bgPlay, bgSetRate } from '../utils/sounds';
+import { sfx, bgPlay, bgSetRate } from '../../../utils/sounds';
+import { ASSETS, cssUrl } from '../../../config/assets';
 
 const PRODUCTS = [
-  '/assets/products/product-1.png',
-  '/assets/products/product-2.png',
-  '/assets/products/product-3.png',
+  ASSETS.products.treats,
+  ASSETS.products.wet,
+  ASSETS.products.dry,
 ];
 
 const GAME_TIME = 30;
@@ -47,7 +48,7 @@ function pickType(): ItemType {
 const COMBO_MIN  = 3;
 const COMBO_MULT = 1.5;
 
-export default function FallingBagsGameScreen({ onDone }: Props) {
+export default function CatchGameScreen({ onDone }: Props) {
   const [bags,         setBags]         = useState<Bag[]>([]);
   const [score,        setScore]        = useState(0);
   const [timeLeft,     setTimeLeft]     = useState(GAME_TIME);
@@ -77,8 +78,8 @@ export default function FallingBagsGameScreen({ onDone }: Props) {
       type,
       x:        baseX,
       baseX,
-      img:      type === 'mouse'    ? '/assets/games/mouse_no_bg.png'
-               : type === 'fishbone' ? '/assets/games/fishbone_no_bg.png'
+      img:      type === 'mouse'    ? ASSETS.games.mouse
+               : type === 'fishbone' ? ASSETS.games.fishbone
                : PRODUCTS[Math.floor(Math.random() * PRODUCTS.length)],
       speed:    type === 'mouse'    ? 4.8 + Math.random() * 1.8
                : type === 'fishbone' ? 3.4 + Math.random() * 1.8
@@ -229,7 +230,7 @@ export default function FallingBagsGameScreen({ onDone }: Props) {
       style={{
         width: '100%', height: '100%',
         background: '#00b6ed',
-        backgroundImage: 'url(/assets/backgrounds/bg-Inicio.png)',
+        backgroundImage: cssUrl(ASSETS.backgrounds.start),
         backgroundSize: 'cover', backgroundPosition: 'center',
         position: 'relative', overflow: 'hidden',
         display: 'flex', flexDirection: 'column',
@@ -323,7 +324,7 @@ export default function FallingBagsGameScreen({ onDone }: Props) {
         zIndex: 20,
         pointerEvents: 'none',
       }}>
-        <img src="/assets/ui/logo-nutre-cat.svg" alt="Nutre Cat" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+        <img src={ASSETS.ui.logo} alt="Nutre Cat" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
       </div>
 
       <div
@@ -383,7 +384,7 @@ export default function FallingBagsGameScreen({ onDone }: Props) {
               {tapIndicators.map(t => (
                 <motion.img
                   key={t.id}
-                  src="/assets/cat/PaticaAtrapalo.png"
+                  src={ASSETS.cat.catchPaw}
                   alt=""
                   initial={{ opacity: 1, scale: 0.6 }}
                   animate={{ opacity: 0, scale: 1.1 }}
@@ -440,7 +441,7 @@ export default function FallingBagsGameScreen({ onDone }: Props) {
             style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 'min(4vw, 2.2vh)', padding: '0 10%' }}
           >
             <motion.video
-              src={score > 0 ? '/assets/cat/Animation/Celebrando.webm' : '/assets/cat/Animation/Perdedor.webm'}
+              src={score > 0 ? ASSETS.catVideos.celebrate : ASSETS.catVideos.defeat}
               autoPlay
               loop
               muted
@@ -469,7 +470,7 @@ export default function FallingBagsGameScreen({ onDone }: Props) {
           boxSizing: 'border-box',
         }}>
           <div style={{ position: 'absolute', left: 'min(3vw, 1.7vh)', top: '50%', transform: 'translateY(-50%)', width: 'min(5.46vw, 3.06vh)', height: 'min(5.46vw, 3.06vh)', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <img src="/assets/ui/icon-clock.svg" alt="" style={{ width: '100%', height: '100%', filter: 'brightness(0) invert(1)', display: 'block' }} />
+            <img src={ASSETS.ui.clock} alt="" style={{ width: '100%', height: '100%', filter: 'brightness(0) invert(1)', display: 'block' }} />
           </div>
           <motion.span
             key={timeLeft}

@@ -1,7 +1,8 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useRef, useEffect, useCallback } from 'react';
-import ScreenLayout from '../components/ScreenLayout';
-import { bgPlay, bgStop } from '../utils/sounds';
+import ScreenLayout from '../../components/ScreenLayout';
+import { bgPlay, bgStop } from '../../utils/sounds';
+import { ASSETS } from '../../config/assets';
 
 
 interface Particle { id: number; x: number; y: number; text: string; }
@@ -11,7 +12,7 @@ interface Props { onNext: () => void; name?: string; }
 const PURRWORDS = ['Prrr…', 'Grrr…', 'Miau~', 'Prrr…', '💙'];
 const FILL_RATE = 1.2;
 
-export default function PetScreen({ onNext, name = 'Simón' }: Props) {
+export default function PettingScreen({ onNext, name = 'Simón' }: Props) {
   const [affection,  setAffection]  = useState(0);
   const [petting,    setPetting]    = useState(false);
   const [done,       setDone]       = useState(false);
@@ -104,7 +105,7 @@ export default function PetScreen({ onNext, name = 'Simón' }: Props) {
 
   return (
     <ScreenLayout
-      backgroundImage="/assets/backgrounds/bg-pet2.png"
+      backgroundImage={ASSETS.backgrounds.pet}
       backgroundOpacity={0.44}
       backgroundFilter="blur(5px) brightness(1.08) saturate(0.78)"
       tintColor="rgba(255, 185, 90, 0.10)"
@@ -143,7 +144,7 @@ export default function PetScreen({ onNext, name = 'Simón' }: Props) {
       >
         {/* Logo — centrado, doble tamaño, 100px abajo */}
         <img
-          src="/assets/ui/logo-nutre-cat.svg"
+          src={ASSETS.ui.logo}
           alt="Nutre Cat"
           draggable={false}
           style={{
@@ -230,7 +231,7 @@ export default function PetScreen({ onNext, name = 'Simón' }: Props) {
           {/* Video Esperando — visible en idle y al soltar */}
           <video
             ref={esperandoRef}
-            src="/assets/cat/Animation/Esperando.webm"
+            src={ASSETS.catVideos.idle}
             loop
             muted
             playsInline
@@ -249,7 +250,7 @@ export default function PetScreen({ onNext, name = 'Simón' }: Props) {
           {/* Video de consentir — visible solo mientras se acaricia */}
           <video
             ref={videoRef}
-            src="/assets/cat/Animation/Concentir.webm"
+            src={ASSETS.catVideos.petting}
             loop
             muted
             playsInline
@@ -267,7 +268,7 @@ export default function PetScreen({ onNext, name = 'Simón' }: Props) {
           {/* Video Celebrando — visible cuando termina, en loop */}
           <video
             ref={celebrandoRef}
-            src="/assets/cat/Animation/Celebrando.webm"
+            src={ASSETS.catVideos.celebrate}
             muted
             playsInline
             loop

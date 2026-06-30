@@ -1,19 +1,20 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
+import { ASSETS } from '../../../config/assets';
 
 interface Props { onDone: () => void; score?: number; }
 
 const A = {
-  deadCreature: '/assets/instructions/bags-dead-creature.png',
-  mouse:        '/assets/instructions/bags-mouse.png',
+  deadCreature: ASSETS.catchInstructions.deadCreature,
+  mouse:        ASSETS.catchInstructions.mouse,
 };
 
 // ─── Absolute-positioned layout matches Figma 346:162 (1080×1920 canvas) ────
-// Same card & button positions as FootballInstructionsScreen.
+// Same card & button positions as PenaltyInstructionsScreen.
 // All % values: x = px/1080*100  (or within-card: (px-98)/887*100)
 //               y = px/1920*100  (or within-card: (px-381)/1278*100)
 
-export default function FallingBagsInstructionsScreen({ onDone, score = 0 }: Props) {
+export default function CatchInstructionsScreen({ onDone, score = 0 }: Props) {
   const [refill, setRefill] = useState(false);
 
   const handlePress = () => {
@@ -26,7 +27,7 @@ export default function FallingBagsInstructionsScreen({ onDone, score = 0 }: Pro
 
       {/* ── Logo ─────────────────────────────────────────────────────── */}
       <div style={{ position: 'absolute', top: '4.79%', left: '9.07%', right: '62.31%', bottom: '83.7%', zIndex: 5, pointerEvents: 'none' }}>
-        <img src="/assets/ui/logo-nutre-cat.svg" alt="Nutre Cat" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+        <img src={ASSETS.ui.logo} alt="Nutre Cat" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
       </div>
 
       {/* ── Puntos pill ──────────────────────────────────────────────── */}
@@ -99,21 +100,21 @@ export default function FallingBagsInstructionsScreen({ onDone, score = 0 }: Pro
         {/* Relative container covers the illustration zone within the card */}
         <div style={{ position: 'absolute', left: '17%', top: '13%', width: '38%', height: '19%', zIndex: 1 }}>
           {/* leche — left, small, +7.02° */}
-          <img src="/assets/products/product-1.png" alt="" style={{
+          <img src={ASSETS.products.treats} alt="" style={{
             position: 'absolute', left: '10%', top: '15%',
             height: '41.31%', width: 'auto', objectFit: 'contain',
             transform: 'rotate(7.02deg)', transformOrigin: 'center center',
             filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.22))', pointerEvents: 'none',
           }} />
           {/* salmon — center, larger, +38.14° */}
-          <img src="/assets/products/product-3.png" alt="" style={{
+          <img src={ASSETS.products.dry} alt="" style={{
             position: 'absolute', left: '36.88%', top: '40.56%',
             height: '70%', width: 'auto', objectFit: 'contain',
             transform: 'rotate(38.14deg)', transformOrigin: 'center center',
             filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.22))', pointerEvents: 'none',
           }} />
           {/* tilapia — right, small, -38.09° */}
-          <img src="/assets/products/product-2.png" alt="" style={{
+          <img src={ASSETS.products.wet} alt="" style={{
             position: 'absolute', right: '5%', top: '18%',
             height: '31.2%', width: 'auto', objectFit: 'contain',
             transform: 'rotate(-38.09deg)', transformOrigin: 'center center',
@@ -183,20 +184,20 @@ export default function FallingBagsInstructionsScreen({ onDone, score = 0 }: Pro
         {/* 3 products side by side — canvas left ~291–521px, top ~1402px */}
         {/* Within card: left ~21.8% top ~79.9%, each bag ~8% wide */}
         <div style={{ position: 'absolute', left: '20.26%', top: '80.07%', width: '37%', height: '12.1%', zIndex: 1 }}>
-          <img src="/assets/products/product-1.png" alt="" style={{
+          <img src={ASSETS.products.treats} alt="" style={{
             position: 'absolute', left: '11%', top: '6.47%',
             height: '100%', width: 'auto', objectFit: 'contain',
             transform: 'rotate(-14.36deg)', transformOrigin: 'bottom center',
             filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.2))', pointerEvents: 'none',
             zIndex: 1,
           }} />
-          <img src="/assets/products/product-3.png" alt="" style={{
+          <img src={ASSETS.products.dry} alt="" style={{
             position: 'absolute', left: '25.10%', top: 0,
             height: '115%', width: 'auto', objectFit: 'contain',
             filter: 'drop-shadow(0 2px 6px rgba(0,0,0,0.2))', pointerEvents: 'none',
             zIndex: 2,
           }} />
-          <img src="/assets/products/product-2.png" alt="" style={{
+          <img src={ASSETS.products.wet} alt="" style={{
             position: 'absolute', left: '49%', top: '6.47%',
             height: '100%', width: 'auto', objectFit: 'contain',
             transform: 'rotate(8.21deg)', transformOrigin: 'bottom center',

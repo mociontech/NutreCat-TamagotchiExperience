@@ -1,18 +1,12 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useRef } from 'react';
-import type { CatState, FoodType } from '../data/gameStates';
+import type { FoodType } from '../../data/gameStates';
+import { ASSETS, cssUrl } from '../../config/assets';
+import { ACTIVITY_NAV_ITEMS, PRODUCT_LAYOUTS } from '../../config/products';
 
-const PRODUCTS: { id: FoodType; img: string; left: string; width: string }[] = [
-  { id: 'treats', img: '/assets/products/product-1.png', left: '13.61%', width: '21.48%' },
-  { id: 'dry',    img: '/assets/products/product-3.png', left: '37.41%', width: '22.13%' },
-  { id: 'wet',    img: '/assets/products/product-2.png', left: '63.52%', width: '21.48%' },
-];
+const PRODUCTS: { id: FoodType; img: string; left: string; width: string }[] = PRODUCT_LAYOUTS;
 
-const NAV = [
-  { id: 'game',  icon: '/assets/nav/icon-game.svg',  doneKey: 'hasPlayed' as keyof Pick<CatState, 'hasFed' | 'hasPlayed' | 'hasTalked'> },
-  { id: 'food',  icon: '/assets/nav/icon-food.svg',  doneKey: 'hasFed'    as keyof Pick<CatState, 'hasFed' | 'hasPlayed' | 'hasTalked'> },
-  { id: 'sleep', icon: '/assets/nav/icon-sleep.svg', doneKey: 'hasTalked' as keyof Pick<CatState, 'hasFed' | 'hasPlayed' | 'hasTalked'> },
-] as const;
+const NAV = ACTIVITY_NAV_ITEMS;
 
 interface Props {
   onSelect: (food: FoodType) => void;
@@ -91,11 +85,11 @@ export default function FeedSelectScreen({ onSelect, onBack, score = 0, hasFed =
       }}
     >
       {/* Fondo cuarto 44% */}
-      <div style={{ position: 'absolute', inset: 0, backgroundImage: 'url(/assets/backgrounds/bg-pet2.png)', backgroundSize: 'cover', backgroundPosition: 'center bottom', opacity: 0.44, pointerEvents: 'none' }} />
+      <div style={{ position: 'absolute', inset: 0, backgroundImage: cssUrl(ASSETS.backgrounds.pet), backgroundSize: 'cover', backgroundPosition: 'center bottom', opacity: 0.44, pointerEvents: 'none' }} />
 
       {/* Logo */}
       <div style={{ position: 'absolute', top: '4.79%', left: '9.07%', right: '62.31%', bottom: '83.7%', zIndex: 2 }}>
-        <img src="/assets/ui/logo-nutre-cat.svg" alt="Nutre Cat" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+        <img src={ASSETS.ui.logo} alt="Nutre Cat" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
       </div>
 
       {/* Score pill */}
@@ -157,7 +151,7 @@ export default function FeedSelectScreen({ onSelect, onBack, score = 0, hasFed =
 
       {/* Gato esperando comida */}
       <video
-        src="/assets/cat/Animation/EsperandoComida.webm"
+        src={ASSETS.catVideos.foodIdle}
         autoPlay loop muted playsInline
         style={{
           position: 'absolute', left: '8.5%', top: 'calc(20.73% + 150px)', width: '83%',

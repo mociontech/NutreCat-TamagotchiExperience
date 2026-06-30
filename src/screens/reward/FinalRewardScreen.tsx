@@ -1,12 +1,13 @@
 import { motion } from 'framer-motion';
-import type { CatState } from '../data/gameStates';
+import type { CatState } from '../../data/gameStates';
+import { ASSETS } from '../../config/assets';
 
 interface Props { cat?: CatState; onNext: () => void; }
 
 const PETROL = '#00577a';
 const LIGHT_BLUE = '#b0e8f9';
 
-export default function RewardQrScreen({ onNext }: Props) {
+export default function FinalRewardScreen({ onNext }: Props) {
   return (
     <div
       onClick={onNext}
@@ -20,7 +21,7 @@ export default function RewardQrScreen({ onNext }: Props) {
       }}
     >
       <img
-        src="/assets/reward/final-bg.png"
+        src={ASSETS.reward.background}
         alt=""
         style={{
           position: 'absolute',
@@ -47,14 +48,14 @@ export default function RewardQrScreen({ onNext }: Props) {
         }}
       >
         <img
-          src="/assets/ui/logo-nutre-cat.svg"
+          src={ASSETS.ui.logo}
           alt="NutreCat Premium"
           style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block' }}
         />
       </motion.div>
 
       <motion.img
-        src="/assets/reward/final-cat.png"
+        src={ASSETS.reward.cat}
         alt=""
         initial={{ opacity: 0, x: 70, scale: 0.96 }}
         animate={{ opacity: 1, x: 0, scale: 1 }}
@@ -136,7 +137,7 @@ export default function RewardQrScreen({ onNext }: Props) {
         }}
       >
         <img
-          src="/assets/reward/final-star.svg"
+          src={ASSETS.reward.star}
           alt=""
           style={{
             position: 'absolute',
@@ -218,7 +219,7 @@ export default function RewardQrScreen({ onNext }: Props) {
         }}
       >
         <img
-          src="/assets/backgrounds/QR.png"
+          src={ASSETS.backgrounds.qr}
           alt="QR"
           style={{ width: '88%', height: '88%', objectFit: 'contain', display: 'block' }}
         />

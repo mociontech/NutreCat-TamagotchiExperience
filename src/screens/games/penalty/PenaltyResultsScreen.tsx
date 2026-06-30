@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion';
+import { ASSETS } from '../../../config/assets';
 
 interface Props {
   pts:    number;
@@ -7,7 +8,7 @@ interface Props {
   onDone: () => void;
 }
 
-export default function FootballResultsScreen({ pts: _pts, pScore, mScore, onDone }: Props) {
+export default function PenaltyResultsScreen({ pts: _pts, pScore, mScore, onDone }: Props) {
   const win  = pScore > mScore;
   const tie  = pScore === mScore;
   const resultText = tie ? 'EMPATE' : win ? 'GANASTE' : 'PERDISTE';
@@ -22,17 +23,17 @@ export default function FootballResultsScreen({ pts: _pts, pScore, mScore, onDon
       {win && <Confetti />}
 
       {/* Background */}
-      <img src="/assets/backgrounds/bg-football-results.png" alt=""
+      <img src={ASSETS.backgrounds.footballResults} alt=""
         style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top', opacity: 0.31, pointerEvents: 'none' }} />
 
       {/* Logo */}
       <div style={{ position: 'absolute', top: '4.97%', left: '28.14%', right: '28.14%', bottom: '77.45%', zIndex: 5 }}>
-        <img src="/assets/ui/logo-nutre-cat.svg" alt="Nutre Cat" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+        <img src={ASSETS.ui.logo} alt="Nutre Cat" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
       </div>
 
       {/* Victory cat */}
       <video
-        src={win ? '/assets/cat/Animation/Celebrando.webm' : '/assets/cat/Animation/Perdedor.webm'}
+        src={win ? ASSETS.catVideos.celebrate : ASSETS.catVideos.defeat}
         autoPlay
         loop
         muted
@@ -110,14 +111,14 @@ export default function FootballResultsScreen({ pts: _pts, pScore, mScore, onDon
       </motion.div>
 
       {/* Ball 1 */}
-      <motion.img src="/assets/games/football-ball.svg" alt=""
+      <motion.img src={ASSETS.games.footballBall} alt=""
         animate={{ y: [0, -10, 0], rotate: [0, 15, 0] }}
         transition={{ duration: 3.2, repeat: Infinity, ease: 'easeInOut' }}
         style={{ position: 'absolute', left: '16.8%', top: 'calc(55.4% + 80px)', width: '10.9%', objectFit: 'contain', zIndex: 7, pointerEvents: 'none', filter: 'drop-shadow(0 4px 10px rgba(0,0,0,0.3))' }}
       />
 
       {/* Ball 2 */}
-      <motion.img src="/assets/games/football-ball.svg" alt=""
+      <motion.img src={ASSETS.games.footballBall} alt=""
         animate={{ y: [0, -12, 0], rotate: [0, -20, 0] }}
         transition={{ duration: 2.8, repeat: Infinity, ease: 'easeInOut', delay: 0.8 }}
         style={{ position: 'absolute', left: '69.2%', top: 'calc(68.7% + 80px)', width: '10.9%', objectFit: 'contain', zIndex: 7, pointerEvents: 'none', filter: 'drop-shadow(0 4px 10px rgba(0,0,0,0.3))' }}

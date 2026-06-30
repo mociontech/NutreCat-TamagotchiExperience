@@ -1,20 +1,18 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect, useRef } from 'react';
-import { sfx, bgPlay, bgStop } from '../utils/sounds';
+import { sfx, bgPlay, bgStop } from '../../utils/sounds';
+import { ASSETS, cssUrl } from '../../config/assets';
+import { ACTIVITY_NAV_ITEMS, PRODUCT_IMAGES } from '../../config/products';
 
 
-const ACTIVITY_NAV = [
-  { id: 'game',  label: 'Jugar',  icon: '/assets/nav/icon-game.svg',  doneKey: 'hasPlayed' as const },
-  { id: 'food',  label: 'Comer',  icon: '/assets/nav/icon-food.svg',  doneKey: 'hasFed'    as const },
-  { id: 'sleep', label: 'Dormir', icon: '/assets/nav/icon-sleep.svg', doneKey: 'hasTalked' as const },
-] as const;
+const ACTIVITY_NAV = ACTIVITY_NAV_ITEMS;
 
 interface Zzz { id: number; x: number; y: number; size: number; rot: number; char: string; }
 
 const DREAM_PRODUCTS = [
-  '/assets/products/product-1.png',
-  '/assets/products/product-3.png',
-  '/assets/products/product-2.png',
+  PRODUCT_IMAGES.treats,
+  PRODUCT_IMAGES.dry,
+  PRODUCT_IMAGES.wet,
 ];
 
 interface DreamBubble { id: number; x: number; y: number; size: number; drift: number; img: string; }
@@ -132,7 +130,7 @@ export default function TalkScreen({ onDone, onBack, score = 0, hasFed = true, h
 
       {/* Fondo con luz */}
       <div style={{ position: 'absolute', inset: 0, zIndex: 0, pointerEvents: 'none',
-        backgroundImage: `url('/assets/cat/Fondo%20con%20luz%201.png')`,
+        backgroundImage: cssUrl(ASSETS.cat.foodLightBackground),
         backgroundSize: 'cover', backgroundPosition: 'center bottom' }}
       />
 
@@ -141,7 +139,7 @@ export default function TalkScreen({ onDone, onBack, score = 0, hasFed = true, h
 
       {/* ── Logo ── */}
       <div style={{ position: 'absolute', top: '4.79%', left: '9.07%', right: '62.31%', bottom: '83.7%', zIndex: 10 }}>
-        <img src="/assets/ui/logo-nutre-cat.svg" alt="Nutre Cat"
+        <img src={ASSETS.ui.logo} alt="Nutre Cat"
           style={{ width: '100%', height: '100%', objectFit: 'contain',
             filter: phase === 'dark' ? 'brightness(1.4)' : 'none', transition: 'filter 0.8s' }} />
       </div>
@@ -198,7 +196,7 @@ export default function TalkScreen({ onDone, onBack, score = 0, hasFed = true, h
       {/* ── Videos del gato ── */}
       <video
         ref={casiDormidoRef}
-        src="/assets/cat/Animation/CasiDormido.webm"
+        src={ASSETS.catVideos.sleepy}
         loop
         muted
         playsInline
@@ -220,7 +218,7 @@ export default function TalkScreen({ onDone, onBack, score = 0, hasFed = true, h
       />
       <video
         ref={dormidoRef}
-        src="/assets/cat/Animation/Dormido.webm"
+        src={ASSETS.catVideos.sleeping}
         muted
         playsInline
         onEnded={() => {
@@ -279,7 +277,7 @@ export default function TalkScreen({ onDone, onBack, score = 0, hasFed = true, h
           >
             <div style={{ width: '100%', aspectRatio: '360 / 239' }}>
               <img
-                src="/assets/ui/hand-pointer.svg"
+                src={ASSETS.ui.handPointer}
                 alt=""
                 style={{
                   width: '100%', height: '100%', display: 'block',

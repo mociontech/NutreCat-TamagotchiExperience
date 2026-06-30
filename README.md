@@ -1,68 +1,86 @@
-# 🐱 NUTRE CAT: EL GATO CAMPEÓN
+# NutreCat Play
 
-Experiencia interactiva tipo Tamagotchi para totem touch, inspirada en el Mundial de fútbol y Colombia.
+Experiencia interactiva para totem touch en formato vertical 9:16. El usuario registra el nombre del gato, lo consiente, completa actividades de comida/juego/sueno y llega a una pantalla final con QR promocional.
 
-## Instalación y ejecución
+## Comandos
 
 ```bash
 npm install
 npm run dev
+npm run build
 ```
 
-Abre http://localhost:5173
+En local, Vite suele levantar en `http://localhost:5173`.
+
+## Variables de entorno
+
+Copiar `.env.example` a `.env` y completar:
+
+```bash
+VITE_DATAHUB_TOKEN=
+VITE_DATAHUB_EVENT_ID=
+VITE_DATAHUB_URL=
+VITE_EXPERIENCE_NAME=
+VITE_DATAHUB_EXPERIENCE_ID=
+```
+
+No subir `.env` al repositorio.
+
+## Estructura principal
+
+```text
+src/
+  App.tsx                    Flujo central de pantallas
+  data/gameStates.ts         Tipos y estado inicial del gato
+  utils/datahub.ts           Envio de datos a Datahub
+  utils/sounds.ts            Mapa y helpers de audio
+  screens/
+    start/                   Pantalla inicial
+    onboarding/              Registro del nombre
+    pet/                     Consentir al gato
+    hub/                     Hub de actividades
+    feed/                    Seleccion e interaccion de comida
+    games/
+      penalty/               Juego de penalties
+      catch/                 Juego Atrapalo
+    sleep/                   Pantalla de dormir
+    reward/                  Pantalla final con QR
+```
 
 ## Flujo de pantallas
 
-1. **Attract Loop** → pantalla de atracción con estadio y gato dormido
-2. **Wake Screen** → toca la patita para despertar a Simón
-3. **Pet Screen** → desliza para acariciarlo y llenar la barra de cariño
-4. **Dashboard** → hub principal con 4 acciones y stats del gato
-5. **Feed Select** → elige entre Dry Food, Wet Food o Treats
-6. **Feed Interaction** → arrastra el plato hasta el gato con drag & drop
-7. **Football Game** → toca rápido para cargar potencia, luego patea
-8. **Goal Celebration** → ¡Gol por Colombia! marcador + confetti
-9. **Care Screen** → mantén presionado para cepillar al gato
-10. **Talk Screen** → elige frases y el gato responde con burbujas
-11. **Champion Result** → stats al 100%, badge "Vínculo Inquebrantable"
-12. **Reward QR** → código QR con 10% OFF en Nutre Cat
-13. **Share Postcard** → postal compartible con score final
+1. `StartScreen`
+2. `RegistrationScreen`
+3. `PettingScreen`
+4. `HubScreen`
+5. Actividad de comida: `FeedSelectScreen` -> `FeedInteractionScreen`
+6. Juego de penalties: `PenaltyInstructionsScreen` -> `PenaltyGameScreen` -> `PenaltyResultsScreen`
+7. Juego Atrapalo: `CatchBenefitsScreen` -> `CatchInstructionsScreen` -> `CatchCountdownScreen` -> `CatchGameScreen`
+8. Dormir: `SleepScreen`
+9. Final: `FinalRewardScreen`
 
-## Reemplazar assets reales
+## Assets
 
-Todos los assets van en `/public/assets/`. Busca los comentarios `// REPLACE:` en el código:
+Los assets publicos viven en `public/assets` y los sonidos en `public/sounds`.
 
-| Archivo esperado | Componente |
-|---|---|
-| `nutre-cat-logo.png` | `NutreCatLogo.tsx` |
-| `nutre-cat-pack-dry.png` | `ProductCard.tsx` |
-| `nutre-cat-pack-wet.png` | `ProductCard.tsx` |
-| `nutre-cat-pack-treats.png` | `ProductCard.tsx` |
-| `orange-cat-idle.png` | `CatCharacter.tsx` |
-| `orange-cat-happy.png` | `CatCharacter.tsx` |
-| `orange-cat-eating.png` | `FeedInteractionScreen.tsx` |
-| `orange-cat-playing.png` | `FootballGameScreen.tsx` |
-| `orange-cat-care.png` | `CareScreen.tsx` |
-| `colombia-ball.png` | `AttractLoop.tsx` |
+Videos principales del gato:
 
-## Estado del gato (gameStates.ts)
-
-```ts
-energy: number        // ⚡ sube con alimentar y cuidar
-hunger: number        // 🍗 baja al alimentar
-affection: number     // 💕 sube con todo
-mood: number          // 😺 sube al hablar
-mundialSpirit: number // ⚽ sube al jugar
-score: number         // puntos del mini juego
+```text
+public/assets/cat/Animation/
 ```
 
-## Resolución objetivo
+Assets de la pantalla final:
 
-Diseñado para **1080×1920px** (9:16 vertical totem).
-También funciona responsive en móvil y desktop.
+```text
+public/assets/reward/
+```
 
-## Tech stack
+QR promocional:
 
-- React 18 + TypeScript
-- Vite
-- Framer Motion (animaciones y transiciones)
-- CSS puro con variables (sin dependencias CSS adicionales)
+```text
+public/assets/backgrounds/QR.png
+```
+
+## Datos enviados
+
+La integracion con Datahub se dispara al entrar a la pantalla final, cuando comida, juego y dormir ya estan completados. El payload incluye datos basicos de sesion, duracion, nombre del gato, comida elegida, juego elegido, puntaje total, puntaje del juego y resumen de actividades.

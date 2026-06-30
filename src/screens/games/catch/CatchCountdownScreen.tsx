@@ -1,9 +1,10 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
+import { ASSETS, cssUrl } from '../../../config/assets';
 
 interface Props { onDone: () => void; }
 
-export default function CountdownScreen({ onDone }: Props) {
+export default function CatchCountdownScreen({ onDone }: Props) {
   const [count, setCount] = useState(3);
 
   useEffect(() => {
@@ -21,7 +22,7 @@ export default function CountdownScreen({ onDone }: Props) {
       {/* Fondo inicio */}
       <div style={{
         position: 'absolute', inset: 0,
-        backgroundImage: 'url(/assets/backgrounds/bg-Inicio.png)',
+        backgroundImage: cssUrl(ASSETS.backgrounds.start),
         backgroundSize: 'cover', backgroundPosition: 'center',
         pointerEvents: 'none',
       }} />
@@ -32,7 +33,7 @@ export default function CountdownScreen({ onDone }: Props) {
         top: '4.79%', left: '9.07%', right: '62.31%', bottom: '83.7%',
         zIndex: 2,
       }}>
-        <img src="/assets/ui/logo-nutre-cat.svg" alt="Nutre Cat"
+        <img src={ASSETS.ui.logo} alt="Nutre Cat"
           style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
       </div>
 
@@ -51,7 +52,7 @@ export default function CountdownScreen({ onDone }: Props) {
       }}>
         {/* wrapper necesario: el SVG tiene overflow:visible */}
         <div style={{ position: 'absolute', left: 'min(3vw, 1.7vh)', top: '50%', transform: 'translateY(-50%)', width: 'min(5.46vw, 3.06vh)', height: 'min(5.46vw, 3.06vh)', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <img src="/assets/ui/icon-clock.svg" alt=""
+          <img src={ASSETS.ui.clock} alt=""
             style={{ width: '100%', height: '100%', filter: 'brightness(0) invert(1)', display: 'block' }} />
         </div>
         <span style={{

@@ -1,21 +1,22 @@
 import { motion } from 'framer-motion';
+import { ASSETS } from '../../../config/assets';
 
 interface Props { onDone: () => void; }
 
 const ICONS = {
-  leche1:   '/assets/icons/benefit-digestive.svg',
-  leche2:   '/assets/icons/benefit-bone.svg',
-  salmon1:  '/assets/cat/Salmon1.png?v=salmon-popup-1',
-  salmon2:  '/assets/cat/Salmon2.png?v=salmon-popup-1',
-  tilapia1: '/assets/icons/benefit-digestive-tilapia.svg',
-  tilapia2: '/assets/cat/Tilapila2.png',
+  leche1:   ASSETS.benefitIcons.digestive,
+  leche2:   ASSETS.benefitIcons.bone,
+  salmon1:  ASSETS.benefitIcons.salmon1,
+  salmon2:  ASSETS.benefitIcons.salmon2,
+  tilapia1: ASSETS.benefitIcons.tilapiaDigestive,
+  tilapia2: ASSETS.benefitIcons.tilapia2,
 };
 
 // All positions derived from Figma pixel coords → % of card (887×432) or screen (1080×1920)
 const PRODUCTS = [
   {
     id: 0,
-    src: '/assets/products/product-1.png',
+    src: ASSETS.products.treats,
     name: 'NutreCat con Leche Deslactosada',
     benefits: [
       'Favorece una mejor digestión.',
@@ -37,7 +38,7 @@ const PRODUCTS = [
   },
   {
     id: 1,
-    src: '/assets/products/product-3.png',
+    src: ASSETS.products.dry,
     name: 'NutreCat con Salmón',
     benefits: [
       'Ayuda a mantener una digestión equilibrada.',
@@ -58,7 +59,7 @@ const PRODUCTS = [
   },
   {
     id: 2,
-    src: '/assets/products/product-2.png',
+    src: ASSETS.products.wet,
     name: 'NutreCat con Tilapia',
     benefits: [
       'Apoya la salud digestiva y la regeneración intestinal.',
@@ -80,7 +81,7 @@ const PRODUCTS = [
   },
 ] as const;
 
-export default function FallingBagsBenefitsScreen({ onDone }: Props) {
+export default function CatchBenefitsScreen({ onDone }: Props) {
   return (
     <div style={{ width: '100%', height: '100%', background: '#00b6ed', position: 'relative', overflow: 'hidden' }}>
 

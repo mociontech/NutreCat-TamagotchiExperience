@@ -1,7 +1,8 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect, useRef } from 'react';
-import type { CatState, ScreenName } from '../data/gameStates';
-import { sfx } from '../utils/sounds';
+import type { CatState, ScreenName } from '../../data/gameStates';
+import { sfx } from '../../utils/sounds';
+import { ASSETS, catVideoByName, cssUrl } from '../../config/assets';
 
 
 const SLEEPY_PHRASES = ['Tiene sueño...', 'Zzz...', 'Se está durmiendo...', 'Zzz...'];
@@ -29,9 +30,9 @@ interface Props {
 }
 
 const NAV = [
-  { id: 'game',  label: 'Jugar',  icon: '/assets/nav/icon-game.svg',  screen: 'gameSelect' as ScreenName, doneKey: 'hasPlayed' as keyof CatState },
-  { id: 'food',  label: 'Comer',  icon: '/assets/nav/icon-food.svg',  screen: 'feedSelect' as ScreenName, doneKey: 'hasFed'    as keyof CatState },
-  { id: 'sleep', label: 'Dormir', icon: '/assets/nav/icon-sleep.svg', screen: 'talk'       as ScreenName, doneKey: 'hasTalked' as keyof CatState },
+  { id: 'game',  label: 'Jugar',  icon: ASSETS.nav.game,  screen: 'gameSelect' as ScreenName, doneKey: 'hasPlayed' as keyof CatState },
+  { id: 'food',  label: 'Comer',  icon: ASSETS.nav.food,  screen: 'feedSelect' as ScreenName, doneKey: 'hasFed'    as keyof CatState },
+  { id: 'sleep', label: 'Dormir', icon: ASSETS.nav.sleep, screen: 'sleep'      as ScreenName, doneKey: 'hasTalked' as keyof CatState },
 ] as const;
 
 export default function HubScreen({ cat, onNavigate, pointsEarned, onPointsShown, comingFromSleep = false, onComingFromSleepConsumed }: Props) {
@@ -77,7 +78,7 @@ export default function HubScreen({ cat, onNavigate, pointsEarned, onPointsShown
   useEffect(() => {
     const v = catVideoRef.current;
     if (!v) return;
-    v.src = `/assets/cat/Animation/${animState.name}.webm`;
+    v.src = catVideoByName(animState.name);
     v.load();
     v.play().catch(() => {});
   }, [animState.name, animState.key]);
@@ -207,7 +208,7 @@ export default function HubScreen({ cat, onNavigate, pointsEarned, onPointsShown
       {/* Fondo cuarto 44% */}
       <div style={{
         position: 'absolute', inset: 0,
-        backgroundImage: 'url(/assets/backgrounds/bg-pet2.png)',
+        backgroundImage: cssUrl(ASSETS.backgrounds.pet),
         backgroundSize: 'cover',
         backgroundPosition: 'center bottom',
         opacity: 0.44,
@@ -241,7 +242,7 @@ export default function HubScreen({ cat, onNavigate, pointsEarned, onPointsShown
         padding: 'min(4.8vw, 2.7vh) 9%',
       }}>
         <img
-          src="/assets/ui/logo-nutre-cat.svg"
+          src={ASSETS.ui.logo}
           alt="Nutre Cat"
           style={{ width: '28.5%', objectFit: 'contain' }}
         />
@@ -524,7 +525,7 @@ export default function HubScreen({ cat, onNavigate, pointsEarned, onPointsShown
                 boxShadow: ['0 0 20px rgba(255,255,255,0.3), 0 0 18px rgba(0,87,122,0.22)', '0 0 58px rgba(255,255,255,0.85), 0 0 46px rgba(0,87,122,0.58)', '0 0 20px rgba(255,255,255,0.3), 0 0 18px rgba(0,87,122,0.22)'],
               }}
               transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
-              onClick={() => { sfx('snap', 0.6); onNavigate('rewardQr'); }}
+              onClick={() => { sfx('snap', 0.6); onNavigate('finalReward'); }}
               style={{
                 width: '100%', height: 82, padding: '15px min(4vw, 2.2vh) 0',
                 background: 'white', color: '#00577a',

@@ -7,29 +7,29 @@ import { initialCatState, clamp } from './data/gameStates';
 import { bgPlay, bgStop, muteAll, unmuteAll } from './utils/sounds';
 import { createDatahubSessionId, flushDatahubQueue, sendNutreCatActivity } from './utils/datahub';
 
-import AttractLoop            from './screens/AttractLoop';
-import PetScreen              from './screens/PetScreen';
-import RegistrationScreen     from './screens/RegistrationScreen';
-import HubScreen              from './screens/HubScreen';
-import GameSelectScreen       from './screens/GameSelectScreen';
-import FeedSelectScreen       from './screens/FeedSelectScreen';
-import FeedInteractionScreen  from './screens/FeedInteractionScreen';
-import FootballInstructionsScreen from './screens/FootballInstructionsScreen';
-import FootballGameScreen     from './screens/FootballGameScreen';
-import FootballResultsScreen  from './screens/FootballResultsScreen';
-import CountdownScreen                  from './screens/CountdownScreen';
-import FallingBagsGameScreen           from './screens/FallingBagsGameScreen';
-import FallingBagsBenefitsScreen       from './screens/FallingBagsBenefitsScreen';
-import FallingBagsInstructionsScreen   from './screens/FallingBagsInstructionsScreen';
-import TalkScreen             from './screens/TalkScreen';
-import RewardQrScreen         from './screens/RewardQrScreen';
+import StartScreen from './screens/start/StartScreen';
+import PettingScreen from './screens/pet/PettingScreen';
+import RegistrationScreen from './screens/onboarding/RegistrationScreen';
+import HubScreen from './screens/hub/HubScreen';
+import GameSelectScreen from './screens/games/GameSelectScreen';
+import FeedSelectScreen from './screens/feed/FeedSelectScreen';
+import FeedInteractionScreen from './screens/feed/FeedInteractionScreen';
+import PenaltyInstructionsScreen from './screens/games/penalty/PenaltyInstructionsScreen';
+import PenaltyGameScreen from './screens/games/penalty/PenaltyGameScreen';
+import PenaltyResultsScreen from './screens/games/penalty/PenaltyResultsScreen';
+import CatchCountdownScreen from './screens/games/catch/CatchCountdownScreen';
+import CatchGameScreen from './screens/games/catch/CatchGameScreen';
+import CatchBenefitsScreen from './screens/games/catch/CatchBenefitsScreen';
+import CatchInstructionsScreen from './screens/games/catch/CatchInstructionsScreen';
+import SleepScreen from './screens/sleep/SleepScreen';
+import FinalRewardScreen from './screens/reward/FinalRewardScreen';
 
 const IDLE_MS         = 3 * 60 * 1000; // 3 min → aviso
 
 const INTERACTION_SCREENS: ScreenName[] = [
   'gameSelect', 'feedSelect', 'feedInteraction',
-  'footballInstructions', 'footballResults',
-  'fallingBagsBenefits', 'fallingBagsInstructions', 'fallingBagsCountdown',
+  'penaltyInstructions', 'penaltyResults',
+  'catchBenefits', 'catchInstructions', 'catchCountdown',
 ];
 const WARNING_SECS    = 10;            // 10 s de aviso antes de resetear
 
@@ -130,7 +130,7 @@ export default function App() {
   }, [resetIdle]);
 
   useEffect(() => {
-    if (screen === 'talk') {
+    if (screen === 'sleep') {
       bgStop('soundtrack');
     } else if (['attract', 'registration', 'pet'].includes(screen)) {
       bgPlay('soundtrack', 0.06, 1.0);
@@ -138,9 +138,9 @@ export default function App() {
       bgPlay('soundtrack', 0.08, 1.0);
     } else if (INTERACTION_SCREENS.includes(screen)) {
       bgPlay('soundtrack', 0.04, 1.0);
-    } else if (screen === 'fallingBagsGame' || screen === 'footballGame') {
+    } else if (screen === 'catchGame' || screen === 'penaltyGame') {
       bgPlay('soundtrack', 0.05, 1.0);
-    } else if (screen === 'rewardQr') {
+    } else if (screen === 'finalReward') {
       bgPlay('soundtrack', 0.1, 1.0);
     }
   }, [screen]);
@@ -150,7 +150,7 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    if (screen !== 'rewardQr' || datahubSentRef.current) return;
+    if (screen !== 'finalReward' || datahubSentRef.current) return;
     if (!(cat.hasFed && cat.hasPlayed && cat.hasTalked)) return;
 
     datahubSentRef.current = true;
@@ -190,7 +190,7 @@ export default function App() {
     setLastGameScore(pts);
     updateCat({ score: cat.score + pts, playScore: pts, mundialSpirit: clamp(cat.mundialSpirit + 25), affection: clamp(cat.affection + 10), energy: clamp(cat.energy - 10), hasPlayed: true, level: 'Juguetón' });
     setFootballResult({ pts, pScore, mScore });
-    nav('footballResults');
+    nav('penaltyResults');
   };
 
   const handleBagsDone = (points: number) => {
@@ -208,8 +208,8 @@ const handleTalkDone = () => {
   };
 
   const handleGameSelect = (target: ScreenName) => {
-    if (target === 'footballInstructions') setSelectedGame('penalties');
-    if (target === 'fallingBagsBenefits') setSelectedGame('atrapalo');
+    if (target === 'penaltyInstructions') setSelectedGame('penalties');
+    if (target === 'catchBenefits') setSelectedGame('atrapalo');
     nav(target);
   };
 
@@ -227,9 +227,9 @@ const handleTalkDone = () => {
 
   const renderScreen = () => {
     switch (screen) {
-      case 'attract':      return <AttractLoop onStart={() => nav('registration')} />;
+      case 'attract':      return <StartScreen onStart={() => nav('registration')} />;
       case 'registration': return <RegistrationScreen onNext={handleRegistration} />;
-      case 'pet':          return <PetScreen name={cat.name} onNext={() => { updateCat({ affection: clamp(cat.affection + 30), level: 'Despierto' }); nav('hub'); }} />;
+      case 'pet':          return <PettingScreen name={cat.name} onNext={() => { updateCat({ affection: clamp(cat.affection + 30), level: 'Despierto' }); nav('hub'); }} />;
       case 'hub':          return <HubScreen cat={cat} onNavigate={nav} pointsEarned={pointsEarned} onPointsShown={() => setPointsEarned(null)} comingFromSleep={comingFromSleep} onComingFromSleepConsumed={() => setComingFromSleep(false)} />;
 
       case 'gameSelect':   return <GameSelectScreen onSelect={handleGameSelect} onBack={() => nav('hub')} score={cat.score} hasFed={cat.hasFed} hasPlayed={cat.hasPlayed} hasTalked={cat.hasTalked} />;
@@ -237,25 +237,25 @@ const handleTalkDone = () => {
       case 'feedSelect':      return <FeedSelectScreen onSelect={handleFeedSelect} onBack={() => nav('hub')} score={cat.score} hasFed={cat.hasFed} hasPlayed={cat.hasPlayed} hasTalked={cat.hasTalked} />;
       case 'feedInteraction': return <FeedInteractionScreen selectedFood={cat.selectedFood ?? 'treats'} onDone={handleFeedDone} onBack={() => nav('hub')} score={cat.score} />;
 
-      case 'footballInstructions': return <FootballInstructionsScreen onDone={() => nav('footballGame')} score={cat.score} />;
-      case 'footballGame':    return <FootballGameScreen onGoal={handleGoal} />;
-      case 'footballResults': return <FootballResultsScreen
+      case 'penaltyInstructions': return <PenaltyInstructionsScreen onDone={() => nav('penaltyGame')} score={cat.score} />;
+      case 'penaltyGame':    return <PenaltyGameScreen onGoal={handleGoal} />;
+      case 'penaltyResults': return <PenaltyResultsScreen
         pts={footballResult?.pts ?? 0}
         pScore={footballResult?.pScore ?? 0}
         mScore={footballResult?.mScore ?? 0}
         onDone={() => { flashPoints(footballResult?.pts ?? 0); nav('hub'); }}
       />;
 
-      case 'fallingBagsBenefits':     return <FallingBagsBenefitsScreen     onDone={() => nav('fallingBagsInstructions')} />;
-      case 'fallingBagsInstructions': return <FallingBagsInstructionsScreen onDone={() => nav('fallingBagsCountdown')} score={cat.score} />;
-      case 'fallingBagsCountdown':    return <CountdownScreen               onDone={() => nav('fallingBagsGame')} />;
-      case 'fallingBagsGame':         return <FallingBagsGameScreen         onDone={handleBagsDone} />;
+      case 'catchBenefits':     return <CatchBenefitsScreen     onDone={() => nav('catchInstructions')} />;
+      case 'catchInstructions': return <CatchInstructionsScreen onDone={() => nav('catchCountdown')} score={cat.score} />;
+      case 'catchCountdown':    return <CatchCountdownScreen    onDone={() => nav('catchGame')} />;
+      case 'catchGame':         return <CatchGameScreen         onDone={handleBagsDone} />;
 
-      case 'talk': return <TalkScreen onDone={handleTalkDone} onBack={() => nav('hub')} hasFed={cat.hasFed} hasPlayed={cat.hasPlayed} hasTalked={cat.hasTalked} score={cat.score} />;
+      case 'sleep': return <SleepScreen onDone={handleTalkDone} onBack={() => nav('hub')} hasFed={cat.hasFed} hasPlayed={cat.hasPlayed} hasTalked={cat.hasTalked} score={cat.score} />;
 
-      case 'rewardQr': return <RewardQrScreen cat={cat} onNext={handleRestart} />;
+      case 'finalReward': return <FinalRewardScreen cat={cat} onNext={handleRestart} />;
 
-      default: return <AttractLoop onStart={() => nav('attract')} />;
+      default: return <StartScreen onStart={() => nav('attract')} />;
     }
   };
 

@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
+import { ASSETS, cssUrl } from '../../config/assets';
 
 interface Props { onNext: (name: string) => void; }
 
@@ -22,7 +23,7 @@ export default function RegistrationScreen({ onNext }: Props) {
       {/* Cuarto al 14% de opacidad */}
       <div style={{
         position: 'absolute', inset: 0,
-        backgroundImage: 'url(/assets/backgrounds/bg-pet2.png)',
+        backgroundImage: cssUrl(ASSETS.backgrounds.pet),
         backgroundSize: 'cover',
         backgroundPosition: 'center bottom',
         opacity: 0.44,
@@ -35,7 +36,7 @@ export default function RegistrationScreen({ onNext }: Props) {
         top: '8.23%', right: '27.96%', bottom: '74.04%', left: '27.97%',
       }}>
         <img
-          src="/assets/ui/logo-nutre-cat.svg"
+          src={ASSETS.ui.logo}
           alt="Nutre Cat"
           style={{ width: '100%', height: '100%', objectFit: 'contain' }}
         />

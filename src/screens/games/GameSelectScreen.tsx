@@ -1,12 +1,10 @@
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
-import type { CatState, ScreenName } from '../data/gameStates';
+import type { ScreenName } from '../../data/gameStates';
+import { ASSETS, cssUrl } from '../../config/assets';
+import { ACTIVITY_NAV_ITEMS } from '../../config/products';
 
-const NAV = [
-  { id: 'game',  label: 'Jugar',  icon: '/assets/nav/icon-game.svg',  doneKey: 'hasPlayed' as keyof Pick<CatState, 'hasFed' | 'hasPlayed' | 'hasTalked'> },
-  { id: 'food',  label: 'Comer',  icon: '/assets/nav/icon-food.svg',  doneKey: 'hasFed'    as keyof Pick<CatState, 'hasFed' | 'hasPlayed' | 'hasTalked'> },
-  { id: 'sleep', label: 'Dormir', icon: '/assets/nav/icon-sleep.svg', doneKey: 'hasTalked' as keyof Pick<CatState, 'hasFed' | 'hasPlayed' | 'hasTalked'> },
-] as const;
+const NAV = ACTIVITY_NAV_ITEMS;
 
 const SIZE = 'min(17.13vw, 9.64vh)';
 
@@ -21,13 +19,13 @@ interface Props {
 
 const GAMES = [
   {
-    id:    'footballInstructions'  as ScreenName,
+    id:    'penaltyInstructions'  as ScreenName,
     title: 'PENALES',
     sub:   'Chuta el balón\nal arco',
     visual: 'football' as const,
   },
   {
-    id:    'fallingBagsBenefits' as ScreenName,
+    id:    'catchBenefits' as ScreenName,
     title: 'ATRÁPALO',
     sub:   'Atrapa los productos NutreCat',
     visual: 'bags' as const,
@@ -38,7 +36,7 @@ const GAMES = [
 function SoccerBall() {
   return (
     <motion.img
-      src="/assets/games/ball.svg"
+      src={ASSETS.games.selectionBall}
       alt=""
       animate={{ y: [0, -8, 0] }}
       transition={{ duration: 2.8, repeat: Infinity, ease: 'easeInOut' }}
@@ -64,7 +62,7 @@ function FloatingProducts() {
     <>
       {/* bag-top (214:8) — entra por la parte superior, entrecortado */}
       <motion.img
-        src="/assets/games/bag-top.svg"
+        src={ASSETS.games.bagTop}
         alt=""
         animate={{ y: ['-35%', '-20%', '-35%'] }}
         transition={{ duration: 2.6, repeat: Infinity, ease: 'easeInOut' }}
@@ -78,7 +76,7 @@ function FloatingProducts() {
 
       {/* bag-left (214:4) — centro 29.5%/18%, rotate -41.17° */}
       <motion.img
-        src="/assets/games/bag-left.svg"
+        src={ASSETS.games.bagLeft}
         alt=""
         animate={{ y: [0, -9, 0] }}
         transition={{ duration: 2.3, repeat: Infinity, ease: 'easeInOut', delay: 0.3 }}
@@ -94,7 +92,7 @@ function FloatingProducts() {
 
       {/* bag-right (214:5) — centro 65.8%/36.9%, rotate +26.49° */}
       <motion.img
-        src="/assets/games/bag-right.svg"
+        src={ASSETS.games.bagRight}
         alt=""
         animate={{ y: [0, 9, 0] }}
         transition={{ duration: 2.1, repeat: Infinity, ease: 'easeInOut', delay: 0.7 }}
@@ -124,14 +122,14 @@ export default function GameSelectScreen({ onSelect, onBack, score = 0, hasFed =
       {/* Fondo habitación */}
       <div style={{
         position:'absolute', inset:0,
-        backgroundImage:'url(/assets/backgrounds/bg-pet2.png)',
+        backgroundImage: cssUrl(ASSETS.backgrounds.pet),
         backgroundSize:'cover', backgroundPosition:'center bottom',
         opacity:0.44, pointerEvents:'none',
       }}/>
 
       {/* Logo */}
       <div style={{ position:'absolute', top:'4.79%', left:'9.07%', right:'62.31%', bottom:'83.7%', zIndex:3 }}>
-        <img src="/assets/ui/logo-nutre-cat.svg" alt="Nutre Cat"
+        <img src={ASSETS.ui.logo} alt="Nutre Cat"
           style={{ width:'100%', height:'100%', objectFit:'contain' }}/>
       </div>
 
@@ -169,7 +167,7 @@ export default function GameSelectScreen({ onSelect, onBack, score = 0, hasFed =
         pointerEvents: 'none',
       }}>
         <video
-          src="/assets/cat/Animation/Esperando.webm"
+          src={ASSETS.catVideos.idle}
           autoPlay
           loop
           muted

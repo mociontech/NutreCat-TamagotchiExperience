@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect, useRef, useCallback, useLayoutEffect } from 'react';
+import { ASSETS } from '../../../config/assets';
 
 // ─── Config ────────────────────────────────────────────────────────────────────
 const N_PENS     = 3;
@@ -30,42 +31,42 @@ interface Props { onGoal: (pts: number, pScore: number, mScore: number) => void;
 
 const PRODUCTS = [
   {
-    id: 0, src: '/assets/products/product-1.png', nx: 0.18,
+    id: 0, src: ASSETS.products.treats, nx: 0.18,
     name: 'NutreCat\ncon Leche Deslactosada',
     subtitle: 'Para gatitos con sensibilidad a la lactosa.',
     benefits: [
       'Favorece una mejor digestión.',
       'Con vitamina D, calcio y fósforo\nque apoyan el desarrollo de\nhuesos y dientes fuertes.',
     ],
-    benefitIcons: ['/assets/icons/benefit-digestive.svg', '/assets/icons/benefit-bone.svg'],
+    benefitIcons: [ASSETS.benefitIcons.digestive, ASSETS.benefitIcons.bone],
     badge: 'Sin colorantes y sin\nsabores artificiales.',
     nameTop: '24.31%', subtitleTop: '45.73%',
     benefit1Top: '59.11%', dividerTop: '64.46%', benefit2Top: '68.99%',
     cardBg: '#f4a875', textColor: '#d23d22', borderColor: '#d23d22',
   },
   {
-    id: 1, src: '/assets/products/product-3.png', nx: 0.50,
+    id: 1, src: ASSETS.products.dry, nx: 0.50,
     name: 'NutreCat\ncon Salmón',
     subtitle: 'Digestión saludable y bienestar integral.',
     benefits: [
       'Ayuda a mantener una digestión equilibrada.',
       'Contiene ácidos grasos y omega 3 lo que contribuye a la salud cardiovascular.',
     ],
-    benefitIcons: ['/assets/cat/Salmon1.png?v=salmon-popup-1', '/assets/cat/Salmon2.png?v=salmon-popup-1'],
+    benefitIcons: [ASSETS.benefitIcons.salmon1, ASSETS.benefitIcons.salmon2],
     badge: 'Sin colorantes y sin\nsabores artificiales.',
     nameTop: '27.14%', subtitleTop: '42.16%',
     benefit1Top: '53.91%', dividerTop: '64.2%', benefit2Top: '66.02%',
     cardBg: '#dbd672', textColor: '#606225', borderColor: '#606225',
   },
   {
-    id: 2, src: '/assets/products/product-2.png', nx: 0.82,
+    id: 2, src: ASSETS.products.wet, nx: 0.82,
     name: 'NutreCat\ncon Tilapia',
     subtitle: 'Para gatos con sistema digestivo sensible.',
     benefits: [
       'Apoya la salud digestiva y la regeneración intestinal.',
       'Fortalece los músculos con el aporte de fósforo y potasio.',
     ],
-    benefitIcons: ['/assets/icons/benefit-digestive-tilapia.svg', '/assets/cat/Tilapila2.png'],
+    benefitIcons: [ASSETS.benefitIcons.tilapiaDigestive, ASSETS.benefitIcons.tilapia2],
     badge: 'Sin colorantes y sin\nsabores artificiales.',
     nameTop: '27.14%', subtitleTop: '42.16%',
     benefit1Top: '53.91%', dividerTop: '64.2%', benefit2Top: '66.02%',
@@ -95,7 +96,7 @@ function PenaltyDots({ outcomes, reverse }: { outcomes: Outcome[]; reverse?: boo
 }
 
 // ─── Main ───────────────────────────────────────────────────────────────────────
-export default function FootballGameScreen({ onGoal }: Props) {
+export default function PenaltyGameScreen({ onGoal }: Props) {
   const [phase,          setPhase]         = useState<Phase>('aim');
   const [round,          setRound]         = useState(0);
   const [pOuts,          setPOuts]         = useState<Outcome[]>(Array(N_PENS).fill(null));
@@ -451,12 +452,12 @@ export default function FootballGameScreen({ onGoal }: Props) {
       {showConfetti && <Confetti />}
 
       {/* ── Background ──────────────────────────────────────────────── */}
-      <img src="/assets/backgrounds/bg-football-field.png" alt=""
+      <img src={ASSETS.backgrounds.footballField} alt=""
         style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center top', pointerEvents: 'none', zIndex: 0 }} />
 
       {/* ── Logo ────────────────────────────────────────────────────── */}
       <div style={{ position: 'absolute', top: '2.66%', left: '32.7%', right: '32.78%', bottom: '83.45%', zIndex: 10, pointerEvents: 'none' }}>
-        <img src="/assets/ui/logo-nutre-cat.svg" alt="Nutre Cat" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+        <img src={ASSETS.ui.logo} alt="Nutre Cat" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
       </div>
 
       {/* ── Score pill ──────────────────────────────────────────────── */}
@@ -559,7 +560,7 @@ export default function FootballGameScreen({ onGoal }: Props) {
             {/* Idle loop */}
             <video
               ref={rivalIdleRef}
-              src="/assets/cat/Animation/ArqueroRivalIdle.webm"
+              src={ASSETS.catVideos.rivalKeeperIdle}
               autoPlay loop muted playsInline
               onLoadedData={(e) => e.currentTarget.play().catch(() => {})}
               style={{ width: '100%', height: 'auto', objectFit: 'contain', display: 'block',
@@ -567,7 +568,7 @@ export default function FootballGameScreen({ onGoal }: Props) {
             />
             {/* Salto izquierda */}
             <video ref={rivalDiveLeftRef}
-              src="/assets/cat/Animation/ArqueroRivalIzquierda.webm"
+              src={ASSETS.catVideos.rivalKeeperLeft}
               muted playsInline preload="auto"
               onEnded={() => { setRivalDiving(false); setRivalDiveDir(null); }}
               style={{ position: 'absolute', inset: 0, width: '100%', height: 'auto', objectFit: 'contain', display: 'block',
@@ -575,7 +576,7 @@ export default function FootballGameScreen({ onGoal }: Props) {
             />
             {/* Salto derecha */}
             <video ref={rivalDiveRightRef}
-              src="/assets/cat/Animation/ArqueroRivalDerecha.webm"
+              src={ASSETS.catVideos.rivalKeeperRight}
               muted playsInline preload="auto"
               onEnded={() => { setRivalDiving(false); setRivalDiveDir(null); }}
               style={{ position: 'absolute', inset: 0, width: '100%', height: 'auto', objectFit: 'contain', display: 'block',
@@ -583,7 +584,7 @@ export default function FootballGameScreen({ onGoal }: Props) {
             />
             {/* Salto centro */}
             <video ref={rivalDiveCenterRef}
-              src="/assets/cat/Animation/ArqueroRivalCentro.webm"
+              src={ASSETS.catVideos.rivalKeeperCenter}
               muted playsInline preload="auto"
               onEnded={() => { setRivalDiving(false); setRivalDiveDir(null); }}
               style={{ position: 'absolute', inset: 0, width: '100%', height: 'auto', objectFit: 'contain', display: 'block',
@@ -613,7 +614,7 @@ export default function FootballGameScreen({ onGoal }: Props) {
             }}
           >
             <video
-              src="/assets/cat/Animation/ArqueroPrincipalIdle.webm"
+              src={ASSETS.catVideos.playerKeeperIdle}
               autoPlay
               loop
               muted
@@ -629,7 +630,7 @@ export default function FootballGameScreen({ onGoal }: Props) {
             />
             <video
               ref={playerGkJumpRef}
-              src="/assets/cat/Animation/ArqueroPrincipalSaltoCentro.webm"
+              src={ASSETS.catVideos.playerKeeperJumpCenter}
               muted
               playsInline
               preload="auto"
@@ -750,7 +751,7 @@ export default function FootballGameScreen({ onGoal }: Props) {
           style={{ position: 'absolute', left: 'calc(5% + 90px)', top: 'calc(57.65% + 90px)', width: '51.14%', aspectRatio: '1 / 1', zIndex: 19, pointerEvents: 'none' }}
         >
           <video
-            src="/assets/cat/Animation/EspaldasNaranja.webm"
+            src={ASSETS.catVideos.playerBack}
             autoPlay
             loop
             muted
@@ -767,7 +768,7 @@ export default function FootballGameScreen({ onGoal }: Props) {
           />
           <video
             ref={playerKickRef}
-            src="/assets/cat/Animation/JugadorPrincipalGolpeobalon.webm"
+            src={ASSETS.catVideos.playerKick}
             muted
             playsInline
             preload="auto"
@@ -792,7 +793,7 @@ export default function FootballGameScreen({ onGoal }: Props) {
       {inRivalPhases && (
         <div style={{ position: 'absolute', left: 'calc(5% + 100px)', top: 'calc(57.65% - 80px)', width: '39.34%', aspectRatio: '9 / 16', zIndex: 8, pointerEvents: 'none' }}>
           <video
-            src="/assets/cat/Animation/RivalIdle.webm"
+            src={ASSETS.catVideos.rivalIdle}
             autoPlay
             loop
             muted
@@ -809,7 +810,7 @@ export default function FootballGameScreen({ onGoal }: Props) {
           />
           <video
             ref={rivalKickRef}
-            src="/assets/cat/Animation/RivalGolpeo.webm"
+            src={ASSETS.catVideos.rivalKick}
             muted
             playsInline
             preload="auto"
@@ -840,7 +841,7 @@ export default function FootballGameScreen({ onGoal }: Props) {
         }}
       >
         <motion.img
-          src="/assets/games/football-ball.svg" alt=""
+          src={ASSETS.games.footballBall} alt=""
           animate={{ rotate: [0, 6, -6, 0] }}
           transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut' }}
           style={{ width: '100%', objectFit: 'contain', filter: 'drop-shadow(0 6px 18px rgba(0,0,0,0.45))' }}
@@ -863,7 +864,7 @@ export default function FootballGameScreen({ onGoal }: Props) {
             animate={{ x: fireTarget.x - ballPx.x, y: fireTarget.y - ballPx.y, scale: 0.44, rotate: 720 }}
             transition={{ duration: SHOOT_MS / 1000, ease: [0.18, 0, 0.85, 1] }}
           >
-            <img src="/assets/games/football-ball.svg" alt=""
+            <img src={ASSETS.games.footballBall} alt=""
               style={{ width: '100%', objectFit: 'contain', filter: 'drop-shadow(0 4px 12px rgba(0,0,0,0.55))' }} />
           </motion.div>
         )}
@@ -885,7 +886,7 @@ export default function FootballGameScreen({ onGoal }: Props) {
             animate={{ x: rivalTarget.x - ballPx.x, y: rivalTarget.y - ballPx.y, scale: 0.44, rotate: -720 }}
             transition={{ duration: SHOOT_MS / 1000, ease: [0.18, 0, 0.85, 1] }}
           >
-            <img src="/assets/games/football-ball.svg" alt=""
+            <img src={ASSETS.games.footballBall} alt=""
               style={{ width: '100%', objectFit: 'contain', filter: 'drop-shadow(0 4px 14px rgba(239,68,68,0.5))' }} />
           </motion.div>
         )}

@@ -1,12 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { sfx } from '../utils/sounds';
+import { sfx } from '../../utils/sounds';
+import { ASSETS } from '../../config/assets';
 
 interface Props { onStart: () => void; }
 
-const VIDEO_SRC = '/assets/cat/Animation/caja.webm';
+const VIDEO_SRC = ASSETS.catVideos.attractBox;
 
-export default function AttractLoop({ onStart }: Props) {
+export default function StartScreen({ onStart }: Props) {
   const [playing,   setPlaying]   = useState(false);
   const [loadPct,   setLoadPct]   = useState(0);
   const [ready,     setReady]     = useState(false);
@@ -62,12 +63,12 @@ export default function AttractLoop({ onStart }: Props) {
       }}
     >
       {/* ── Fondo ── */}
-      <img src="/assets/backgrounds/bg-Inicio.png" alt=""
+      <img src={ASSETS.backgrounds.start} alt=""
         style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', pointerEvents: 'none', zIndex: 0 }} />
 
       {/* ── LOGO ── */}
       <div style={{ position: 'absolute', top: 'calc(5.52% + 50px)', right: '27.96%', bottom: '76.75%', left: '27.97%' }}>
-        <img src="/assets/ui/logo-nutre-cat.svg" alt="Nutre Cat Premium" draggable={false} style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block' }} />
+        <img src={ASSETS.ui.logo} alt="Nutre Cat Premium" draggable={false} style={{ width: '100%', height: '100%', objectFit: 'contain', display: 'block' }} />
       </div>
 
       {/* ── TÍTULO ── */}
@@ -186,7 +187,7 @@ export default function AttractLoop({ onStart }: Props) {
               transition={{ duration: 2.4, repeat: Infinity, ease: 'easeInOut', times: [0, 0.35, 0.5, 0.65, 1] }}
               style={{ width: 'min(26.71vw, 15.02vh)', height: 'min(17.73vw, 9.98vh)', rotate: '-27.14deg', flexShrink: 0 }}
             >
-              <img src="/assets/ui/hand-pointer.svg" alt="" draggable={false} style={{ width: '100%', height: '100%', display: 'block', userSelect: 'none' }} />
+              <img src={ASSETS.ui.handPointer} alt="" draggable={false} style={{ width: '100%', height: '100%', display: 'block', userSelect: 'none' }} />
             </motion.div>
           </motion.div>
         )}

@@ -4,10 +4,10 @@ export type FoodType = 'dry' | 'wet' | 'treats' | null;
 export type ScreenName =
   | 'attract' | 'pet' | 'registration' | 'hub'
   | 'gameSelect' | 'feedSelect' | 'feedInteraction'
-  | 'footballInstructions' | 'footballGame' | 'footballResults'
-  | 'fallingBagsBenefits' | 'fallingBagsInstructions' | 'fallingBagsCountdown' | 'fallingBagsGame'
-  | 'talk'
-  | 'rewardQr';
+  | 'penaltyInstructions' | 'penaltyGame' | 'penaltyResults'
+  | 'catchBenefits' | 'catchInstructions' | 'catchCountdown' | 'catchGame'
+  | 'sleep'
+  | 'finalReward';
 
 export interface CatState {
   name: string;
