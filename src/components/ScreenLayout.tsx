@@ -10,7 +10,7 @@ interface Props {
 }
 
 /** Cyan base + room background at 44% opacity — used by all interaction screens */
-export default function ScreenLayout({ children, style, backgroundImage = '/assets/backgrounds/bg-room.png', backgroundOpacity = 0.44, backgroundFilter, tintColor }: Props) {
+export default function ScreenLayout({ children, style, backgroundImage = '/assets/backgrounds/bg-pet2.png', backgroundOpacity = 0.44, backgroundFilter, tintColor }: Props) {
   return (
     <div style={{
       width: '100%', height: '100%',

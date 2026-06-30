@@ -134,7 +134,7 @@ export default function App() {
       bgStop('soundtrack');
     } else if (['attract', 'registration', 'pet'].includes(screen)) {
       bgPlay('soundtrack', 0.06, 1.0);
-    } else if (['hub', 'dashboard'].includes(screen)) {
+    } else if (screen === 'hub') {
       bgPlay('soundtrack', 0.08, 1.0);
     } else if (INTERACTION_SCREENS.includes(screen)) {
       bgPlay('soundtrack', 0.04, 1.0);
@@ -230,8 +230,7 @@ const handleTalkDone = () => {
       case 'attract':      return <AttractLoop onStart={() => nav('registration')} />;
       case 'registration': return <RegistrationScreen onNext={handleRegistration} />;
       case 'pet':          return <PetScreen name={cat.name} onNext={() => { updateCat({ affection: clamp(cat.affection + 30), level: 'Despierto' }); nav('hub'); }} />;
-      case 'hub':
-      case 'dashboard':    return <HubScreen cat={cat} onNavigate={nav} pointsEarned={pointsEarned} onPointsShown={() => setPointsEarned(null)} comingFromSleep={comingFromSleep} onComingFromSleepConsumed={() => setComingFromSleep(false)} />;
+      case 'hub':          return <HubScreen cat={cat} onNavigate={nav} pointsEarned={pointsEarned} onPointsShown={() => setPointsEarned(null)} comingFromSleep={comingFromSleep} onComingFromSleepConsumed={() => setComingFromSleep(false)} />;
 
       case 'gameSelect':   return <GameSelectScreen onSelect={handleGameSelect} onBack={() => nav('hub')} score={cat.score} hasFed={cat.hasFed} hasPlayed={cat.hasPlayed} hasTalked={cat.hasTalked} />;
 
