@@ -5,6 +5,7 @@ import './styles/global.css';
 import type { CatState, ScreenName, FoodType } from './data/gameStates';
 import { initialCatState, clamp } from './data/gameStates';
 import { bgPlay, bgStop, muteAll, unmuteAll } from './utils/sounds';
+import { createDatahubSessionId, flushDatahubQueue, sendNutreCatActivity } from './utils/datahub';
 
 import AttractLoop            from './screens/AttractLoop';
 import PetScreen              from './screens/PetScreen';
@@ -38,12 +39,16 @@ const pageVariants = {
   exit:    { opacity: 0, scale: 0.97, y: -18 },
 };
 
+type SelectedGame = 'penalties' | 'atrapalo' | null;
+
 export default function App() {
   const [screen, setScreen]             = useState<ScreenName>('attract');
   const [cat,    setCat]                = useState<CatState>(initialCatState);
   const [pointsEarned, setPointsEarned] = useState<number | null>(null);
   const [comingFromSleep, setComingFromSleep] = useState(false);
   const [footballResult, setFootballResult] = useState<{ pts: number; pScore: number; mScore: number } | null>(null);
+  const [selectedGame, setSelectedGame] = useState<SelectedGame>(null);
+  const [lastGameScore, setLastGameScore] = useState(0);
   const [idleWarning, setIdleWarning]   = useState(false);
   const [warnSecs,  setWarnSecs]        = useState(WARNING_SECS);
   const [muted,     setMutedState]      = useState(false);
@@ -53,6 +58,9 @@ export default function App() {
   const warnInterval = useRef<ReturnType<typeof setInterval> | null>(null);
   const mutedRef          = useRef(false);
   const idleAutoMutedRef  = useRef(false);
+  const sessionIdRef      = useRef(createDatahubSessionId());
+  const startedAtRef      = useRef(new Date().toISOString());
+  const datahubSentRef    = useRef(false);
 
   const toggleMute = () => {
     const next = !mutedRef.current;
@@ -68,6 +76,12 @@ export default function App() {
     idleAutoMutedRef.current = false;
     setCat(initialCatState);
     setPointsEarned(null);
+    setFootballResult(null);
+    setSelectedGame(null);
+    setLastGameScore(0);
+    sessionIdRef.current = createDatahubSessionId();
+    startedAtRef.current = new Date().toISOString();
+    datahubSentRef.current = false;
     setScreen('attract');
   }, []);
 
@@ -131,6 +145,23 @@ export default function App() {
     }
   }, [screen]);
 
+  useEffect(() => {
+    flushDatahubQueue();
+  }, []);
+
+  useEffect(() => {
+    if (screen !== 'rewardQr' || datahubSentRef.current) return;
+    if (!(cat.hasFed && cat.hasPlayed && cat.hasTalked)) return;
+
+    datahubSentRef.current = true;
+    sendNutreCatActivity({
+      cat: { ...cat, playScore: lastGameScore },
+      selectedGame,
+      startedAt: startedAtRef.current,
+      sessionId: sessionIdRef.current,
+    });
+  }, [screen, cat, selectedGame, lastGameScore]);
+
   const nav = useCallback((s: ScreenName) => setScreen(s), []);
 
   const updateCat = useCallback((updates: Partial<CatState>) => {
@@ -156,12 +187,14 @@ export default function App() {
   };
 
   const handleGoal = (pts: number, pScore: number, mScore: number) => {
+    setLastGameScore(pts);
     updateCat({ score: cat.score + pts, playScore: pts, mundialSpirit: clamp(cat.mundialSpirit + 25), affection: clamp(cat.affection + 10), energy: clamp(cat.energy - 10), hasPlayed: true, level: 'Juguetón' });
     setFootballResult({ pts, pScore, mScore });
     nav('footballResults');
   };
 
   const handleBagsDone = (points: number) => {
+    setLastGameScore(points);
     updateCat({ score: cat.score + points, mundialSpirit: clamp(cat.mundialSpirit + 20), affection: clamp(cat.affection + 10), energy: clamp(cat.energy - 5), hasPlayed: true, level: 'Juguetón' });
     flashPoints(points); nav('hub');
   };
@@ -174,7 +207,23 @@ const handleTalkDone = () => {
     nav('hub');
   };
 
-  const handleRestart = () => { setCat(initialCatState); setPointsEarned(null); nav('attract'); };
+  const handleGameSelect = (target: ScreenName) => {
+    if (target === 'footballInstructions') setSelectedGame('penalties');
+    if (target === 'fallingBagsBenefits') setSelectedGame('atrapalo');
+    nav(target);
+  };
+
+  const handleRestart = () => {
+    setCat(initialCatState);
+    setPointsEarned(null);
+    setFootballResult(null);
+    setSelectedGame(null);
+    setLastGameScore(0);
+    sessionIdRef.current = createDatahubSessionId();
+    startedAtRef.current = new Date().toISOString();
+    datahubSentRef.current = false;
+    nav('attract');
+  };
 
   const renderScreen = () => {
     switch (screen) {
@@ -184,7 +233,7 @@ const handleTalkDone = () => {
       case 'hub':
       case 'dashboard':    return <HubScreen cat={cat} onNavigate={nav} pointsEarned={pointsEarned} onPointsShown={() => setPointsEarned(null)} comingFromSleep={comingFromSleep} onComingFromSleepConsumed={() => setComingFromSleep(false)} />;
 
-      case 'gameSelect':   return <GameSelectScreen onSelect={nav} onBack={() => nav('hub')} score={cat.score} hasFed={cat.hasFed} hasPlayed={cat.hasPlayed} hasTalked={cat.hasTalked} />;
+      case 'gameSelect':   return <GameSelectScreen onSelect={handleGameSelect} onBack={() => nav('hub')} score={cat.score} hasFed={cat.hasFed} hasPlayed={cat.hasPlayed} hasTalked={cat.hasTalked} />;
 
       case 'feedSelect':      return <FeedSelectScreen onSelect={handleFeedSelect} onBack={() => nav('hub')} score={cat.score} hasFed={cat.hasFed} hasPlayed={cat.hasPlayed} hasTalked={cat.hasTalked} />;
       case 'feedInteraction': return <FeedInteractionScreen selectedFood={cat.selectedFood ?? 'treats'} onDone={handleFeedDone} onBack={() => nav('hub')} score={cat.score} />;

@@ -131,13 +131,13 @@ export default function FeedInteractionScreen({ selectedFood, onDone, score = 0 
             transition={{ delay: i * 0.18, type: 'spring', stiffness: 220, damping: 24 }}
             style={{
               position: 'absolute',
-              top: i === 0 ? 'calc(13% + 130px)' : 'calc(19% + 130px)',
-              left:  i === 0 ? '9%'  : undefined,
-              right: i === 1 ? '9%'  : undefined,
+              top: i === 0 ? 'calc(13% + 170px)' : 'calc(19% + 170px)',
+              left:  i === 0 ? 'calc(9% - 30px)'  : undefined,
+              right: i === 1 ? 'calc(9% - 30px)'  : undefined,
               maxWidth: '40%',
               zIndex: 8, pointerEvents: 'none',
               rotate: i === 0 ? '-10deg' : '15deg',
-              scale: 1.3,
+              scale: 1.43,
               transformOrigin: i === 0 ? 'left center' : 'right center',
             }}
           >
