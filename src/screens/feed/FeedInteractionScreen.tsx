@@ -94,6 +94,8 @@ export default function FeedInteractionScreen({ selectedFood, onDone, score = 0 
   const selected = PRODUCTS.find(p => p.id === selectedFood)!;
   const others   = PRODUCTS.filter(p => p.id !== selectedFood);
   const benefits = BENEFITS[selectedFood];
+  const compactBenefitPills = selectedFood === 'dry' || selectedFood === 'wet';
+  const benefitPillScale = selectedFood === 'wet' ? 1.416 : compactBenefitPills ? 1.287 : 1.43;
 
   return (
     <div style={{ width: '100%', height: '100%', background: '#00b6ed', position: 'relative', overflow: 'hidden' }}>
@@ -130,12 +132,12 @@ export default function FeedInteractionScreen({ selectedFood, onDone, score = 0 
             style={{
               position: 'absolute',
               top: i === 0 ? 'calc(13% + 170px)' : 'calc(19% + 170px)',
-              left:  i === 0 ? 'calc(9% - 30px)'  : undefined,
-              right: i === 1 ? 'calc(9% - 30px)'  : undefined,
+              left:  i === 0 ? `calc(9% - ${compactBenefitPills ? 45 : 30}px)`  : undefined,
+              right: i === 1 ? `calc(9% - ${compactBenefitPills ? 45 : 30}px)`  : undefined,
               maxWidth: '40%',
               zIndex: 8, pointerEvents: 'none',
               rotate: i === 0 ? '-10deg' : '15deg',
-              scale: 1.43,
+              scale: benefitPillScale,
               transformOrigin: i === 0 ? 'left center' : 'right center',
             }}
           >

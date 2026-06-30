@@ -356,20 +356,29 @@ export default function HubScreen({ cat, onNavigate, pointsEarned, onPointsShown
           {isSleepy && (
             <motion.div
               key={phraseIdx}
-              initial={{ opacity: 0, scale: 0.7, y: 10 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.7, y: -10 }}
-              transition={{ duration: 0.4 }}
+              initial={{ opacity: 0, y: -8, scale: 0.9 }}
+              animate={{ opacity: 1, y: [0, -5, 0], scale: [1, 1.04, 1] }}
+              exit={{ opacity: 0, y: -6, scale: 0.9 }}
+              transition={{
+                opacity: { duration: 0.4 },
+                y: { duration: 2.6, repeat: Infinity, ease: 'easeInOut', delay: 0.3 },
+                scale: { duration: 2.6, repeat: Infinity, ease: 'easeInOut', delay: 0.3 },
+              }}
               style={{
                 position: 'absolute', top: 'calc(8% + 230px)', left: 'calc(50% + 50px)',
                 transform: 'translateX(-50%)',
-                background: 'white', borderRadius: 99,
+                background: 'rgba(255,255,255,0.25)',
+                backdropFilter: 'blur(12px)',
+                WebkitBackdropFilter: 'blur(12px)',
+                border: '1.5px solid rgba(255,255,255,0.5)',
+                borderRadius: 99,
                 padding: 'min(1.5vw, 0.85vh) min(4vw, 2.2vh)',
-                boxShadow: '0 4px 16px rgba(0,87,122,0.2)',
+                boxShadow: '0 8px 28px rgba(0,87,122,0.18), inset 0 1px 0 rgba(255,255,255,0.6)',
                 zIndex: 3, whiteSpace: 'nowrap',
                 fontFamily: 'var(--font-display)',
                 fontSize: 'min(4vw, 2.3vh)',
-                color: '#00577a',
+                color: 'white',
+                pointerEvents: 'none',
               }}
             >
               {SLEEPY_PHRASES[phraseIdx]}
